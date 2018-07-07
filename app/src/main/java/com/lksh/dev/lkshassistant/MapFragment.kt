@@ -21,7 +21,6 @@ import java.io.File
 import java.io.FileNotFoundException
 
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_LATITUDE = "lat"
 private const val ARG_LONGITUDE = "long"
@@ -61,7 +60,7 @@ class MapFragment : Fragment() {
                     mapView!!.model.mapViewPosition, AndroidGraphicFactory.INSTANCE)
             tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT)
 
-            mapView!!.layerManager.layers.add(tileRendererLayer);
+            mapView!!.layerManager.layers.add(tileRendererLayer)
 
             mapView!!.setCenter(LatLong(57.51457, 41.42603))
             mapView!!.setZoomLevel(12.toByte())
@@ -82,11 +81,6 @@ class MapFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    /*fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }*/
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -127,12 +121,13 @@ class MapFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
+         * default params: enter point of dining room
          * @param posLat latitude of center.
          * @param posLong longitude of center.
          * @return A new instance of fragment MapFragment.
          */
         @JvmStatic
-        fun newInstance(posLat: Double = 57.51074, posLong: Double = 41.35674) =
+        fun newInstance(posLat: Double = 57.85760, posLong: Double = 41.70948) =
                 MapFragment().apply {
                     arguments = Bundle().apply {
                         putDouble(ARG_LATITUDE, posLat)
@@ -152,3 +147,5 @@ class MapFragment : Fragment() {
      */
 
 }
+//57.85722%2C41.71562#map=18/57.85760/41.70948
+//geoURI: geo://57.85760,41.70948?z=18
