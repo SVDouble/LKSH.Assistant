@@ -9,11 +9,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.mapsforge.core.graphics.Filter
 import org.mapsforge.core.model.LatLong
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
 import org.mapsforge.map.android.util.AndroidUtil
 import org.mapsforge.map.android.view.MapView
-import org.mapsforge.map.layer.cache.TileCache
 import org.mapsforge.map.layer.renderer.TileRendererLayer
 import org.mapsforge.map.reader.MapFile
 import org.mapsforge.map.rendertheme.InternalRenderTheme
@@ -58,10 +58,10 @@ class MapFragment : Fragment() {
             }
             val mapDataStore = MapFile(mapFile)
             val tileRendererLayer = TileRendererLayer(tileCache, mapDataStore,
-                    mapView!!.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE)
+                    mapView!!.model.mapViewPosition, AndroidGraphicFactory.INSTANCE)
             tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT)
 
-            mapView!!.getLayerManager().getLayers().add(tileRendererLayer);
+            mapView!!.layerManager.layers.add(tileRendererLayer);
 
             mapView!!.setCenter(LatLong(57.51457, 41.42603))
             mapView!!.setZoomLevel(12.toByte())
@@ -84,9 +84,9 @@ class MapFragment : Fragment() {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
+    /*fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
-    }
+    }*/
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -100,6 +100,10 @@ class MapFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    fun setNightTheme() {
+        mapView!!.model.displayModel.filter = Filter.INVERT
     }
 
     /**
