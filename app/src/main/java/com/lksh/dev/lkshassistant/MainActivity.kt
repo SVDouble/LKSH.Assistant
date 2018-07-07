@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         one.setOnClickListener {
-            val intent = Intent(this, UserData::class.java)
+            val intent = Intent(this, UserList::class.java)
             startActivity(intent)
        }
     }
