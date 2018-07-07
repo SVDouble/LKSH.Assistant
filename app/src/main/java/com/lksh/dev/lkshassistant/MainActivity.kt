@@ -16,24 +16,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val photoView = findViewById<View>(R.id.photo_view) as PhotoView
         photoView.setImageResource(R.drawable.ic_map)
-        //photoView.setOnTouchListener(handleTouch)
-        
-    }
 
-
-    private val handleTouch = View.OnTouchListener { v, event ->
-        val x = event.x.toInt()
-        val y = event.y.toInt()
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> Log.i("TAG", "touched down")
-
-            MotionEvent.ACTION_MOVE -> Log.i("TAG", "moving: ($x, $y)")
-            MotionEvent.ACTION_UP -> Log.i("TAG", "touched up")
+        photoView.setOnPhotoTapListener { view, x, y ->
+            Log.i("TAG", "$x, $y")
         }
-
-        true
     }
+
+
 }
 
 
