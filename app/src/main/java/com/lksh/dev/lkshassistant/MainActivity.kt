@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
             = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                map.setCurrentItem(0, true)
+                map.setCurrentItem(0, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                map.setCurrentItem(1, true)
+                map.setCurrentItem(1, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                map.setCurrentItem(2, true)
+                map.setCurrentItem(2, false)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -59,28 +59,7 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
                 }
             }
         })
-        /* Disable swiping */
-        map.setOnTouchListener { view, motionEvent -> false }
-    }
-
-    class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
-        private var swipingEnabled: Boolean = false
-
-        init {
-            this.swipingEnabled = true
-        }
-
-        override fun onTouchEvent(event: MotionEvent): Boolean {
-            return if (this.swipingEnabled) {
-                super.onTouchEvent(event)
-            } else false
-        }
-
-        override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-            return if (this.swipingEnabled) {
-                super.onInterceptTouchEvent(event)
-            } else false
-        }
+        map.swipingEnabled = false
     }
 
     class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
@@ -101,5 +80,25 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
 
     override fun onFragmentInteraction(uri: Uri) {
 
+    }
+}
+
+class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
+    var swipingEnabled: Boolean = false
+
+    init {
+        this.swipingEnabled = true
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        return if (this.swipingEnabled) {
+            super.onTouchEvent(event)
+        } else false
+    }
+
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+        return if (this.swipingEnabled) {
+            super.onInterceptTouchEvent(event)
+        } else false
     }
 }
