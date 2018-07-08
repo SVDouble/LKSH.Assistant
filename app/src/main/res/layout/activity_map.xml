@@ -11,12 +11,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="center"
-        android:id="@+id/button_center"
-
-        />
-
 </android.support.constraint.ConstraintLayout>
