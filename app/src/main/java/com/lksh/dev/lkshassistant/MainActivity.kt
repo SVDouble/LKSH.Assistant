@@ -2,20 +2,24 @@ package com.lksh.dev.lkshassistant
 
 import android.content.Context
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
-import android.support.design.widget.BottomNavigationView
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
-import android.view.MotionEvent
+import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import kotlinx.android.synthetic.main.activity_main.*
 
-
-
-class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener, UserListFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(),
+        ProfileFragment.OnFragmentInteractionListener,
+        FragmentMap.OnFragmentInteractionListener,
+        UserListFragment.OnFragmentInteractionListener,
+        InfoFragment.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -23,14 +27,20 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
             = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
+                header.visibility = GONE
+                search.visibility = VISIBLE
                 map.setCurrentItem(0, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
+                header.visibility = VISIBLE
+                search.visibility = GONE
                 map.setCurrentItem(1, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
+                header.visibility = VISIBLE
+                search.visibility = GONE
                 map.setCurrentItem(2, false)
                 return@OnNavigationItemSelectedListener true
             }
@@ -44,7 +54,8 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
+                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -60,27 +71,26 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
             }
         })
         map.swipingEnabled = false
-    }
-
-    class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-        private val fragments = mutableListOf<Fragment>()
-
-        init {
-            fragments.addAll(arrayOf(FragmentMap(), UserListFragment(), ProfileFragment()))
-        }
-
-
-        override fun getItem(position: Int): Fragment {
-            return fragments[position]
-        }
-
-        override fun getCount() = fragments.size
+        header.visibility = GONE
     }
 
     override fun onFragmentInteraction(uri: Uri) {
-
     }
+}
+
+class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+
+    private val fragments = mutableListOf<Fragment>()
+
+    constructor(fm: FragmentManager, fragments: Array<Fragment>) : this(fm) {
+        this.fragments.addAll(fragments)
+    }
+
+    override fun getItem(position: Int): Fragment {
+        return fragments[position]
+    }
+
+    override fun getCount() = fragments.size
 }
 
 class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
