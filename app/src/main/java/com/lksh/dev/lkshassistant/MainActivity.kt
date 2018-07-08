@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(),
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
+                arrayOf(FragmentMap(), InfoFragment(), UserListFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity(),
         })
         map.swipingEnabled = false
         header.visibility = GONE
+        DBWrapper.getInstance(this)
     }
 
     override fun onFragmentInteraction(uri: Uri) {
