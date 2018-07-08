@@ -53,11 +53,13 @@ class FragmentMap : Fragment() {
 
         photo_view.setImageResource(R.drawable.ic_map)
         //Log.i("")
+        photo_view.setScaleLevels(1.0F, 5.0F, 10.0F)
+
         photo_view.setOnPhotoTapListener { view, x, y ->
             Log.i("TAG", "$x, $y")
             for (build in Constant.POINTS){
                 val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
-                Log.i("TAG", "$res")
+
                 if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
                     Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
                 }
