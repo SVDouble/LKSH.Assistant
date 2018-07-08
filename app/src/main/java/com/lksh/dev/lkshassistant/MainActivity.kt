@@ -1,16 +1,10 @@
 package com.lksh.dev.lkshassistant
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,8 +17,7 @@ class MainActivity : AppCompatActivity(),
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
-    private val mOnNavigationItemSelectedListener
-            = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
                 header.visibility = GONE
@@ -75,40 +68,5 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(uri: Uri) {
-    }
-}
-
-class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-    private val fragments = mutableListOf<Fragment>()
-
-    constructor(fm: FragmentManager, fragments: Array<Fragment>) : this(fm) {
-        this.fragments.addAll(fragments)
-    }
-
-    override fun getItem(position: Int): Fragment {
-        return fragments[position]
-    }
-
-    override fun getCount() = fragments.size
-}
-
-class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
-    var swipingEnabled: Boolean = false
-
-    init {
-        this.swipingEnabled = true
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return if (this.swipingEnabled) {
-            super.onTouchEvent(event)
-        } else false
-    }
-
-    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-        return if (this.swipingEnabled) {
-            super.onInterceptTouchEvent(event)
-        } else false
     }
 }

@@ -74,7 +74,7 @@ class ProfileFragment : Fragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument type and NAME
         fun onFragmentInteraction(uri: Uri)
     }
 

@@ -1,8 +1,8 @@
 package com.lksh.dev.lkshassistant
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_user_list.*
 
@@ -20,7 +20,7 @@ class UserList : AppCompatActivity() {
         if(usrDataList.size > 0) {
             var lazyData = ArrayList<String>()
             for (temp in usrDataList){
-                lazyData.add(/*temp._id.toString() + */
+                lazyData.add(/*temp.ID.toString() + */
                         "Login : "+ temp.login+"\n" +
                         "Name : "+ temp.name +"\n" +
                         "Surname : "+ temp.surname +"\n" +
