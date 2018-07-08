@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 
-class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -58,11 +58,18 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
 
     class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-        override fun getItem(position: Int): Fragment {
-            return ProfileFragment()
+        private val fragments = mutableListOf<Fragment>()
+
+        init {
+            fragments.addAll(arrayOf(FragmentMap(), ProfileFragment(), FragmentMap()))
         }
 
-        override fun getCount() = 3
+
+        override fun getItem(position: Int): Fragment {
+            return fragments[position]
+        }
+
+        override fun getCount() = fragments.size
     }
 
     override fun onFragmentInteraction(uri: Uri) {
