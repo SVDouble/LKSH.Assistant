@@ -101,8 +101,9 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //super.onViewCreated(view, savedInstanceState)
         Log.i(TAG, "onViewCreated(...)")
-        mapView = view.findViewById(R.id.mapViewFr) as MapView
-        activity!!.setContentView(mapView)
+        //mapView = view.findViewById(R.id.mapViewFr) as MapView
+        mapView = view as MapView
+        //activity!!.setContentView(mapView)
         setupMap()
     }
 
@@ -116,7 +117,7 @@ class MapFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         Log.d(TAG, "onCreateView(...)")
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false).findViewById(R.id.mapViewFr)
     }
 
     override fun onDestroyView() {
@@ -132,53 +133,6 @@ class MapFragment : Fragment() {
     fun setLigthTheme() {
         mapView!!.model.displayModel.filter = Filter.NONE
     }
-    /*override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * default params: enter point of dining room
-         * @param posLat latitude of center.
-         * @param posLong longitude of center.
-         * @return A new instance of fragment MapFragment.
-         */
-        @JvmStatic
-        fun newInstance(posLat: Double = 57.85760, posLong: Double = 41.70948) =
-                MapFragment().apply {
-                    arguments = Bundle().apply {
-                        putDouble(ARG_LATITUDE, posLat)
-                        putDouble(ARG_LONGITUDE, posLong)
-                    }
-                }
-    }*/
 }
 //57.85722%2C41.71562#map=18/57.85760/41.70948
 //geoURI: geo://57.85760,41.70948?z=18
