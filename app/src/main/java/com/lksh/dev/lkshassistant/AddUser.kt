@@ -13,8 +13,6 @@ class AddUser : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
 
-        var localDB = DBHandler(this)
-
         submit_btn.setOnClickListener{
             var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
             var temppassword = ""
@@ -37,7 +35,7 @@ class AddUser : AppCompatActivity() {
             values.put(DBHandler.NAME, tempname)
             values.put(DBHandler.SURNAME, tempsurname)
             values.put(DBHandler.ADMIN, tempadmin)
-            localDB.addUser(values)
+            DBWrapper.getInstance(this).addUser(values)
 
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

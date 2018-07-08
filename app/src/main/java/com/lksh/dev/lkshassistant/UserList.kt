@@ -15,8 +15,7 @@ class UserList : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        var localDB = DBHandler(this)
-        var usrDataList = localDB.listUsers("%")
+        var usrDataList = DBWrapper.getInstance(this).listUsers("%")
         if(usrDataList.size > 0) {
             var lazyData = ArrayList<String>()
             for (temp in usrDataList){

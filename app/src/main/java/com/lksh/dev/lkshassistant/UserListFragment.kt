@@ -54,8 +54,7 @@ class UserListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        var localDB = DBHandler(context!!)
-        var usrDataList = localDB.listUsers("%")
+        var usrDataList = DBWrapper.getInstance(context!!).listUsers("%")
         if(usrDataList.size > 0) {
             var lazyData = ArrayList<String>()
             for (temp in usrDataList){
