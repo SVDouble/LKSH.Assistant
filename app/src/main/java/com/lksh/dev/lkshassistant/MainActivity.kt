@@ -1,6 +1,6 @@
 package com.lksh.dev.lkshassistant
 
-import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.support.design.widget.BottomNavigationView
@@ -10,6 +10,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.view.MotionEvent
+import android.util.AttributeSet
+
+
 
 class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener {
 
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         map.adapter = mSectionsPagerAdapter
+        /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
@@ -54,6 +59,28 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
                 }
             }
         })
+        /* Disable swiping */
+        map.setOnTouchListener { view, motionEvent -> false }
+    }
+
+    class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
+        private var swipingEnabled: Boolean = false
+
+        init {
+            this.swipingEnabled = true
+        }
+
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            return if (this.swipingEnabled) {
+                super.onTouchEvent(event)
+            } else false
+        }
+
+        override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+            return if (this.swipingEnabled) {
+                super.onInterceptTouchEvent(event)
+            } else false
+        }
     }
 
     class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
@@ -61,7 +88,7 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
         private val fragments = mutableListOf<Fragment>()
 
         init {
-            fragments.addAll(arrayOf(FragmentMap(), ProfileFragment(), FragmentMap()))
+            fragments.addAll(arrayOf(FragmentMap(), FragmentMap(), ProfileFragment()))
         }
 
 
