@@ -1,17 +1,17 @@
 package com.lksh.dev.lkshassistant
 
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_map.*
-import org.mapsforge.core.graphics.Bitmap
 import org.mapsforge.core.model.BoundingBox
 import org.mapsforge.core.model.LatLong
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
+import org.mapsforge.map.android.rotation.RotateView
 import org.mapsforge.map.android.util.AndroidUtil
+import org.mapsforge.map.android.view.MapView
 import org.mapsforge.map.layer.overlay.Marker
 import org.mapsforge.map.layer.renderer.TileRendererLayer
 import org.mapsforge.map.reader.MapFile
@@ -39,7 +39,7 @@ class MapActivity : AppCompatActivity() {
             mapView.mapScaleBar.isVisible = true
             mapView.setBuiltInZoomControls(false)
 
-            mapView.mapZoomControls.isShowMapZoomControls = true
+            mapView.mapZoomControls.isShowMapZoomControls = false
 
             val mapDataStore = MapFile(prepareMapData())
             val tileCache = AndroidUtil.createTileCache(applicationContext, "mapcache",
@@ -55,6 +55,7 @@ class MapActivity : AppCompatActivity() {
             mapView.mapZoomControls.zoomLevelMin = 16
             mapView.setZoomLevel(19.toByte())
             mapView.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
+            //mapView.model.displayModel
             /*val boundingBox = BoundingBox(minLat, minLong, maxLat, maxLong)
             val dimension = mapView.model.mapViewDimension.dimension
 
