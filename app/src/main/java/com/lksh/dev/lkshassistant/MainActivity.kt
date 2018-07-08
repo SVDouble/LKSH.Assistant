@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(),
         })
         map.swipingEnabled = false
         header.visibility = GONE
-        DBWrapper.getInstance(this)
+        initDb(DBWrapper.getInstance(this))
     }
 
     override fun onFragmentInteraction(uri: Uri) {
