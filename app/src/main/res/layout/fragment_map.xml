@@ -7,7 +7,9 @@
     tools:context=".MapFragment">
 
     <org.mapsforge.map.android.view.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/mapViewFr"
+        android:scaleX="100"
+        android:scaleY="100"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
