@@ -20,10 +20,10 @@ import java.io.File
 
 private const val ARG_LATITUDE = "lat"
 private const val ARG_LONGITUDE = "long"
-private const val minLat = 57.855300
-private const val maxLat = 57.858790
-private const val minLong = 41.708843
-private const val maxLong = 41.717549
+const val minLat = 57.855300
+const val maxLat = 57.858790
+const val minLong = 41.708843
+const val maxLong = 41.717549
 
 /**
  * A simple [Fragment] subclass.
