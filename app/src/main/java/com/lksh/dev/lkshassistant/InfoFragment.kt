@@ -54,7 +54,7 @@ class InfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mSectionsPagerAdapter = SectionsPagerAdapter(activity!!.supportFragmentManager, arrayOf(ProfileFragment(), ProfileFragment()))
+        mSectionsPagerAdapter = SectionsPagerAdapter(activity!!.supportFragmentManager, arrayOf(UserListFragment(), ProfileFragment()))
 
         // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter

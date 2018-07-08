@@ -25,7 +25,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
     private var sqlObj: SQLiteDatabase = this.writableDatabase // Сущность SQLiteDatabase
 
     override fun onCreate(p0: SQLiteDatabase?) { // Вызывается при генерации БД
-        var sql1: String = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ( $ID  INTEGER PRIMARY KEY, $LOGIN TEXT, $PASSWORD TEXT, $HOUSE TEXT, $PARALLEL TEXT, $NAME TEXT, $SURNAME TEXT, $ADMIN INTEGER);"
+        val sql1: String = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ( $ID  INTEGER PRIMARY KEY, $LOGIN TEXT, $PASSWORD TEXT, $HOUSE TEXT, $PARALLEL TEXT, $NAME TEXT, $SURNAME TEXT, $ADMIN INTEGER);"
         p0!!.execSQL(sql1);
     }
 
@@ -116,5 +116,19 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
             } while (cursor.moveToNext())
         }
         return arraylist
+    }
+}
+
+class DBWrapper private constructor() {
+    companion object {
+        var db: DBHandler? = null
+
+        @JvmStatic
+        fun getInstance(ctx: Context): DBHandler {
+            if (db == null)
+                db = DBHandler(ctx)
+            return db!!
+        }
+
     }
 }
