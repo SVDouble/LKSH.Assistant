@@ -20,7 +20,14 @@ class UserList : AppCompatActivity() {
         if(usrDataList.size > 0) {
             var lazyData = ArrayList<String>()
             for (temp in usrDataList){
-                lazyData.add(/*temp._id.toString() +*/ temp.login+ " " + temp.house + " " + temp.parallel + " ")
+                lazyData.add(/*temp._id.toString() + */
+                        "Login : "+ temp.login+"\n" +
+                        "Name : "+ temp.name +"\n" +
+                        "Surname : "+ temp.surname +"\n" +
+                        "House : "+ temp.house + "\n" +
+                        "Parallel : " +temp.parallel +"\n" +
+                        "Password : " + temp.password+"\n" +
+                        "Admin : " + temp.admin)
             }
             var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, lazyData)
             userlist.adapter = adapter
