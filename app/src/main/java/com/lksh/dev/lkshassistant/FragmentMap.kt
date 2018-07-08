@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.synthetic.main.fragment_map.*
+import kotlin.math.abs
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -50,9 +52,18 @@ class FragmentMap : Fragment() {
         super.onStart()
 
         photo_view.setImageResource(R.drawable.ic_map)
+        //Log.i("")
         photo_view.setOnPhotoTapListener { view, x, y ->
             Log.i("TAG", "$x, $y")
+            for (build in Constant.POINTS){
+                val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
+                Log.i("TAG", "$res")
+                if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
+                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -109,4 +120,8 @@ class FragmentMap : Fragment() {
                     }
                 }
     }
+}
+
+private operator fun Pair<Float, Float>.minus(pair: Pair<Double, Double>): Pair<Double, Double> {
+    return Pair<Double, Double>(this.first - pair.first, this.second - pair.second)
 }
