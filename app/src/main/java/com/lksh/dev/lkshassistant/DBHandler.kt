@@ -66,5 +66,55 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DBName, null, DBVe
         return arraylist
     }
 
+    fun listHouse(key : String) : ArrayList<UserData> {
+        var arraylist = ArrayList<UserData>()
+        var sqlQB = SQLiteQueryBuilder()
+        sqlQB.tables = tableName
+        var cols = arrayOf(_id, login, password, house, parallel, name, surname, admin)
+        var selectArgs = arrayOf(key)
 
+        var cursor = sqlQB.query(sqlObj, cols,"$house like ?", selectArgs,null,null, _id)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex(_id))
+                val login = cursor.getString(cursor.getColumnIndex(login))
+                val password = cursor.getString(cursor.getColumnIndex(password))
+                val house = cursor.getString(cursor.getColumnIndex(house))
+                val parallel = cursor.getString(cursor.getColumnIndex(parallel))
+                val name = cursor.getString(cursor.getColumnIndex(name))
+                val surname = cursor.getString(cursor.getColumnIndex(surname))
+                val admin = cursor.getInt(cursor.getColumnIndex(admin))
+                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin))
+
+            } while (cursor.moveToNext())
+        }
+        return arraylist
+    }
+
+    fun listParallel(key : String) : ArrayList<UserData> {
+        var arraylist = ArrayList<UserData>()
+        var sqlQB = SQLiteQueryBuilder()
+        sqlQB.tables = tableName
+        var cols = arrayOf(_id, login, password, house, parallel, name, surname, admin)
+        var selectArgs = arrayOf(key)
+
+        var cursor = sqlQB.query(sqlObj, cols,"$parallel like ?", selectArgs,null,null, _id)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex(_id))
+                val login = cursor.getString(cursor.getColumnIndex(login))
+                val password = cursor.getString(cursor.getColumnIndex(password))
+                val house = cursor.getString(cursor.getColumnIndex(house))
+                val parallel = cursor.getString(cursor.getColumnIndex(parallel))
+                val name = cursor.getString(cursor.getColumnIndex(name))
+                val surname = cursor.getString(cursor.getColumnIndex(surname))
+                val admin = cursor.getInt(cursor.getColumnIndex(admin))
+                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin))
+
+            } while (cursor.moveToNext())
+        }
+        return arraylist
+    }
 }

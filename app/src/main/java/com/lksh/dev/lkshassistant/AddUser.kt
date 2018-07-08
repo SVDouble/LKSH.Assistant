@@ -39,7 +39,7 @@ class AddUser : AppCompatActivity() {
             values.put(DBHandler.admin, tempadmin)
             localDB.addUser(values)
 
-            val intent = Intent(this, UserList::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }

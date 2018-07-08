@@ -15,7 +15,7 @@ import android.util.AttributeSet
 
 
 
-class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener, UserListFragment.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
         private val fragments = mutableListOf<Fragment>()
 
         init {
-            fragments.addAll(arrayOf(FragmentMap(), FragmentMap(), ProfileFragment()))
+            fragments.addAll(arrayOf(FragmentMap(), UserListFragment(), ProfileFragment()))
         }
 
 
