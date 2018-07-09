@@ -2,10 +2,13 @@ package com.lksh.dev.lkshassistant
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
 import kotlinx.android.synthetic.main.activity_add_user.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.util.*
 
 class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -135,7 +138,9 @@ class DBWrapper private constructor() {
     }
 }
 
-fun initDb(db: DBHandler) {
+
+
+fun initDb(db: DBHandler, resources: Resources) {
     var usrDataList = db.listUsers("%")
     if(usrDataList.size > 0){
         for (temp in usrDataList) {
@@ -144,67 +149,41 @@ fun initDb(db: DBHandler) {
     }
 
     var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-
-
     var temppassword = ""
-    Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
-    var templogin = "adminadmin"
-    var temphouse = "1"
-    var tempparallel = "P"
-    var tempname = "Artyom"
-    var tempsurname = "Sushkov"
-    var tempadmin = 1
-
+    var templogin = ""
+    var temphouse = ""
+    var tempparallel = ""
+    var tempname = ""
+    var tempsurname = ""
+    var tempadmin = ""
     val values = ContentValues()
-    values.put(DBHandler.LOGIN, templogin)
-    values.put(DBHandler.PASSWORD, temppassword)
-    values.put(DBHandler.HOUSE, temphouse)
-    values.put(DBHandler.PARALLEL, tempparallel)
-    values.put(DBHandler.NAME, tempname)
-    values.put(DBHandler.SURNAME, tempsurname)
-    values.put(DBHandler.ADMIN, tempadmin)
-    db.addUser(values)
 
 
-    temppassword = ""
-    Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
-    templogin = "adminadmin"
-    temphouse = "1"
-    tempparallel = "P"
-    tempname = "Valentin"
-    tempsurname = "Safronov"
-    tempadmin = 0
+    val inputStream = resources.openRawResource(R.raw.test)                                 //file reading
+    val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
+        it.split(";")
+    }
 
 
+    for (i in lines){                   //put into db
+        temppassword = ""
+        templogin = i[0]
+        temphouse = i[4]
+        tempparallel = i[3]
+        tempname = i[1]
+        tempsurname = i[2]
+        tempadmin = i[5]
+        Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
 
-    values.put(DBHandler.LOGIN, templogin)
-    values.put(DBHandler.PASSWORD, temppassword)
-    values.put(DBHandler.HOUSE, temphouse)
-    values.put(DBHandler.PARALLEL, tempparallel)
-    values.put(DBHandler.NAME, tempname)
-    values.put(DBHandler.SURNAME, tempsurname)
-    values.put(DBHandler.ADMIN, tempadmin)
-    db.addUser(values)
+        values.put(DBHandler.LOGIN, templogin)
+        values.put(DBHandler.PASSWORD, temppassword)
+        values.put(DBHandler.HOUSE, temphouse)
+        values.put(DBHandler.PARALLEL, tempparallel)
+        values.put(DBHandler.NAME, tempname)
+        values.put(DBHandler.SURNAME, tempsurname)
+        values.put(DBHandler.ADMIN, tempadmin)
+        db.addUser(values)
+    }
 
-
-    temppassword = ""
-    Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
-    templogin = "lbezvershenko"
-    temphouse = "1"
-    tempparallel = "P"
-    tempname = "Leonid"
-    tempsurname = "Bezvershenko"
-    tempadmin = 0
-
-
-
-    values.put(DBHandler.LOGIN, templogin)
-    values.put(DBHandler.PASSWORD, temppassword)
-    values.put(DBHandler.HOUSE, temphouse)
-    values.put(DBHandler.PARALLEL, tempparallel)
-    values.put(DBHandler.NAME, tempname)
-    values.put(DBHandler.SURNAME, tempsurname)
-    values.put(DBHandler.ADMIN, tempadmin)
-    db.addUser(values)
 }
 
