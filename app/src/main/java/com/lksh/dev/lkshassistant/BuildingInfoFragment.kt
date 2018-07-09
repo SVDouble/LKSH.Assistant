@@ -54,9 +54,10 @@ class BuildingInfoFragment : Fragment() {
 //        }
         table.isStretchAllColumns = false
         table.bringToFront()
+        dataset.add(0, UserData(0, "", "", "house", "parallel", "name", "", 0))
         dataset.forEachIndexed { i, data ->
             val row = layoutInflater.inflate(R.layout.part_rv_building, null, false)
-            row.number.text = i.toString()
+            row.number.text = if (i == 0) "#" else i.toString()
             row.name.text = data.name + " " + data.surname
             row.parallel.text = data.parallel
             row.home.text = data.house
