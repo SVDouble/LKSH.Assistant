@@ -153,10 +153,7 @@ fun initDb(db: DBHandler) {
     var tempparallel = "P"
     var tempname = "Artyom"
     var tempsurname = "Sushkov"
-    var tempadmin = 0
-    if (templogin == "adminadmin"){
-        tempadmin = 1
-    }
+    var tempadmin = 1
 
     val values = ContentValues()
     values.put(DBHandler.LOGIN, templogin)
@@ -177,9 +174,7 @@ fun initDb(db: DBHandler) {
     tempname = "Valentin"
     tempsurname = "Safronov"
     tempadmin = 0
-    if (templogin == "adminadmin"){
-        tempadmin = 1
-    }
+
 
 
     values.put(DBHandler.LOGIN, templogin)
@@ -191,5 +186,25 @@ fun initDb(db: DBHandler) {
     values.put(DBHandler.ADMIN, tempadmin)
     db.addUser(values)
 
+
+    temppassword = ""
+    Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
+    templogin = "lbezvershenko"
+    temphouse = "1"
+    tempparallel = "P"
+    tempname = "Leonid"
+    tempsurname = "Bezvershenko"
+    tempadmin = 0
+
+
+
+    values.put(DBHandler.LOGIN, templogin)
+    values.put(DBHandler.PASSWORD, temppassword)
+    values.put(DBHandler.HOUSE, temphouse)
+    values.put(DBHandler.PARALLEL, tempparallel)
+    values.put(DBHandler.NAME, tempname)
+    values.put(DBHandler.SURNAME, tempsurname)
+    values.put(DBHandler.ADMIN, tempadmin)
+    db.addUser(values)
 }
 
