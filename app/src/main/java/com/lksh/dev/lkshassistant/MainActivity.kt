@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity(),
         FragmentMap.OnFragmentInteractionListener,
         UserListFragment.OnFragmentInteractionListener,
         InfoFragment.OnFragmentInteractionListener,
-        BuildingInfoFragment.OnFragmentInteractionListener {
+        BuildingInfoFragment.OnFragmentInteractionListener,
+        TimetableFragment.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
