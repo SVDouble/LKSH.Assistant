@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
 import android.net.Uri
@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.lksh.dev.lkshassistant.R
 
 
 // TODO: Rename parameter arguments, choose names that match

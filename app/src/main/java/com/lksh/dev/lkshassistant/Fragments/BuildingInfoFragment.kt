@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
 import android.graphics.Color
@@ -9,6 +9,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.lksh.dev.lkshassistant.DBWrapper
+import com.lksh.dev.lkshassistant.MainActivity
+import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.UserData
+import com.lksh.dev.lkshassistant.Views.UserCardAdapter
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
 

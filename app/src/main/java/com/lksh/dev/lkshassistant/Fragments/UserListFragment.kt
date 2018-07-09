@@ -1,15 +1,18 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_map.*
-import kotlin.math.abs
+import android.widget.ArrayAdapter
+import com.lksh.dev.lkshassistant.AddUser
+import com.lksh.dev.lkshassistant.DBWrapper
+import com.lksh.dev.lkshassistant.R
+import kotlinx.android.synthetic.main.activity_user_list.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -20,13 +23,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [FragmentMap.OnFragmentInteractionListener] interface
+ * [UserListFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [FragmentMap.newInstance] factory method to
+ * Use the [UserListFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class FragmentMap : Fragment() {
+class UserListFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -43,33 +46,38 @@ class FragmentMap : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        photo_view.setImageResource(R.drawable.ic_map)
-        //Log.i("")
-        photo_view.setScaleLevels(1.0F, 5.0F, 10.0F)
-
-        photo_view.setOnPhotoTapListener { view, x, y ->
-            Log.i("TAG", "$x, $y")
-            for (build in Constant.POINTS){
-                val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
-
-                if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
-//                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
-                    activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
-                }
-            }
-        }
-
+        return inflater.inflate(R.layout.fragment_user_list, container, false)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        var usrDataList = DBWrapper.getInstance(context!!).listUsers("%")
+        if (usrDataList.size > 0) {
+            var lazyData = ArrayList<String>()
+            for (temp in usrDataList) {
+                lazyData.add(/*temp.ID.toString() + */
+                        "Login : " + temp.login + "\n" +
+                                "Name : " + temp.name + "\n" +
+                                "Surname : " + temp.surname + "\n" +
+                                "House : " + temp.house + "\n" +
+                                "Parallel : " + temp.parallel + "\n" +
+                                "Password : " + temp.password + "\n" +
+                                "Admin : " + temp.admin)
+            }
+            var adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, lazyData)
+            userlist.adapter = adapter
+        }
+
+        add_new.setOnClickListener {
+            val intent = Intent(context!!, AddUser::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -109,20 +117,16 @@ class FragmentMap : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentMap.
+         * @return A new instance of fragment UserListFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                FragmentMap().apply {
+                UserListFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
                     }
                 }
     }
-}
-
-private operator fun Pair<Float, Float>.minus(pair: Pair<Double, Double>): Pair<Double, Double> {
-    return Pair<Double, Double>(this.first - pair.first, this.second - pair.second)
 }

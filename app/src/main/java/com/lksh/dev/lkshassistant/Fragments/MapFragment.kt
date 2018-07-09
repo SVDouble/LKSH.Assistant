@@ -1,14 +1,17 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_info.*
+import com.lksh.dev.lkshassistant.Constant
+import com.lksh.dev.lkshassistant.R
+import kotlinx.android.synthetic.main.fragment_map.*
+import kotlin.math.abs
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -19,18 +22,17 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [InfoFragment.OnFragmentInteractionListener] interface
+ * [FragmentMap.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [InfoFragment.newInstance] factory method to
+ * Use the [FragmentMap.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class InfoFragment : Fragment() {
+class FragmentMap : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
-    private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,24 +45,33 @@ class InfoFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_info, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        photo_view.setImageResource(R.drawable.ic_map)
+        //Log.i("")
+        photo_view.setScaleLevels(1.0F, 5.0F, 10.0F)
+
+        photo_view.setOnPhotoTapListener { view, x, y ->
+            Log.i("TAG", "$x, $y")
+            for (build in Constant.POINTS) {
+                val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
+
+                if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015) {
+//                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+                    activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
+                }
+            }
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        mSectionsPagerAdapter = SectionsPagerAdapter(activity!!.supportFragmentManager, arrayOf(UserListFragment(), BuildingInfoFragment()))
-
-        // Set up the ViewPager with the sections adapter.
-        container.adapter = mSectionsPagerAdapter
-
-        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
     }
 
     override fun onAttach(context: Context) {
@@ -100,16 +111,20 @@ class InfoFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment InfoFragment.
+         * @return A new instance of fragment FragmentMap.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                InfoFragment().apply {
+                FragmentMap().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
                     }
                 }
     }
+}
+
+private operator fun Pair<Float, Float>.minus(pair: Pair<Double, Double>): Pair<Double, Double> {
+    return Pair<Double, Double>(this.first - pair.first, this.second - pair.second)
 }

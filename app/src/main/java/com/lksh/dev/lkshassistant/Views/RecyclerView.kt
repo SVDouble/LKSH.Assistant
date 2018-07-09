@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Views
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.UserData
 
 class UserCardAdapter(private val mContext: Context, private val dataset: ArrayList<UserData>) :
         RecyclerView.Adapter<UserCardAdapter.ViewHolder>() {
@@ -18,7 +20,7 @@ class UserCardAdapter(private val mContext: Context, private val dataset: ArrayL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): UserCardAdapter.ViewHolder {
+                                    viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.part_rv_building, parent, false)
         // set the view's size, margins, paddings and layout parameters

@@ -17,7 +17,7 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        tools:context=".BuildingInfoFragment">
+        tools:context=".Fragments.BuildingInfoFragment">
 
         <RelativeLayout
             android:layout_width="wrap_content"

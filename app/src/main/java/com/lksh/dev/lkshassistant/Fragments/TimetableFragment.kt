@@ -1,15 +1,13 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_user_list.*
+import com.lksh.dev.lkshassistant.R
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -20,13 +18,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [UserListFragment.OnFragmentInteractionListener] interface
+ * [TimetableFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [UserListFragment.newInstance] factory method to
+ * Use the [TimetableFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class UserListFragment : Fragment() {
+class TimetableFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -43,38 +41,12 @@ class UserListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_list, container, false)
+        return inflater.inflate(R.layout.fragment_timetable, container, false)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        var usrDataList = DBWrapper.getInstance(context!!).listUsers("%")
-        if(usrDataList.size > 0) {
-            var lazyData = ArrayList<String>()
-            for (temp in usrDataList){
-                lazyData.add(/*temp.ID.toString() + */
-                        "Login : "+ temp.login+"\n" +
-                                "Name : "+ temp.name +"\n" +
-                                "Surname : "+ temp.surname +"\n" +
-                                "House : "+ temp.house + "\n" +
-                                "Parallel : " +temp.parallel +"\n" +
-                                "Password : " + temp.password+"\n" +
-                                "Admin : " + temp.admin)
-            }
-            var adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, lazyData)
-            userlist.adapter = adapter
-        }
-
-        add_new.setOnClickListener {
-            val intent = Intent(context!!, AddUser::class.java)
-            startActivity(intent)
-        }
     }
 
     override fun onAttach(context: Context) {
@@ -103,7 +75,7 @@ class UserListFragment : Fragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and NAME
+        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 
@@ -114,12 +86,12 @@ class UserListFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment UserListFragment.
+         * @return A new instance of fragment TimetableFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                UserListFragment().apply {
+                TimetableFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
