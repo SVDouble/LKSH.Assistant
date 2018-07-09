@@ -8,12 +8,26 @@
     tools:context=".StartActivity">
 
 
+    <TextView
+        android:id="@+id/profile_parallel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="LKSH.Assistant"
+        android:textSize="24sp" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_height="185dp"
+        android:layout_above="@+id/loginField"
         android:layout_alignParentTop="true"
+        android:layout_below="@+id/profile_parallel"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="70dp"
         app:srcCompat="@drawable/logo_lksh" />
 
     <EditText
@@ -22,7 +36,7 @@
         android:layout_height="41dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="231dp"
+        android:layout_marginBottom="178dp"
         android:background="#11000000"
         android:fontFamily="sans-serif"
         android:hint="Username"
@@ -37,7 +51,7 @@
 
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="173dp"
+        android:layout_marginBottom="112dp"
         android:background="#11000000"
         android:ems="10"
         android:hint="Password"
@@ -49,9 +63,9 @@
         android:id="@+id/cardView"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:layout_above="@+id/textView2"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="31dp"
+        android:layout_marginBottom="26dp"
         app:cardBackgroundColor="@color/colorAccent"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp">
@@ -90,4 +104,5 @@
         android:orientation="horizontal">
 
     </LinearLayout>
+
 </RelativeLayout>

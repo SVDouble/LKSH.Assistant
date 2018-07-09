@@ -45,12 +45,14 @@ class StartActivity : AppCompatActivity() {
                         }
                         if (!isLogin) {
                             Toast.makeText(this, "Invalid login or password", Toast.LENGTH_LONG).show()
+                            passwordField.setText("")
 
                         }
                     }
 
                 } else {
                     Toast.makeText(this, "Empty fields", Toast.LENGTH_LONG).show()
+                    passwordField.setText("")
 
                 }
             }
