@@ -25,12 +25,13 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         const val NAME = "name"
         const val SURNAME = "surname"
         const val ADMIN = "admin"
+        const val ROOM = "room"
     }
 
     private var sqlObj: SQLiteDatabase = this.writableDatabase // Сущность SQLiteDatabase
 
     override fun onCreate(p0: SQLiteDatabase?) { // Вызывается при генерации БД
-        val sql1: String = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ( $ID  INTEGER PRIMARY KEY, $LOGIN TEXT, $PASSWORD TEXT, $HOUSE TEXT, $PARALLEL TEXT, $NAME TEXT, $SURNAME TEXT, $ADMIN INTEGER);"
+        val sql1: String = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ( $ID  INTEGER PRIMARY KEY, $LOGIN TEXT, $PASSWORD TEXT, $HOUSE TEXT, $PARALLEL TEXT, $NAME TEXT, $SURNAME TEXT, $ADMIN INTEGER, $ROOM TEXT);"
         p0!!.execSQL(sql1);
     }
 
@@ -49,7 +50,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
-        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN)
+        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM)
         val selectArgs = arrayOf(key)
 
         val cursor = sqlQB.query(sqlObj, cols, "$LOGIN like ?", selectArgs, null, null, LOGIN)
@@ -64,7 +65,8 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 val name = cursor.getString(cursor.getColumnIndex(NAME))
                 val surname = cursor.getString(cursor.getColumnIndex(SURNAME))
                 val admin = cursor.getInt(cursor.getColumnIndex(ADMIN))
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin))
+                val room = cursor.getString((cursor.getColumnIndex(ROOM)))
+                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room))
 
             } while (cursor.moveToNext())
         }
@@ -75,7 +77,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
-        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN)
+        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM)
         val selectArgs = arrayOf(key)
 
         val cursor = sqlQB.query(sqlObj, cols, "$HOUSE like ?", selectArgs, null, null, ID)
@@ -90,7 +92,9 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 val name = cursor.getString(cursor.getColumnIndex(NAME))
                 val surname = cursor.getString(cursor.getColumnIndex(SURNAME))
                 val admin = cursor.getInt(cursor.getColumnIndex(ADMIN))
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin))
+                val room = cursor.getString((cursor.getColumnIndex(ROOM)))
+                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room))
+
 
             } while (cursor.moveToNext())
         }
@@ -101,7 +105,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
-        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN)
+        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM)
         val selectArgs = arrayOf(key)
 
         val cursor = sqlQB.query(sqlObj, cols, "$PARALLEL like ?", selectArgs, null, null, ID)
@@ -116,7 +120,9 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 val name = cursor.getString(cursor.getColumnIndex(NAME))
                 val surname = cursor.getString(cursor.getColumnIndex(SURNAME))
                 val admin = cursor.getInt(cursor.getColumnIndex(ADMIN))
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin))
+                val room = cursor.getString((cursor.getColumnIndex(ROOM)))
+                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room))
+
 
             } while (cursor.moveToNext())
         }
@@ -156,6 +162,7 @@ fun initDb(db: DBHandler, resources: Resources) {
     var tempname = ""
     var tempsurname = ""
     var tempadmin = ""
+    var temproom = ""
     val values = ContentValues()
 
 
@@ -172,7 +179,8 @@ fun initDb(db: DBHandler, resources: Resources) {
         tempparallel = i[4]
         tempname = i[2]
         tempsurname = i[3]
-        tempadmin = i[6]
+        tempadmin = i[7]
+        temproom = i[6]
         //Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
 
         values.put(DBHandler.LOGIN, templogin)
@@ -182,6 +190,7 @@ fun initDb(db: DBHandler, resources: Resources) {
         values.put(DBHandler.NAME, tempname)
         values.put(DBHandler.SURNAME, tempsurname)
         values.put(DBHandler.ADMIN, tempadmin)
+        values.put(DBHandler.ROOM, temproom)
         db.addUser(values)
     }
 

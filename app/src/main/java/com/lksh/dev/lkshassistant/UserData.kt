@@ -7,7 +7,8 @@ class UserData (var _id : Int,
                 var parallel : String,
                 var name : String,
                 var surname : String,
-                var admin : Int)
+                var admin : Int,
+                var room : String)
 
 //package com.lksh.dev.lkshassistant
 //
