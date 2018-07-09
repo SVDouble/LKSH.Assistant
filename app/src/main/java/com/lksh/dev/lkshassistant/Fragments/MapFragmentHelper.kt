@@ -17,8 +17,8 @@ import kotlin.math.sqrt
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
 class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double):
         Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
-                AndroidGraphicFactory.convertToBitmap(icon).width / 2,
-                -1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2) {
+                /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
+                /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
         if (tapLatLong == null || getDistance(tapLatLong, latLong) > radius)
             return false
@@ -111,7 +111,7 @@ val houseCoordinates = arrayOf(
         HouseInfo(LatLong(57.855307, 41.712678), "35", 0.00025),
         HouseInfo(LatLong(57.857403, 41.711691), "Main House", 0.0004),
         HouseInfo(LatLong(57.858095, 41.711262), "Club", 0.0003),
-        HouseInfo(LatLong(57.857525, 41.712398), "Kompovnik", 0.0005),
+        HouseInfo(LatLong(57.857525, 41.712398), "Kompovnik", 0.0003),
         HouseInfo(LatLong(57.856865, 41.712037), "Romantic", 0.00025),
         HouseInfo(LatLong(57.857136, 41.711321), "Garazh", 0.00015),
         HouseInfo(LatLong(57.857064, 41.711265), "Gnezdo", 0.00015),
@@ -123,3 +123,7 @@ const val minLat = 57.855300
 const val maxLat = 57.858790
 const val minLong = 41.708843
 const val maxLong = 41.717549
+const val defaultLat = 57.85760 //coordinates of dormitory
+const val defaultLong = 41.71000
+const val LAT = "LAT"
+const val LONG = "LONG"
