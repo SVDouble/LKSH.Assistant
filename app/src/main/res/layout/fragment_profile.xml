@@ -33,6 +33,7 @@
                 android:paddingStart="10dp">
 
                 <TextView
+                    android:id="@+id/header.name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
@@ -95,6 +96,12 @@
                     android:text="Adress"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
+
+        <Button
+            android:id="@+id/info.logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log out"/>
     </LinearLayout>
 
 </RelativeLayout>
