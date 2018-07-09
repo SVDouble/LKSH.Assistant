@@ -16,11 +16,12 @@ const val TAG = "_LKSH"
 
 class MainActivity : AppCompatActivity(),
         ProfileFragment.OnFragmentInteractionListener,
-        FragmentMap.OnFragmentInteractionListener,
+        FragmentMapSvg.OnFragmentInteractionListener,
         UserListFragment.OnFragmentInteractionListener,
         InfoFragment.OnFragmentInteractionListener,
         BuildingInfoFragment.OnFragmentInteractionListener,
-        TimetableFragment.OnFragmentInteractionListener {
+        TimetableFragment.OnFragmentInteractionListener,
+        FragmentMapBox.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity(),
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
+                arrayOf(FragmentMapBox(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
