@@ -9,6 +9,7 @@ class Prefs private constructor(context: Context) {
     private val BOOL_LOGIN_STATE = "login_state"
     private val STRING_LOGIN = "login"
     private val STRING_PASSWORD = "psw"
+    private val INT_DB_VERSION = "db_version"
     val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
 
     var login: String
@@ -22,6 +23,10 @@ class Prefs private constructor(context: Context) {
     var loginState: Boolean
         get() = prefs.getBoolean(BOOL_LOGIN_STATE, false)
         set(value) = prefs.edit().putBoolean(BOOL_LOGIN_STATE, value).apply()
+
+    var dbVersion: Int
+        get() = prefs.getInt(INT_DB_VERSION, -1)
+        set(value) = prefs.edit().putInt(INT_DB_VERSION, value).apply()
 
 
     companion object : SingletonHolder<Prefs, Context>(::Prefs)

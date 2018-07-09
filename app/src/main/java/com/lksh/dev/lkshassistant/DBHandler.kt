@@ -146,16 +146,26 @@ class DBWrapper private constructor() {
 
 
 
-fun initDb(db: DBHandler, resources: Resources) {
+fun initDb(ctx: Context, db: DBHandler, resources: Resources) {
     var usrDataList = db.listUsers("%")
-    if(usrDataList.size > 0){
+
+    val inputStream = resources.openRawResource(R.raw.test)                                 //file reading
+    val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
+        it.split(";")
+    }
+
+    Prefs.getInstance(ctx).dbVersion = 0
+    if(usrDataList.size == 0 || lines[0][0].toInt() > Prefs.getInstance(ctx).dbVersion){
+    //var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+    Prefs.getInstance(ctx).dbVersion = lines[0][0].toInt()
         for (temp in usrDataList) {
             db.removeUser(temp._id)
         }
-    }
 
-    //var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-    var temppassword = ""
+        for (temp in usrDataList){
+
+        }
+        var temppassword = ""
     var templogin = ""
     var temphouse = ""
     var tempparallel = ""
@@ -166,21 +176,15 @@ fun initDb(db: DBHandler, resources: Resources) {
     val values = ContentValues()
 
 
-    val inputStream = resources.openRawResource(R.raw.test)                                 //file reading
-    val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
-        it.split(";")
-    }
-
-
-    for (i in lines){                   //put into db
-        temppassword = i[1]
-        templogin = i[0]
-        temphouse = i[5]
-        tempparallel = i[4]
-        tempname = i[2]
-        tempsurname = i[3]
-        tempadmin = i[7]
-        temproom = i[6]
+    for (i in 1..(lines.size-1)) {                   //put into db
+        temppassword = lines[i][1]
+        templogin = lines[i][0]
+        temphouse = lines[i][5]
+        tempparallel = lines[i][4]
+        tempname = lines[i][2]
+        tempsurname = lines[i][3]
+        tempadmin = lines[i][7]
+        temproom = lines[i][6]
         //Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
 
         values.put(DBHandler.LOGIN, templogin)
@@ -193,6 +197,6 @@ fun initDb(db: DBHandler, resources: Resources) {
         values.put(DBHandler.ROOM, temproom)
         db.addUser(values)
     }
-
+    }
 }
 
