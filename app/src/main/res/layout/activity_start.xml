@@ -17,12 +17,12 @@
         app:srcCompat="@drawable/logo_lksh" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/loginField"
         android:layout_width="250dp"
         android:layout_height="41dp"
-        android:layout_above="@+id/editText2"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="34dp"
+        android:layout_marginBottom="231dp"
         android:background="#11000000"
         android:fontFamily="sans-serif"
         android:hint="Username"
@@ -31,13 +31,13 @@
         android:textSize="16dp" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/passwordField"
         android:layout_width="250dp"
         android:layout_height="40dp"
 
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="147dp"
+        android:layout_marginBottom="173dp"
         android:background="#11000000"
         android:ems="10"
         android:hint="Password"
