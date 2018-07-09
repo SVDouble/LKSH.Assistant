@@ -1,8 +1,8 @@
 package com.lksh.dev.lkshassistant
 
 import android.app.Application
-import com.lksh.dev.lkshassistant.SQliteHelper.DBWrapper
-import com.lksh.dev.lkshassistant.SQliteHelper.initDb
+import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
+import com.lksh.dev.lkshassistant.sqlite_helper.initDb
 
 class App : Application() {
 

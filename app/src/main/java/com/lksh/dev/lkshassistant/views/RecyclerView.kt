@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.Views
+package com.lksh.dev.lkshassistant.views
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.SQliteHelper.UserData
+import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 
 class UserCardAdapter(private val mContext: Context, private val dataset: ArrayList<UserData>) :
         RecyclerView.Adapter<UserCardAdapter.ViewHolder>() {

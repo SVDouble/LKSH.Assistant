@@ -13,8 +13,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".Activities.StartActivity"
-            android:parentActivityName=".Activities.MainActivity"
+            android:name=".activities.StartActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,12 +24,12 @@
         </activity>
 
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".Activities.UserList" />
+        <activity android:name=".activities.UserList" />
 
-        <activity android:name=".Activities.AddUser" />
+        <activity android:name=".activities.AddUser" />
     </application>
 
 </manifest>
