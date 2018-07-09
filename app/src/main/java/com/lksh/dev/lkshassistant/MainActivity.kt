@@ -10,6 +10,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 //        Log.e("START", "I'm started")
         startActivity(Intent(this, MapActivity::class.java))
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
     }
 }

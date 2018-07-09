@@ -1,20 +1,16 @@
 package com.lksh.dev.lkshassistant
 
 import android.content.Intent
-import android.os.IBinder
 import android.app.Service
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.*
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Environment
-import android.os.Looper
-import android.support.v4.app.ActivityCompat
 import android.util.Log
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_map.*
 import org.mapsforge.core.model.BoundingBox
 import org.mapsforge.core.model.LatLong
@@ -36,10 +32,10 @@ val LONG = "LONG"
 class MapActivity : AppCompatActivity() {
     private val TAG = "LKSH_MAP_A"
     private var myPos = LatLong(defaultLat, defaultLong)
-
     private var posMarker: TappableMarker? = null
     private var working = true
-
+    private var trackMe = true
+    private var locationManager: LocationManager? = null
     private fun setupMap() {
         if (mapView == null)
             throw NullPointerException("mapView is empty")
@@ -78,19 +74,41 @@ class MapActivity : AppCompatActivity() {
             drawPos()
             Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 //            mapView.setGestureDetector(GestureDetector())
+
+            locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
             thread(name = "PosThread", isDaemon = true) {
                 Looper.prepare()
-                val gps = GpsTracker(applicationContext)
                 while (true) {
-                    //check if the GPS is active
-                    if (working && gps.canGetLocation())
-                        setLocation(gps.getLatitude(), gps.getLongitude())
-                    Thread.sleep(1000 * 2)
+                    if (working) {
+                        try {
+                            // Request location updates
+                            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+                            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
+
+                        } catch (e: SecurityException) {
+                            Log.d("LKSH_GPS_THR", e.message, e)
+                        }
+                        if (trackMe)
+                            setLocation(myPos)
+                    }
+                    Thread.sleep(500) // 2 updates/s
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
         }
+    }
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            //Looper.prepare()
+            //setLocation(location.latitude, location.longitude)
+            updateMyLocation(location.latitude, location.longitude)
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
     }
 
     private fun drawPos() {
@@ -101,15 +119,21 @@ class MapActivity : AppCompatActivity() {
 
     }
 
-    private fun setLocation(lat: Double, long: Double) {
+    private fun updateMyLocation(lat: Double, long: Double) {
+        myPos = LatLong(lat, long)
+    }
+
+    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat()) {
         if (posMarker != null)
             mapView.layerManager.layers.remove(posMarker)
-        myPos = LatLong(lat, long)
         val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
         val marker = TappableMarker(drawable, myPos)
         mapView.layerManager.layers.add(marker)
-        mapView.model.mapViewPosition.center = myPos
+        mapView.model.mapViewPosition.center = pos
         posMarker = marker
+        Log.d("LKSH_MAP", "set center to ${pos.latitude} ${pos.longitude} ($accuracy)")
+        if (accuracy != 0.toFloat())
+            Toast.makeText(this, "Accuracy is $accuracy m", Toast.LENGTH_SHORT).show()
     }
 
     private fun prepareMapData(): File {
@@ -142,7 +166,27 @@ class MapActivity : AppCompatActivity() {
         setContentView(R.layout.activity_map)
         myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
         setupMap()
-        //button_center.setOnClickListener {mapView.setCenter(LatLong(defaultLat, defaultLong))}
+        startService(Intent(this, LocationTrackingService::class.java))
+
+        setMyPosButton.setOnClickListener {
+            val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
+            val networkLocation = LocationTrackingService.locationListeners[1].lastLocation
+
+            val endLocation: Location
+            endLocation = if (!gpsLocation.hasAccuracy() && !networkLocation.hasAccuracy()) {
+                Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else if (!gpsLocation.hasAccuracy() || (networkLocation.hasAccuracy()
+                            && networkLocation.accuracy < gpsLocation.accuracy)) networkLocation
+            else gpsLocation
+            updateMyLocation(endLocation.latitude, long = endLocation.longitude)
+            setLocation(myPos, endLocation.accuracy)
+        }
+
+        posAutoSwitch.setOnCheckedChangeListener { _, checked ->
+            trackMe = checked
+        }
+
     }
 
     override fun onDestroy() {
@@ -159,84 +203,84 @@ private class TappableMarker(icon: Drawable, localLatLong: LatLong) :
                 AndroidGraphicFactory.convertToBitmap(icon).width / 2,
                 -1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2)
 
+class LocationTrackingService : Service() {
 
-/**
- * Ahmet Ertugrul OZCAN
- * Cihazin konum bilgisini goruntuler
- */
-class GpsTracker(private val context: Context) : Service(), LocationListener {
-    internal var isGPSEnabled = false
-    internal var isNetworkEnabled = false
-    internal var canGetLocation = false
-    internal var location: Location? = null
-    internal var latitude = 0.0
-    internal var longitude = 0.0
-    protected var locationManager: LocationManager? = null
+    var locationManager: LocationManager? = null
 
-    init {
-        getLocation()
+    override fun onBind(intent: Intent?) = null
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
-    private fun requestLocation(provider: String) {
-        if (location == null && ActivityCompat.checkSelfPermission(context,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            locationManager!!.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES.toFloat(), this)
-            if (locationManager != null) {
-                location = locationManager!!.getLastKnownLocation(provider)
-                if (location != null) {
-                    latitude = location!!.latitude
-                    longitude = location!!.longitude
+    override fun onCreate() {
+        if (locationManager == null)
+            locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        try {
+            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL, DISTANCE, locationListeners[1])
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Fail to request location update", e)
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "Network provider does not exist", e)
+        }
+
+        try {
+            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, DISTANCE, locationListeners[0])
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Fail to request location update", e)
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "GPS provider does not exist", e)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (locationManager != null)
+            for (locationListener in locationListeners) { // <- fix
+                try {
+                    locationManager?.removeUpdates(locationListener)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to remove location listeners")
                 }
             }
-        }
     }
-    fun getLocation(): Location? {
-        try {
-            locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            isGPSEnabled = locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            isNetworkEnabled = locationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            if (!isGPSEnabled && !isNetworkEnabled) { } else {
-                this.canGetLocation = true
-                if (isNetworkEnabled)
-                    requestLocation(LocationManager.NETWORK_PROVIDER)
-                if (isGPSEnabled)
-                    requestLocation(LocationManager.GPS_PROVIDER)
-            }
-        } catch (e: Exception) {
-            Log.e("LKSH_GPS", e.message, e)
-        }
-        return location
-    }
-    fun getLatitude(): Double {
-        if (location != null)
-            latitude = location!!.latitude
-        return latitude
-    }
-    fun getLongitude(): Double {
-        if (location != null)
-            longitude = location!!.longitude
-        return longitude
-    }
-    override fun onLocationChanged(location: Location) {}
-    override fun onProviderDisabled(provider: String) {}
-    override fun onProviderEnabled(provider: String) {}
-    override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-    override fun onBind(arg0: Intent): IBinder? {
-        return null
-    }
-    fun canGetLocation(): Boolean {
-        return this.canGetLocation
-    }
-    fun stopUsingGPS() {
-        if (locationManager != null)
-            locationManager!!.removeUpdates(this)
-    }
+
+
     companion object {
-        private val MIN_DISTANCE_CHANGE_FOR_UPDATES: Long = 10
-        private val MIN_TIME_BW_UPDATES = 1000L * 60 * 1
+        val TAG = "LocationTrackingService"
+
+        val INTERVAL = 1000.toLong() // In milliseconds
+        val DISTANCE = 0.toFloat() // In meters
+
+        val locationListeners = arrayOf(
+                LTRLocationListener(LocationManager.GPS_PROVIDER),
+                LTRLocationListener(LocationManager.NETWORK_PROVIDER)
+        )
+
+        class LTRLocationListener(provider: String) : android.location.LocationListener {
+            val lastLocation = Location(provider)
+            override fun onLocationChanged(location: Location?) {
+                lastLocation.set(location)
+                if (location != null) {
+                    val mes = "update location to ${location.latitude}, ${location.longitude} " +
+                            "(${location.accuracy})"
+                    Log.d("LKSH_LOCATION-SERVICE", mes)
+                } else
+                    Log.d("LKSH_LOCATION-SERVICE", "null location")
+                // TODO: Do something here
+            }
+
+            override fun onProviderDisabled(provider: String?) {
+            }
+
+            override fun onProviderEnabled(provider: String?) {
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            }
+        }
     }
+
 }
