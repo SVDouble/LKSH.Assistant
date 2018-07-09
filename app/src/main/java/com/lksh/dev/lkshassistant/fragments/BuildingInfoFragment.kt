@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.Fragments
+package com.lksh.dev.lkshassistant.fragments
 
 import android.content.Context
 import android.graphics.Color
@@ -9,11 +9,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.lksh.dev.lkshassistant.DBWrapper
-import com.lksh.dev.lkshassistant.MainActivity
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.UserData
-import com.lksh.dev.lkshassistant.Views.UserCardAdapter
+import com.lksh.dev.lkshassistant.activities.MainActivity
+import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
+import com.lksh.dev.lkshassistant.sqlite_helper.UserData
+import com.lksh.dev.lkshassistant.views.UserCardAdapter
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
 
@@ -63,7 +63,7 @@ class BuildingInfoFragment : Fragment() {
         dataset.forEachIndexed { i, data ->
             val row = layoutInflater.inflate(R.layout.part_rv_building, null, false)
             row.number.text = if (i == 0) "№" else i.toString()
-            row.name.text = data.name + " " + data.surname
+            row.name.text = "${data.name} ${data.surname}"
             row.parallel.text = data.parallel
             row.home.text = data.house
             table.addView(row, i)

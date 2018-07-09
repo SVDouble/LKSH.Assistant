@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.Fragments
+package com.lksh.dev.lkshassistant.fragments
 
 import android.content.Context
 import android.net.Uri
@@ -95,7 +95,7 @@ class FragmentMap : Fragment() {
      * activity.
      *
      *
-     * See the Android Training lesson [Communicating with Other Fragments]
+     * See the Android Training lesson [Communicating with Other fragments]
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
