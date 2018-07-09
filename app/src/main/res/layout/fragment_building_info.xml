@@ -18,6 +18,7 @@
         android:background="@color/cardview_light_background"
         android:clickable="true"
         android:focusable="true"
+        android:layout_margin="10dp"
         android:focusableInTouchMode="true">
 
         <TextView

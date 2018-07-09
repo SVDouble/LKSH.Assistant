@@ -32,12 +32,14 @@ class MainActivity : AppCompatActivity(),
             R.id.navigation_dashboard -> {
                 header.visibility = VISIBLE
                 search.visibility = GONE
+                header.text = getString(R.string.nav_title_info)
                 map.setCurrentItem(1, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
                 header.visibility = VISIBLE
                 search.visibility = GONE
+                header.text = getString(R.string.nav_title_profile)
                 map.setCurrentItem(2, false)
                 return@OnNavigationItemSelectedListener true
             }
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity(),
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMap(), InfoFragment(), UserListFragment()))
+                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {

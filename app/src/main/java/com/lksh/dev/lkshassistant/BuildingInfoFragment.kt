@@ -41,7 +41,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        header.text = houseId ?: "All users"
+        header.text = if (houseId == null) "All users" else ("House " + houseId)
         val dataset = DBWrapper.getInstance(context!!).listHouse(houseId ?: "%")
         viewAdapter = UserCardAdapter(context!!, dataset)
         viewAdapter.notifyDataSetChanged()
