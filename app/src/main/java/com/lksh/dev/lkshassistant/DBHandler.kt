@@ -45,14 +45,14 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
     fun updateUser(values: ContentValues, id: Int) = sqlObj.update(TABLE_NAME, values, "id=?", arrayOf(id.toString()))
 
-    fun listUsers(key : String) : ArrayList<UserData> {
+    fun listUsers(key: String) : ArrayList<UserData> {
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
         val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN)
         val selectArgs = arrayOf(key)
 
-        val cursor = sqlQB.query(sqlObj, cols, "$ID like ?", selectArgs, null, null, ID)
+        val cursor = sqlQB.query(sqlObj, cols, "$LOGIN like ?", selectArgs, null, null, LOGIN)
 
         if (cursor.moveToFirst()) {
             do {
@@ -71,7 +71,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         return arraylist
     }
 
-    fun listHouse(key : String) : ArrayList<UserData> {
+    fun listHouse(key: String) : ArrayList<UserData> {
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME

@@ -1,13 +1,15 @@
 package com.lksh.dev.lkshassistant.Fragments
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -47,6 +49,17 @@ class ProfileFragment : Fragment() {
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val user = DBWrapper.getInstance(context!!).listUsers(Prefs.getInstance(context!!).login)[0]
+        header_name.text = "${user.name} ${user.surname}"
+        info_logout.setOnClickListener {
+            Prefs.getInstance(context!!).loginState = false
+            (activity as? MainActivity)?.finish()
+            startActivity(Intent(context, StartActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        }
     }
 
     override fun onAttach(context: Context) {
