@@ -61,6 +61,7 @@ class FragmentMap : Fragment() {
 
                 if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
                     Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+                    activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
                 }
             }
         }
