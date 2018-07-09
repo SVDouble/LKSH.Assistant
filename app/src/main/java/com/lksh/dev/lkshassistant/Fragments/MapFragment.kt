@@ -218,7 +218,7 @@ class MapFragment : Fragment() {
             mapView!!.setCenter(myPos)
             mapView!!.setZoomLevel(19.toByte())
             mapView!!.setZoomLevelMax(22)
-            mapView!!.setZoomLevelMin(18)
+            mapView!!.setZoomLevelMin(16)
             mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
             Log.d(tag, "Map fragment setup successfully")
             drawPos()
