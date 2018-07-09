@@ -9,9 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import com.lksh.dev.lkshassistant.AddUser
-import com.lksh.dev.lkshassistant.DBWrapper
+import com.lksh.dev.lkshassistant.Activities.AddUser
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.SQliteHelper.DBWrapper
 import kotlinx.android.synthetic.main.activity_user_list.*
 
 

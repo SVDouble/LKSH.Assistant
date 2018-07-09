@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.UserData
+import com.lksh.dev.lkshassistant.SQliteHelper.UserData
 
 class UserCardAdapter(private val mContext: Context, private val dataset: ArrayList<UserData>) :
         RecyclerView.Adapter<UserCardAdapter.ViewHolder>() {

@@ -8,7 +8,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.lksh.dev.lkshassistant.*
+import com.lksh.dev.lkshassistant.Activities.MainActivity
+import com.lksh.dev.lkshassistant.Activities.StartActivity
+import com.lksh.dev.lkshassistant.Prefs
+import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.SQliteHelper.DBWrapper
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 

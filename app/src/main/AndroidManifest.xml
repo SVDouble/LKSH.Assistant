@@ -12,29 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".StartActivity"
-            android:parentActivityName=".MainActivity">
+        <activity
+            android:name=".Activities.StartActivity"
+            android:parentActivityName=".Activities.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait">
 
-        </activity>
+        <activity
+            android:name=".Activities.MainActivity"
+            android:screenOrientation="portrait" />
 
+        <activity android:name=".Activities.UserList" />
 
-        <activity android:name=".UserList">
-
-        </activity>
-
-
-        <activity android:name=".AddUser">
-
-        </activity>
+        <activity android:name=".Activities.AddUser" />
     </application>
 
 </manifest>
