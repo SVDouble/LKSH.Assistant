@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/mapFragment"
         android:tag="mapFragment"
-        android:name="com.lksh.dev.lkshassistant.MapFragment"
+        android:name="com.lksh.dev.lkshassistant.Fragments.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

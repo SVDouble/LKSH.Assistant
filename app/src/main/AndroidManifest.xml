@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".MapActivity" />
 
-        <service android:name=".LocationTrackingService" />
+        <service android:name=".Fragments.LocationTrackingService" />
 
     </application>
 
