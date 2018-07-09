@@ -6,12 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_building_info.*
+import kotlinx.android.synthetic.main.part_rv_building.view.*
 
 private const val ARG_HOUSE_ID = "house_id"
 
@@ -42,13 +41,27 @@ class BuildingInfoFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         header.text = if (houseId == null) "All users" else ("House " + houseId)
+        content_focusable.setOnClickListener {
+            (activity as? MainActivity)?.hideFragment()
+        }
         val dataset = DBWrapper.getInstance(context!!).listHouse(houseId ?: "%")
-        viewAdapter = UserCardAdapter(context!!, dataset)
-        viewAdapter.notifyDataSetChanged()
-        recycler.apply {
-            layoutManager = GridLayoutManager(context!!, 1)
-            itemAnimator = DefaultItemAnimator()
-            adapter = viewAdapter
+//        viewAdapter = UserCardAdapter(context!!, dataset)
+//        viewAdapter.notifyDataSetChanged()
+//        recycler.apply {
+//            layoutManager = GridLayoutManager(context!!, 1)
+//            itemAnimator = DefaultItemAnimator()
+//            adapter = viewAdapter
+//        }
+        table.isStretchAllColumns = false
+        table.bringToFront()
+        dataset.add(0, UserData(0, "", "", "house", "parallel", "name", "", 0))
+        dataset.forEachIndexed { i, data ->
+            val row = layoutInflater.inflate(R.layout.part_rv_building, null, false)
+            row.number.text = if (i == 0) "#" else i.toString()
+            row.name.text = data.name + " " + data.surname
+            row.parallel.text = data.parallel
+            row.home.text = data.house
+            table.addView(row, i)
         }
     }
 

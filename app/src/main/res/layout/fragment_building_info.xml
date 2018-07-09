@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardview_focusable"
-    style="@style/CardView"
+    android:id="@+id/content_focusable"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context=".BuildingInfoFragment">
+    android:focusable="true">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        style="@style/CardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/cardview_light_background"
         android:clickable="true"
         android:focusable="true"
-        android:layout_margin="10dp"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        tools:context=".BuildingInfoFragment">
 
-        <TextView
-            android:id="@+id/header"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:textAlignment="center"
-            android:textSize="24sp" />
+            android:layout_gravity="center"
+            android:background="@color/cardview_light_background"
+            android:padding="10dp">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/header" />
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TableLayout
+                android:id="@+id/table"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/header" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</FrameLayout>

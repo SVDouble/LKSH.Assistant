@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_map.*
 import kotlin.math.abs
 
@@ -60,7 +59,7 @@ class FragmentMap : Fragment() {
                 val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
 
                 if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
-                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
                     activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
                 }
             }

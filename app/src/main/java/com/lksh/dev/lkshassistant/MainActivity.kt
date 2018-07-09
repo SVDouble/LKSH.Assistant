@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.view.MotionEvent
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
@@ -77,13 +76,8 @@ class MainActivity : AppCompatActivity(),
     override fun onFragmentInteraction(uri: Uri) {
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if (ev?.action == MotionEvent.ACTION_DOWN) {
-//            Log.d(TAG, currentFocus?.toString() ?: "null")
-            if (currentFocus?.id == R.id.cardview_focusable) {
-                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
-            }
-        }
-        return super.dispatchTouchEvent(ev)
+    fun hideFragment() {
+        supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
     }
+
 }
