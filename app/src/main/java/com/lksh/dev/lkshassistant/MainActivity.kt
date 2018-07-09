@@ -1,37 +1,46 @@
 package com.lksh.dev.lkshassistant
 
-import android.content.Context
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
-import android.support.design.widget.BottomNavigationView
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
-import android.util.AttributeSet
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import kotlinx.android.synthetic.main.activity_main.*
 
+const val TAG = "_LKSH"
 
-
-class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, FragmentMap.OnFragmentInteractionListener, UserListFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(),
+        ProfileFragment.OnFragmentInteractionListener,
+        FragmentMap.OnFragmentInteractionListener,
+        UserListFragment.OnFragmentInteractionListener,
+        InfoFragment.OnFragmentInteractionListener,
+        BuildingInfoFragment.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
-    private val mOnNavigationItemSelectedListener
-            = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                map.setCurrentItem(0, true)
+                header.visibility = GONE
+                search.visibility = VISIBLE
+                map.setCurrentItem(0, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                map.setCurrentItem(1, true)
+                header.visibility = VISIBLE
+                search.visibility = GONE
+                header.text = getString(R.string.nav_title_info)
+                map.setCurrentItem(1, false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                map.setCurrentItem(2, true)
+                header.visibility = VISIBLE
+                search.visibility = GONE
+                header.text = getString(R.string.nav_title_profile)
+                map.setCurrentItem(2, false)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -44,7 +53,8 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
+                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -59,47 +69,21 @@ class MainActivity : AppCompatActivity(), ProfileFragment.OnFragmentInteractionL
                 }
             }
         })
-        /* Disable swiping */
-        map.setOnTouchListener { view, motionEvent -> false }
-    }
-
-    class NoSwipePager(context: Context, attrs: AttributeSet) : ViewPager(context, attrs) {
-        private var swipingEnabled: Boolean = false
-
-        init {
-            this.swipingEnabled = true
-        }
-
-        override fun onTouchEvent(event: MotionEvent): Boolean {
-            return if (this.swipingEnabled) {
-                super.onTouchEvent(event)
-            } else false
-        }
-
-        override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-            return if (this.swipingEnabled) {
-                super.onInterceptTouchEvent(event)
-            } else false
-        }
-    }
-
-    class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-        private val fragments = mutableListOf<Fragment>()
-
-        init {
-            fragments.addAll(arrayOf(FragmentMap(), UserListFragment(), ProfileFragment()))
-        }
-
-
-        override fun getItem(position: Int): Fragment {
-            return fragments[position]
-        }
-
-        override fun getCount() = fragments.size
+        map.swipingEnabled = false
+        header.visibility = GONE
+        initDb(DBWrapper.getInstance(this))
     }
 
     override fun onFragmentInteraction(uri: Uri) {
+    }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (ev?.action == MotionEvent.ACTION_DOWN) {
+//            Log.d(TAG, currentFocus?.toString() ?: "null")
+            if (currentFocus?.id == R.id.cardview_focusable) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
+            }
+        }
+        return super.dispatchTouchEvent(ev)
     }
 }

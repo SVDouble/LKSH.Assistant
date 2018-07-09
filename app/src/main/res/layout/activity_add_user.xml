@@ -27,8 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <!--<EditText-->
-            <!--android:hint="password"-->
-            <!--android:id="@+id/password"-->
+        <!--android:hint="PASSWORD"-->
+        <!--android:id="@+id/PASSWORD"-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="wrap_content" />-->
         <EditText

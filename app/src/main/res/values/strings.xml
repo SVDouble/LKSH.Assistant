@@ -4,4 +4,6 @@
     <string name="nav_title_info">Info</string>
     <string name="nav_title_profile">Profile</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tabs_timetable_title">Timetable</string>
+    <string name="tabs_brief_title">Brief</string>
 </resources>

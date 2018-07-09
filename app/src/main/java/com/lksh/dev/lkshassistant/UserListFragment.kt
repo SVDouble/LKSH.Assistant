@@ -54,12 +54,11 @@ class UserListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        var localDB = DBHandler(context!!)
-        var usrDataList = localDB.listUsers("%")
+        var usrDataList = DBWrapper.getInstance(context!!).listUsers("%")
         if(usrDataList.size > 0) {
             var lazyData = ArrayList<String>()
             for (temp in usrDataList){
-                lazyData.add(/*temp._id.toString() + */
+                lazyData.add(/*temp.ID.toString() + */
                         "Login : "+ temp.login+"\n" +
                                 "Name : "+ temp.name +"\n" +
                                 "Surname : "+ temp.surname +"\n" +
@@ -104,7 +103,7 @@ class UserListFragment : Fragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument type and NAME
         fun onFragmentInteraction(uri: Uri)
     }
 

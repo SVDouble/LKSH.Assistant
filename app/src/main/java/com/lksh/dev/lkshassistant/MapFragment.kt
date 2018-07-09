@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.github.chrisbanes.photoview.PhotoView
 import kotlinx.android.synthetic.main.fragment_map.*
 import kotlin.math.abs
 
@@ -62,6 +61,7 @@ class FragmentMap : Fragment() {
 
                 if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015){
                     Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+                    activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
                 }
             }
         }
@@ -99,7 +99,7 @@ class FragmentMap : Fragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument type and NAME
         fun onFragmentInteraction(uri: Uri)
     }
 

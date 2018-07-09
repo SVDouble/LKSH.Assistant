@@ -2,8 +2,8 @@ package com.lksh.dev.lkshassistant
 
 import android.content.ContentValues
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_user.*
 import java.util.*
 
@@ -12,8 +12,6 @@ class AddUser : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
-
-        var localDB = DBHandler(this)
 
         submit_btn.setOnClickListener{
             var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
@@ -30,14 +28,14 @@ class AddUser : AppCompatActivity() {
             }
 
             var values = ContentValues()
-            values.put(DBHandler.login, templogin)
-            values.put(DBHandler.password, temppassword)
-            values.put(DBHandler.house, temphouse)
-            values.put(DBHandler.parallel, tempparallel)
-            values.put(DBHandler.name, tempname)
-            values.put(DBHandler.surname, tempsurname)
-            values.put(DBHandler.admin, tempadmin)
-            localDB.addUser(values)
+            values.put(DBHandler.LOGIN, templogin)
+            values.put(DBHandler.PASSWORD, temppassword)
+            values.put(DBHandler.HOUSE, temphouse)
+            values.put(DBHandler.PARALLEL, tempparallel)
+            values.put(DBHandler.NAME, tempname)
+            values.put(DBHandler.SURNAME, tempsurname)
+            values.put(DBHandler.ADMIN, tempadmin)
+            DBWrapper.getInstance(this).addUser(values)
 
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
