@@ -74,29 +74,56 @@ class MapActivity : AppCompatActivity() {
             drawPos()
             Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 //            mapView.setGestureDetector(GestureDetector())
+            startGPSTrackingThread()
 
-            locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-            thread(name = "PosThread", isDaemon = true) {
-                Looper.prepare()
-                while (true) {
-                    if (working) {
-                        try {
-                            // Request location updates
-                            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-                            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
 
-                        } catch (e: SecurityException) {
-                            Log.d("LKSH_GPS_THR", e.message, e)
-                        }
-                        if (trackMe)
-                            setLocation(myPos)
-                    }
-                    Thread.sleep(500) // 2 updates/s
-                }
-            }
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
         }
+    }
+    private fun startGPSTrackingThread() {
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+        thread(name = "PosThread", isDaemon = true) {
+            Looper.prepare()
+            val TAG = "LKSH_GPS_THR"
+            while (true) {
+                if (working) {
+                    try {
+                        // Request location updates
+                        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+                        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
+
+                    } catch (e: SecurityException) {
+                        Log.d(TAG, e.message, e)
+                    }
+                    if (trackMe) {
+                        centerByMe(false)
+                        //Log.d(TAG, "Updated pos")
+                    } else {
+                        //Log.d(TAG, "not updated pos")
+                    }
+                }
+                //Log.d(TAG, "iteration completed")
+                Thread.sleep(500) // 2 updates/s
+            }
+        }
+        Log.d(TAG, "GPS started")
+    }
+
+    private fun centerByMe(showAccuracy: Boolean = true) {
+        val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
+        val networkLocation = LocationTrackingService.locationListeners[1].lastLocation
+
+        val endLocation: Location
+        endLocation = if (!gpsLocation.hasAccuracy() && !networkLocation.hasAccuracy()) {
+            Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+            return
+        } else if (!gpsLocation.hasAccuracy() || (networkLocation.hasAccuracy()
+                        && networkLocation.accuracy < gpsLocation.accuracy)) networkLocation
+        else gpsLocation
+        updateMyLocation(endLocation.latitude, long = endLocation.longitude)
+
+        setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat())
     }
 
     private val locationListener: LocationListener = object : LocationListener {
@@ -169,22 +196,13 @@ class MapActivity : AppCompatActivity() {
         startService(Intent(this, LocationTrackingService::class.java))
 
         setMyPosButton.setOnClickListener {
-            val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
-            val networkLocation = LocationTrackingService.locationListeners[1].lastLocation
-
-            val endLocation: Location
-            endLocation = if (!gpsLocation.hasAccuracy() && !networkLocation.hasAccuracy()) {
-                Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else if (!gpsLocation.hasAccuracy() || (networkLocation.hasAccuracy()
-                            && networkLocation.accuracy < gpsLocation.accuracy)) networkLocation
-            else gpsLocation
-            updateMyLocation(endLocation.latitude, long = endLocation.longitude)
-            setLocation(myPos, endLocation.accuracy)
+            centerByMe()
         }
 
+        Log.d(TAG, "tracking: $trackMe")
         posAutoSwitch.setOnCheckedChangeListener { _, checked ->
             trackMe = checked
+            Log.d(TAG, "tracking: $trackMe")
         }
 
     }
@@ -195,6 +213,8 @@ class MapActivity : AppCompatActivity() {
         AndroidGraphicFactory.clearResourceMemoryCache()
         super.onDestroy()
     }
+
+
 }
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
