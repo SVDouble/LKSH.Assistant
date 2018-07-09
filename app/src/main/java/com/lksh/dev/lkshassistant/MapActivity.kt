@@ -23,39 +23,42 @@ import org.mapsforge.map.reader.MapFile
 import org.mapsforge.map.rendertheme.InternalRenderTheme
 import java.io.File
 import kotlin.concurrent.thread
+import kotlin.math.sqrt
 
 
 private const val defaultLat = 57.85760 //coordinates of dormitory
 private const val defaultLong = 41.71000
 val LAT = "LAT"
 val LONG = "LONG"
-public val houseCoordinates = arrayOf(
-        LatLong(57.858785, 41.71165) to "0",
-        LatLong(57.857963, 41.712258) to "1",
-        LatLong(57.858197, 41.712056) to "2",
-        LatLong(57.858433, 41.712241) to "3",
-        LatLong(57.857929, 41.712768) to "4",
-        LatLong(57.856296, 41.711431) to "5",
-        LatLong(57.856296, 41.711431) to "6",
-        LatLong(57.858274, 41.712611) to "8",
-        LatLong(57.857621, 41.712989) to "10",
-        LatLong(57.856478, 41.713326) to "17",
-        LatLong(57.855682, 41.713292) to "32",
-        LatLong(57.85552, 41.713419) to "33",
-        LatLong(57.855341, 41.71351) to "34",
-        LatLong(57.855307, 41.712678) to "35",
-        LatLong(57.857403, 41.711691) to "Main House",
-        LatLong(57.858095, 41.711262) to "Club",
-        LatLong(57.857525, 41.712398) to "Kompovnik",
-        LatLong(57.856865, 41.712037) to "Romantic",
-        LatLong(57.857136, 41.711321) to "Garazh",
-        LatLong(57.857064, 41.711265) to "Gnezdo",
-        LatLong(57.857413, 41.710131) to "Stolovaya",
-        LatLong(57.856306, 41.712751) to "Korabl"
+
+data class HouseInfo(val latLong: LatLong, val name: String, val radius: Double)
+val houseCoordinates = arrayOf(
+        HouseInfo(LatLong(57.858785, 41.71165), "0", 0.00025),
+        HouseInfo(LatLong(57.857963, 41.712258), "1", 0.00025),
+        HouseInfo(LatLong(57.858197, 41.712056), "2", 0.00025),
+        HouseInfo(LatLong(57.858433, 41.712241), "3", 0.00025),
+        HouseInfo(LatLong(57.857929, 41.712768), "4", 0.00025),
+        HouseInfo(LatLong(57.856296, 41.711431), "5", 0.00025),
+        HouseInfo(LatLong(57.856296, 41.711431), "6", 0.00025),
+        HouseInfo(LatLong(57.858274, 41.712611), "8", 0.00025),
+        HouseInfo(LatLong(57.857621, 41.712989), "10", 0.00025),
+        HouseInfo(LatLong(57.856478, 41.713326), "17", 0.00025),
+        HouseInfo(LatLong(57.855682, 41.713292), "32", 0.00025),
+        HouseInfo(LatLong(57.85552, 41.713419), "33", 0.00025),
+        HouseInfo(LatLong(57.855341, 41.71351), "34", 0.00025),
+        HouseInfo(LatLong(57.855307, 41.712678), "35", 0.00025),
+        HouseInfo(LatLong(57.857403, 41.711691), "Main House", 0.0004),
+        HouseInfo(LatLong(57.858095, 41.711262), "Club", 0.0003),
+        HouseInfo(LatLong(57.857525, 41.712398), "Kompovnik", 0.0005),
+        HouseInfo(LatLong(57.856865, 41.712037), "Romantic", 0.00025),
+        HouseInfo(LatLong(57.857136, 41.711321), "Garazh", 0.00015),
+        HouseInfo(LatLong(57.857064, 41.711265), "Gnezdo", 0.00015),
+        HouseInfo(LatLong(57.857413, 41.710131), "Stolovaya", 0.0007),
+        HouseInfo(LatLong(57.856306, 41.712751), "Korabl", 0.00025)
 )
 
 class MapActivity : AppCompatActivity() {
-    private val TAG = "LKSH_MAP_A"
+    private val tag = "LKSH_MAP_A"
     private var myPos = LatLong(defaultLat, defaultLong)
     private var posMarker: TappableMarker? = null
     private var working = true
@@ -64,22 +67,19 @@ class MapActivity : AppCompatActivity() {
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            //Looper.prepare()
-            //setLocation(location.latitude, location.longitude)
             updateMyLocation(location.latitude, location.longitude)
         }
-
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
     }
 
     private fun setupMap() {
-        val TAG = TAG + "_INIT"
+        val tag = tag + "_INIT"
         if (mapView == null)
             throw NullPointerException("mapView is empty")
         try {
-            Log.d(TAG, "map fragment setup started")
+            Log.d(tag, "map fragment setup started")
             AndroidGraphicFactory.createInstance(application)
             mapView.isClickable = true
             mapView.mapScaleBar.isVisible = true
@@ -100,19 +100,19 @@ class MapActivity : AppCompatActivity() {
             mapView.setZoomLevelMax(22)
             mapView.setZoomLevelMin(18)
             mapView.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
-            Log.d(TAG, "Map fragment setup successfully")
+            Log.d(tag, "Map fragment setup successfully")
             drawPos()
-            Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
+            Log.d(tag, "dining room's position is marked (but it isn't exactly)")
 
         } catch (e: Exception) {
-            Log.e(TAG, e.message, e)
+            Log.e(tag, e.message, e)
         }
     }
     private fun startGPSTrackingThread() {
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         thread(name = "PosThread", isDaemon = true) {
             Looper.prepare()
-            val TAG = "LKSH_GPS_THR"
+            val tag = "LKSH_GPS_THR"
             while (true) {
                 if (working) {
                     try {
@@ -122,25 +122,25 @@ class MapActivity : AppCompatActivity() {
                         locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                 0L, 0f, locationListener)
                     } catch (e: SecurityException) {
-                        Log.d(TAG, e.message, e)
+                        Log.d(tag, e.message, e)
                     }
                     if (trackMe) {
                         centerByMe(false)
-                        //Log.d(TAG, "Updated pos")
+                        //Log.d(tag, "Updated pos")
                     } else {
-                        //Log.d(TAG, "not updated pos")
+                        //Log.d(tag, "not updated pos")
                     }
                 }
-                //Log.d(TAG, "iteration completed")
+                //Log.d(tag, "iteration completed")
                 Thread.sleep(500) // 2 updates/s
             }
         }
-        Log.d(TAG, "GPS started")
+        Log.d(tag, "GPS started")
     }
     private fun setHouseMarkers() {
         for (house in houseCoordinates) {
             val marker = TappableMarker(resources.getDrawable(android.R.drawable.btn_radio),
-                    house.first, house.second)
+                    house.latLong, house.name, house.radius)
             mapView.layerManager.layers.add(marker)
         }
     }
@@ -162,7 +162,7 @@ class MapActivity : AppCompatActivity() {
 
     private fun drawPos() {
         val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position")
+        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
         mapView.layerManager.layers.add(marker)
         posMarker = marker
 
@@ -176,7 +176,7 @@ class MapActivity : AppCompatActivity() {
         if (posMarker != null)
             mapView.layerManager.layers.remove(posMarker)
         val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position")
+        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
         mapView.layerManager.layers.add(marker)
         mapView.model.mapViewPosition.center = pos
         posMarker = marker
@@ -223,10 +223,10 @@ class MapActivity : AppCompatActivity() {
             centerByMe()
         }
 
-        Log.d(TAG, "tracking: $trackMe")
+        Log.d(tag, "tracking: $trackMe")
         posAutoSwitch.setOnCheckedChangeListener { _, checked ->
             trackMe = checked
-            Log.d(TAG, "tracking: $trackMe")
+            Log.d(tag, "tracking: $trackMe")
         }
 
 
@@ -240,26 +240,32 @@ class MapActivity : AppCompatActivity() {
 }
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-private class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String) :
+private class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double):
         Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
                 AndroidGraphicFactory.convertToBitmap(icon).width / 2,
                 -1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
-        Log.d("LKSH_MARKER", "$name is tapped")
+        if (tapLatLong == null || getDistance(tapLatLong, latLong) > radius)
+            return false
+        Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
         return true
     }
+    private fun sqr(x: Double) = x * x
+    private fun getDistance(latLong: LatLong, latLong2: LatLong) =
+            sqrt(sqr(latLong.latitude - latLong2.latitude) +
+                    sqr(latLong.longitude - latLong2.longitude))
 }
 
 class LocationTrackingService : Service() {
-    var locationManager: LocationManager? = null
+    private var locationManager: LocationManager? = null
 
     private fun requestLocationUpdates(locationManager: LocationManager?, provider: String) {
         try {
-            locationManager?.requestLocationUpdates(provider, INTERVAL, DISTANCE, locationListeners[1])
+            locationManager?.requestLocationUpdates(provider, internal, distance, locationListeners[1])
         } catch (e: SecurityException) {
-            Log.e(TAG, "Fail to request location update", e)
+            Log.e(tag, "Fail to request location update", e)
         } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "$provider provider does not exist", e)
+            Log.e(tag, "$provider provider does not exist", e)
         }
     }
 
@@ -281,14 +287,14 @@ class LocationTrackingService : Service() {
                 try {
                     locationManager?.removeUpdates(locationListener)
                 } catch (e: Exception) {
-                    Log.w(TAG, "Failed to remove location listeners")
+                    Log.w(tag, "Failed to remove location listeners")
                 }
             }
     }
     companion object {
-        val TAG = "LocationTrackingService"
-        val INTERVAL = 1000.toLong() // In milliseconds
-        val DISTANCE = 0f // In meters
+        const val tag = "LocationTrackingService"
+        const val internal = 1000.toLong() // In milliseconds
+        const val distance = 0f // In meters
         val locationListeners = arrayOf(
                 LTRLocationListener(LocationManager.GPS_PROVIDER),
                 LTRLocationListener(LocationManager.NETWORK_PROVIDER)
