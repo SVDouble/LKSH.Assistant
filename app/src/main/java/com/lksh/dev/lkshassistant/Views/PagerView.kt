@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.Views
 
 import android.content.Context
 import android.support.v4.app.Fragment

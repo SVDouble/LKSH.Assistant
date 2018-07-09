@@ -7,6 +7,8 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import com.lksh.dev.lkshassistant.Fragments.*
+import com.lksh.dev.lkshassistant.Views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val TAG = "_LKSH"
@@ -70,7 +72,6 @@ class MainActivity : AppCompatActivity(),
         })
         map.swipingEnabled = false
         header.visibility = GONE
-        initDb(DBWrapper.getInstance(this), resources)
     }
 
     override fun onFragmentInteraction(uri: Uri) {

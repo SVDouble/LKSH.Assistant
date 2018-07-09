@@ -44,7 +44,7 @@
 
         <view
             android:id="@+id/map"
-            class="com.lksh.dev.lkshassistant.NoSwipePager"
+            class="com.lksh.dev.lkshassistant.Views.NoSwipePager"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorGrey"
