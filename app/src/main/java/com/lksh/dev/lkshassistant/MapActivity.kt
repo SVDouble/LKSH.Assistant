@@ -14,6 +14,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_map.*
 import org.mapsforge.core.model.BoundingBox
 import org.mapsforge.core.model.LatLong
+import org.mapsforge.core.model.Point
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
 import org.mapsforge.map.android.util.AndroidUtil
 import org.mapsforge.map.layer.overlay.Marker
@@ -28,6 +29,30 @@ private const val defaultLat = 57.85760 //coordinates of dormitory
 private const val defaultLong = 41.71000
 val LAT = "LAT"
 val LONG = "LONG"
+public val houseCoordinates = arrayOf(
+        LatLong(57.858785, 41.71165) to "0",
+        LatLong(57.857963, 41.712258) to "1",
+        LatLong(57.858197, 41.712056) to "2",
+        LatLong(57.858433, 41.712241) to "3",
+        LatLong(57.857929, 41.712768) to "4",
+        LatLong(57.856296, 41.711431) to "5",
+        LatLong(57.856296, 41.711431) to "6",
+        LatLong(57.858274, 41.712611) to "8",
+        LatLong(57.857621, 41.712989) to "10",
+        LatLong(57.856478, 41.713326) to "17",
+        LatLong(57.855682, 41.713292) to "32",
+        LatLong(57.85552, 41.713419) to "33",
+        LatLong(57.855341, 41.71351) to "34",
+        LatLong(57.855307, 41.712678) to "35",
+        LatLong(57.857403, 41.711691) to "Main House",
+        LatLong(57.858095, 41.711262) to "Club",
+        LatLong(57.857525, 41.712398) to "Kompovnik",
+        LatLong(57.856865, 41.712037) to "Romantic",
+        LatLong(57.857136, 41.711321) to "Garazh",
+        LatLong(57.857064, 41.711265) to "Gnezdo",
+        LatLong(57.857413, 41.710131) to "Stolovaya",
+        LatLong(57.856306, 41.712751) to "Korabl"
+)
 
 class MapActivity : AppCompatActivity() {
     private val TAG = "LKSH_MAP_A"
@@ -36,6 +61,18 @@ class MapActivity : AppCompatActivity() {
     private var working = true
     private var trackMe = true
     private var locationManager: LocationManager? = null
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            //Looper.prepare()
+            //setLocation(location.latitude, location.longitude)
+            updateMyLocation(location.latitude, location.longitude)
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
 
     private fun setupMap() {
         val TAG = TAG + "_INIT"
@@ -100,6 +137,13 @@ class MapActivity : AppCompatActivity() {
         }
         Log.d(TAG, "GPS started")
     }
+    private fun setHouseMarkers() {
+        for (house in houseCoordinates) {
+            val marker = TappableMarker(resources.getDrawable(android.R.drawable.btn_radio),
+                    house.first, house.second)
+            mapView.layerManager.layers.add(marker)
+        }
+    }
 
     private fun centerByMe(showAccuracy: Boolean = true) {
         val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
@@ -116,21 +160,9 @@ class MapActivity : AppCompatActivity() {
         setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat())
     }
 
-    private val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            //Looper.prepare()
-            //setLocation(location.latitude, location.longitude)
-            updateMyLocation(location.latitude, location.longitude)
-        }
-
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
-
     private fun drawPos() {
         val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos)
+        val marker = TappableMarker(drawable, myPos, "Your position")
         mapView.layerManager.layers.add(marker)
         posMarker = marker
 
@@ -144,7 +176,7 @@ class MapActivity : AppCompatActivity() {
         if (posMarker != null)
             mapView.layerManager.layers.remove(posMarker)
         val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos)
+        val marker = TappableMarker(drawable, myPos, "Your position")
         mapView.layerManager.layers.add(marker)
         mapView.model.mapViewPosition.center = pos
         posMarker = marker
@@ -185,6 +217,7 @@ class MapActivity : AppCompatActivity() {
         setupMap()
         startService(Intent(this, LocationTrackingService::class.java))
         startGPSTrackingThread()
+        setHouseMarkers()
 
         setMyPosButton.setOnClickListener {
             centerByMe()
@@ -195,6 +228,8 @@ class MapActivity : AppCompatActivity() {
             trackMe = checked
             Log.d(TAG, "tracking: $trackMe")
         }
+
+
     }
     override fun onDestroy() {
         if (mapView != null)
@@ -205,10 +240,15 @@ class MapActivity : AppCompatActivity() {
 }
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-private class TappableMarker(icon: Drawable, localLatLong: LatLong) :
+private class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String) :
         Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
                 AndroidGraphicFactory.convertToBitmap(icon).width / 2,
-                -1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2)
+                -1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2) {
+    override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
+        Log.d("LKSH_MARKER", "$name is tapped")
+        return true
+    }
+}
 
 class LocationTrackingService : Service() {
     var locationManager: LocationManager? = null
