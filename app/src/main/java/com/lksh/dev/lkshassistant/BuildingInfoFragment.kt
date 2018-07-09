@@ -45,6 +45,9 @@ class BuildingInfoFragment : Fragment() {
         val dataset = DBWrapper.getInstance(context!!).listHouse(houseId ?: "%")
         viewAdapter = UserCardAdapter(context!!, dataset)
         viewAdapter.notifyDataSetChanged()
+        content_focusable.setOnClickListener {
+            (activity as? MainActivity)?.hideFragment()
+        }
         recycler.apply {
             layoutManager = GridLayoutManager(context!!, 1)
             itemAnimator = DefaultItemAnimator()
