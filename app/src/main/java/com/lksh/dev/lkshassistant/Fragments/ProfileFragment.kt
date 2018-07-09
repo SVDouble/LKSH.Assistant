@@ -54,7 +54,11 @@ class ProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val user = DBWrapper.getInstance(context!!).listUsers(Prefs.getInstance(context!!).login)[0]
-        header_name.text = "${user.name} ${user.surname}"
+
+        profile_name.text = "Name: ${user.name}"
+        profile_surname.text = "Surname: ${user.surname}"
+        profile_parallel.text = "Parallel: ${user.parallel}"
+        profile_house.text =  "House: ${user.house}"
         info_logout.setOnClickListener {
             Prefs.getInstance(context!!).loginState = false
             (activity as? MainActivity)?.finish()
