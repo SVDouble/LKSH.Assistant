@@ -148,7 +148,7 @@ fun initDb(db: DBHandler, resources: Resources) {
         }
     }
 
-    var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+    //var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
     var temppassword = ""
     var templogin = ""
     var temphouse = ""
@@ -166,14 +166,14 @@ fun initDb(db: DBHandler, resources: Resources) {
 
 
     for (i in lines){                   //put into db
-        temppassword = ""
+        temppassword = i[1]
         templogin = i[0]
-        temphouse = i[4]
-        tempparallel = i[3]
-        tempname = i[1]
-        tempsurname = i[2]
-        tempadmin = i[5]
-        Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
+        temphouse = i[5]
+        tempparallel = i[4]
+        tempname = i[2]
+        tempsurname = i[3]
+        tempadmin = i[6]
+        //Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
 
         values.put(DBHandler.LOGIN, templogin)
         values.put(DBHandler.PASSWORD, temppassword)
