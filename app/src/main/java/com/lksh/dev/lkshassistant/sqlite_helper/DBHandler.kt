@@ -148,9 +148,9 @@ class DBWrapper private constructor() {
 fun initDb(ctx: Context, db: DBHandler, resources: Resources) {
     var usrDataList = db.listUsers("%")
 
-    val inputStream = resources.openRawResource(R.raw.test)                                 //file reading
+    val inputStream = resources.openRawResource(R.raw.june2018_pass)                                 //file reading
     val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
-        it.split(";")
+        it.split(",")
     }
 
     Prefs.getInstance(ctx).dbVersion = 0
@@ -176,14 +176,14 @@ fun initDb(ctx: Context, db: DBHandler, resources: Resources) {
 
 
         for (i in 1..(lines.size - 1)) {                   //put into db
-            temppassword = lines[i][1]
+            temppassword = lines[i][15]
             templogin = lines[i][0]
-            temphouse = lines[i][5]
-            tempparallel = lines[i][4]
+            temphouse = lines[i][12]
+            tempparallel = lines[i][11]
             tempname = lines[i][2]
-            tempsurname = lines[i][3]
-            tempadmin = lines[i][7]
-            temproom = lines[i][6]
+            tempsurname = lines[i][1]
+            tempadmin = "0"
+            temproom = lines[i][13]
             //Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
 
             values.put(DBHandler.LOGIN, templogin)

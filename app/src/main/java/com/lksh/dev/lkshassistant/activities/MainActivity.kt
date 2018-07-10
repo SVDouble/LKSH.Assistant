@@ -1,5 +1,8 @@
 package com.lksh.dev.lkshassistant.activities
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -66,6 +69,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        navigation.setBackgroundColor(Color.YELLOW)
 
         infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
