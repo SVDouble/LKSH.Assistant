@@ -34,8 +34,9 @@ import kotlin.concurrent.thread
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_LAT = "lat"
+private const val ARG_LONG = "long"
+const val ARG_HOUSE_NAME = "house"
 
 interface OnMapInteractionListener {
     fun dispatchClickBuilding(marker: HouseInfo)
@@ -72,14 +73,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -158,6 +151,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                     house, this)
             mapView!!.layerManager.layers.add(marker)
         }
+        Log.d(TAG, "Houses marked")
     }
 
     private fun showMyPos(showAccuracy: Boolean = true, center: Boolean) {
@@ -179,14 +173,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             updateMyLocation(endLocation.latitude, long = endLocation.longitude)
             setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat(), center)
         }
-    }
-
-    private fun drawPos() {
-        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001,
-                BuildingType.USER), this)
-        mapView!!.layerManager.layers.add(marker)
-        posMarker = marker
     }
 
     private fun updateMyLocation(lat: Double, long: Double) {
@@ -236,7 +222,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
             Log.d(TAG, "Map fragment setup successfully")
             //drawPos()
-            Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
+            //Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
@@ -324,8 +310,8 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         fun newInstance(param1: String, param2: String) =
                 FragmentMapBox().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
+                        putString(ARG_LONG, param1)
+                        putString(ARG_LAT, param2)
                     }
                 }
     }
