@@ -9,7 +9,7 @@ class App : Application() {
     override fun onCreate() {
         /* Instantiate prefs */
         Prefs.getInstance(applicationContext)
-        initDb(DBWrapper.getInstance(applicationContext), resources)
+        initDb(applicationContext, DBWrapper.getInstance(this), resources)
         super.onCreate()
     }
 }
