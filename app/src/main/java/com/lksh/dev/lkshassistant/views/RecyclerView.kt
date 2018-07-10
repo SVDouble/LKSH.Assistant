@@ -43,6 +43,7 @@ class UserCardAdapter(private val mContext: Context, private val dataset: ArrayL
     override fun getItemCount() = dataset.size
 }
 
+
 /* Search */
 data class SearchResult(val type: Type, val title: String) {
     enum class Type {
@@ -54,7 +55,6 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
         RecyclerView.Adapter<SearchResultAdapter.ViewHolder>(), Filterable {
 
     private var currentData = arrayListOf<SearchResult>()
-    private val mFilterData = arrayListOf<SearchResult>()
     private val resultFilter = ValueFilter()
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -72,7 +72,7 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = currentData[position]
-        holder.title.text = position.toString()
+        holder.title.text = data.title
         holder.image.setImageResource(when (data.type) {
             SearchResult.Type.USER -> android.R.drawable.ic_media_pause
             SearchResult.Type.HOUSE -> android.R.drawable.ic_media_ff
@@ -86,22 +86,20 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
     inner class ValueFilter : Filter() {
         override fun performFiltering(constraint: CharSequence?): Filter.FilterResults {
             val results = Filter.FilterResults()
+            val filterList = ArrayList<SearchResult>()
 
             if (constraint != null && constraint.isNotEmpty()) {
-                val filterList = ArrayList<SearchResult>()
-                for (i in 0 until mFilterData.size) {
-                    if (mFilterData[i].title.toUpperCase().contains(constraint.toString().toUpperCase())) {
-                        filterList.add(mFilterData[i])
+                for (i in 0 until dataset.size) {
+                    if (dataset[i].title.toUpperCase().contains(constraint.toString().toUpperCase())) {
+                        filterList.add(dataset[i])
                     }
                 }
-                results.count = filterList.size
-                results.values = filterList
-            } else {
-                results.count = mFilterData.size
-                results.values = mFilterData
             }
-            return results
 
+            results.count = filterList.size
+            results.values = filterList
+
+            return results
         }
 
         override fun publishResults(constraint: CharSequence,

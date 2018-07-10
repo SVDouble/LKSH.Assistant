@@ -107,6 +107,14 @@ class MainActivity : AppCompatActivity(),
         /* Initializate search */
         search.setOnClickListener {
             (it as SearchView).isIconified = false
+            map.visibility = GONE
+            search_results.visibility = VISIBLE
+        }
+
+        search.setOnCloseListener {
+            search_results.visibility = GONE
+            map.visibility = VISIBLE
+            true
         }
         //search.isActivated = true
         search.queryHint = "Enter user or building"
@@ -115,7 +123,7 @@ class MainActivity : AppCompatActivity(),
         //search.clearFocus()
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
-                //searchAdapter
+                searchAdapter.filter.filter(newText)
                 return false
             }
 
@@ -126,7 +134,7 @@ class MainActivity : AppCompatActivity(),
         })
 
         /* Search results init */
-        val dataset = arrayListOf<SearchResult>()
+        val dataset = arrayListOf(SearchResult(SearchResult.Type.USER, "Arkadiy"), SearchResult(SearchResult.Type.USER, "Gregoriy"))
         searchAdapter = SearchResultAdapter(this, dataset)
         searchAdapter.notifyDataSetChanged()
         search_results.apply {
