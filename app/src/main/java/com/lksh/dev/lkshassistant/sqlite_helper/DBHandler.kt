@@ -145,7 +145,7 @@ class DBWrapper private constructor() {
 }
 
 
-fun initDb(db: DBHandler, resources: Resources) {
+fun initDb(ctx: Context, db: DBHandler, resources: Resources) {
     var usrDataList = db.listUsers("%")
     if (usrDataList.size > 0) {
         for (temp in usrDataList) {
