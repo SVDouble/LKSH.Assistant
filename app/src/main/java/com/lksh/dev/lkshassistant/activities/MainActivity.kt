@@ -2,16 +2,16 @@ package com.lksh.dev.lkshassistant.activities
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
@@ -21,6 +21,9 @@ import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
+import com.lksh.dev.lkshassistant.timetable.JsoupHtml
+import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.doAsync
 
 const val TAG = "_LKSH"
 
@@ -31,7 +34,10 @@ class MainActivity : AppCompatActivity(),
         InfoFragment.OnFragmentInteractionListener,
         BuildingInfoFragment.OnFragmentInteractionListener,
         TimetableFragment.OnFragmentInteractionListener,
-        FragmentMapBox.OnFragmentInteractionListener {
+        FragmentMapBox.OnFragmentInteractionListener,
+        JsoupHtml.JsoupInteraction {
+
+    private lateinit var infoFragment: InfoFragment
 
     private lateinit var searchAdapter: SearchResultAdapter
 
@@ -67,27 +73,17 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /* Request permissions */
-        if (ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this@MainActivity,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+        doAsync {
+            JsoupHtml.getInstance(this@MainActivity).shouldParseHtml()
         }
 
         /* Initialize navigation and pager */
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        navigation.setBackgroundColor(Color.YELLOW)
+
+        infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMapBox(), InfoFragment(), ProfileFragment()))
+                arrayOf(FragmentMapBox(), infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -146,6 +142,11 @@ class MainActivity : AppCompatActivity(),
             itemAnimator = DefaultItemAnimator()
             adapter = searchAdapter
         }
+    override fun onFragmentInteraction(uri: Uri) {}
+
+    override fun timetableLoaded() {
+        infoFragment.onTimetableUpdate()
+        Log.d(TAG, "MAIN: timetable update")
     }
 
     override fun onFragmentInteraction(uri: Uri) {}
@@ -153,5 +154,8 @@ class MainActivity : AppCompatActivity(),
     fun hideFragment() {
         supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
     }
+}
 
+interface TimetableInteraction {
+    fun onTimetableUpdate()
 }

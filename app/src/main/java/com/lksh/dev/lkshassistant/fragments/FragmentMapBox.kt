@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,6 +37,10 @@ import kotlin.concurrent.thread
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
+interface OnMapInteractionListener {
+    fun dispatchClickBuilding(marker: HouseInfo)
+}
+
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -45,7 +50,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class FragmentMapBox : Fragment() {
+class FragmentMapBox : Fragment(), OnMapInteractionListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -55,7 +60,7 @@ class FragmentMapBox : Fragment() {
     private var myPos = LatLong(defaultLat, defaultLong)
     private var posMarker: TappableMarker? = null
     private var working = true
-    private var trackMe = true
+    private var trackMe = false
     private var locationManager: LocationManager? = null
     private var mapView: MapView? = null
 
@@ -108,13 +113,13 @@ class FragmentMapBox : Fragment() {
         setHouseMarkers()
 
         setMyPosButton.setOnClickListener {
-            centerByMe()
+            showMyPos(center = true)
         }
 
-        Log.d(tag, "tracking: $trackMe")
+        Log.d(TAG, "tracking: $trackMe")
         posAutoSwitch.setOnCheckedChangeListener { _, checked ->
             trackMe = checked
-            Log.d(tag, "tracking: $trackMe")
+            Log.d(TAG, "tracking: $trackMe")
         }
     }
 
@@ -122,87 +127,93 @@ class FragmentMapBox : Fragment() {
         locationManager = activity!!.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         thread(name = "PosThread", isDaemon = true) {
             Looper.prepare()
-            val tag = "LKSH_GPS_THR"
+            val TAG = "LKSH_MAP_GPS_THR"
             while (true) {
                 if (working) {
                     try {
                         // Request location updates
-                        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                                0L, 0f, locationListener)
-                        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                0L, 0f, locationListener)
+                        for (locListener in LocationTrackingService.locationListeners)
+                            locationManager?.requestLocationUpdates(locListener.second, 0L,
+                                    0f, locationListener)
+                        if (LocationTrackingService.locationListeners.size == 0)
+                            Toast.makeText(activity!!.applicationContext,
+                                    "I can't get location providers. Do you turn on GPS?",
+                                    Toast.LENGTH_SHORT).show()
                     } catch (e: SecurityException) {
-                        Log.d(tag, e.message, e)
+                        Log.d(TAG, e.message, e)
                     }
-                    if (trackMe) {
-                        centerByMe(false)
-                        //Log.d(tag, "Updated pos")
-                    } else {
-                        //Log.d(tag, "not updated pos")
-                    }
+                    showMyPos(false, trackMe)
                 }
-                //Log.d(tag, "iteration completed")
-                Thread.sleep(500) // 2 updates/s
+                //Log.d(TAG, "iteration completed")
+                Thread.sleep(1000 * 2) // 0.5 updates/s
             }
         }
-        Log.d(tag, "GPS started")
+        Log.d(TAG, "GPS started")
     }
 
     private fun setHouseMarkers() {
         for (house in houseCoordinates) {
-            val marker = TappableMarker(resources.getDrawable(android.R.drawable.btn_radio),
-                    house.latLong, house.name, house.radius)
+            val marker = TappableMarker(ResourcesCompat.getDrawable(resources,
+                    R.drawable.invisible, null)!!,
+                    house, this)
             mapView!!.layerManager.layers.add(marker)
         }
     }
 
-    private fun centerByMe(showAccuracy: Boolean = true) {
-        val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
-        val networkLocation = LocationTrackingService.locationListeners[1].lastLocation
-        val endLocation: Location
+    private fun showMyPos(showAccuracy: Boolean = true, center: Boolean) {
+        var endLocationAccuracy = 55.0f
+        var endLocation: Location? = null
 
-        endLocation = if (!gpsLocation.hasAccuracy() && !networkLocation.hasAccuracy()) {
-            Toast.makeText(activity!!.applicationContext, "Unable to get location",
+        for  (locationListener in LocationTrackingService.locationListeners) {
+            if (locationListener.first.lastLocation.hasAccuracy() &&
+                    locationListener.first.lastLocation.accuracy < endLocationAccuracy) {
+                endLocation = locationListener.first.lastLocation
+                endLocationAccuracy = endLocation.accuracy
+            }
+        }
+
+        if (endLocation == null)
+            Toast.makeText(activity!!.applicationContext, "Unable to get your position",
                     Toast.LENGTH_SHORT).show()
-            return
-        } else if (!gpsLocation.hasAccuracy() || (networkLocation.hasAccuracy()
-                        && networkLocation.accuracy < gpsLocation.accuracy)) networkLocation
-        else gpsLocation
-        updateMyLocation(endLocation.latitude, long = endLocation.longitude)
-        setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat())
+        else {
+            updateMyLocation(endLocation.latitude, long = endLocation.longitude)
+            setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat(), center)
+        }
     }
 
     private fun drawPos() {
-        val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
+        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001,
+                BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         posMarker = marker
-
     }
 
     private fun updateMyLocation(lat: Double, long: Double) {
         myPos = LatLong(lat, long)
     }
 
-    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat()) {
+    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat(), center: Boolean) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
-        val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
+        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001, BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
-        mapView!!.model.mapViewPosition.center = pos
+        if (center)
+            mapView!!.model.mapViewPosition.center = pos
         posMarker = marker
         Log.d("LKSH_MAP", "set center to ${pos.latitude} ${pos.longitude} ($accuracy)")
         if (accuracy != 0.toFloat())
-            Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m",
+                    Toast.LENGTH_SHORT).show()
     }
 
     private fun setupMap() {
-        val tag = tag + "_INIT"
+        val TAG = TAG + "_INIT"
         if (mapView == null)
             throw NullPointerException("mapView is empty")
         try {
-            Log.d(tag, "map fragment setup started")
+            Log.d(TAG, "map fragment setup started")
             AndroidGraphicFactory.createInstance(activity!!.application)
             mapView!!.isClickable = true
             mapView!!.mapScaleBar.isVisible = true
@@ -223,12 +234,12 @@ class FragmentMapBox : Fragment() {
             mapView!!.setZoomLevelMax(22)
             mapView!!.setZoomLevelMin(16)
             mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
-            Log.d(tag, "Map fragment setup successfully")
+            Log.d(TAG, "Map fragment setup successfully")
             drawPos()
-            Log.d(tag, "dining room's position is marked (but it isn't exactly)")
+            Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 
         } catch (e: Exception) {
-            Log.e(tag, e.message, e)
+            Log.e(TAG, e.message, e)
         }
     }
 
@@ -248,6 +259,13 @@ class FragmentMapBox : Fragment() {
         return mapFile
     }
 
+    override fun dispatchClickBuilding(marker: HouseInfo) {
+        if (marker.buildingType == BuildingType.HOUSE)
+            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(marker.name)).commit()
+        else
+            Toast.makeText(activity!!.applicationContext, "This is ${marker.name}", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -265,7 +283,6 @@ class FragmentMapBox : Fragment() {
         AndroidGraphicFactory.clearResourceMemoryCache()
         super.onDestroy()
     }
-
 
     override fun onPause() {
         working = false

@@ -15,14 +15,16 @@ import org.mapsforge.map.layer.overlay.Marker
 import kotlin.math.sqrt
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double) :
-        Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
+class TappableMarker(icon: Drawable, private val houseInfo: HouseInfo,
+                     val listener: OnMapInteractionListener):
+        Marker(houseInfo.latLong, AndroidGraphicFactory.convertToBitmap(icon),
                 /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
                 /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
-        if (tapLatLong == null || getDistance(tapLatLong, latLong) > radius)
+        if (tapLatLong == null || getDistance(tapLatLong, latLong) > houseInfo.radius)
             return false
-        Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
+        listener.dispatchClickBuilding(houseInfo)
+        //Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
         return true
     }
 
@@ -37,11 +39,13 @@ class LocationTrackingService : Service() {
 
     private fun requestLocationUpdates(locationManager: LocationManager?, provider: String) {
         try {
-            locationManager?.requestLocationUpdates(provider, internal, distance, locationListeners[1])
+            val locationListener = LTRLocationListener(provider)
+            locationManager?.requestLocationUpdates(provider, internal, distance, locationListener)
+            locationListeners.add(locationListener to provider)
         } catch (e: SecurityException) {
             Log.e(tag, "Fail to request location update", e)
         } catch (e: IllegalArgumentException) {
-            Log.e(tag, "$provider provider does not exist", e)
+            Log.e(tag, "$provider provider does not exist")
         }
     }
 
@@ -54,8 +58,13 @@ class LocationTrackingService : Service() {
     override fun onCreate() {
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        requestLocationUpdates(locationManager, LocationManager.NETWORK_PROVIDER)
-        requestLocationUpdates(locationManager, LocationManager.GPS_PROVIDER)
+        val providers = arrayOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
+        for (provider in providers)
+            try {
+                requestLocationUpdates(locationManager, provider)
+            } catch (e: Exception) {
+                Log.e(tag, e.message, e)
+            }
     }
 
     override fun onDestroy() {
@@ -63,7 +72,7 @@ class LocationTrackingService : Service() {
         if (locationManager != null)
             for (locationListener in locationListeners) { // <- fix
                 try {
-                    locationManager?.removeUpdates(locationListener)
+                    locationManager?.removeUpdates(locationListener.first)
                 } catch (e: Exception) {
                     Log.w(tag, "Failed to remove location listeners")
                 }
@@ -74,9 +83,10 @@ class LocationTrackingService : Service() {
         const val tag = "LocationTrackingService"
         const val internal = 1000.toLong() // In milliseconds
         const val distance = 0f // In meters
-        val locationListeners = arrayOf(
-                LTRLocationListener(LocationManager.GPS_PROVIDER),
-                LTRLocationListener(LocationManager.NETWORK_PROVIDER)
+        val locationListeners = arrayListOf<Pair<LTRLocationListener, String>>(
+
+                /*LTRLocationListener(LocationManager.GPS_PROVIDER),
+                LTRLocationListener(LocationManager.NETWORK_PROVIDER)*/
         )
 
         class LTRLocationListener(provider: String) : android.location.LocationListener {
@@ -98,37 +108,68 @@ class LocationTrackingService : Service() {
     }
 }
 
-data class HouseInfo(val latLong: LatLong, val name: String, val radius: Double)
+data class HouseInfo(val latLong: LatLong, val name: String, val radius: Double, val buildingType: BuildingType)
+
+enum class BuildingType {
+    HOUSE,
+    OTHER,
+    USER
+}
 
 val houseCoordinates = arrayOf(
-        HouseInfo(LatLong(57.858785, 41.71165), "0", 0.00015),
-        HouseInfo(LatLong(57.857963, 41.712258), "1", 0.00015),
-        HouseInfo(LatLong(57.858197, 41.712056), "2", 0.00015),
-        HouseInfo(LatLong(57.858433, 41.712241), "3", 0.00015),
-        HouseInfo(LatLong(57.857929, 41.712768), "4", 0.00015),
-        HouseInfo(LatLong(57.856296, 41.711431), "5", 0.00015),
-        HouseInfo(LatLong(57.856296, 41.711431), "6", 0.00015),
-        HouseInfo(LatLong(57.858274, 41.712611), "8", 0.00015),
-        HouseInfo(LatLong(57.857621, 41.712989), "10", 0.00015),
-        HouseInfo(LatLong(57.856478, 41.713326), "17", 0.00015),
-        HouseInfo(LatLong(57.855682, 41.713292), "32", 0.00015),
-        HouseInfo(LatLong(57.85552, 41.713419), "33", 0.00015),
-        HouseInfo(LatLong(57.855341, 41.71351), "34", 0.00015),
-        HouseInfo(LatLong(57.855307, 41.712678), "35", 0.00015),
-        HouseInfo(LatLong(57.857403, 41.711691), "Main House", 0.0004),
-        HouseInfo(LatLong(57.858095, 41.711262), "Club", 0.0003),
-        HouseInfo(LatLong(57.857525, 41.712398), "Kompovnik", 0.0003),
-        HouseInfo(LatLong(57.856865, 41.712037), "Romantic", 0.00015),
-        HouseInfo(LatLong(57.857136, 41.711321), "Garazh", 0.00015),
-        HouseInfo(LatLong(57.857064, 41.711265), "Gnezdo", 0.00005),
-        HouseInfo(LatLong(57.857413, 41.710131), "Stolovaya", 0.0007),
-        HouseInfo(LatLong(57.856306, 41.712751), "Korabl", 0.00020)
+        HouseInfo(LatLong(57.858785, 41.71165), "0", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.857963, 41.712258), "1", 0.00015,
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.858197, 41.712056), "2", 0.00015,
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.858433, 41.712241), "3", 0.00015,
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.857929, 41.712768), "4", 0.00015,
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.856296, 41.711431), "5", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.856514, 41.711359), "6", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.858274, 41.712611), "8", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.857621, 41.712989), "10", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.856478, 41.713326), "17", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.855682, 41.713292), "32", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.85552, 41.713419), "33", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.855341, 41.71351), "34", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.855307, 41.712678), "35", 0.00015, 
+                BuildingType.HOUSE),
+        HouseInfo(LatLong(57.857403, 41.711691), "Main House", 0.00025, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.858095, 41.711262), "Club", 0.00025, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.857525, 41.712398), "Kompovnik", 0.00025, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.856865, 41.712037), "Romantic", 0.00015, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.857136, 41.711321), "Garazh", 0.00015, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.857064, 41.711265), "Gnezdo", 0.00005, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.857413, 41.710131), "Stolovaya", 0.0005, 
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.856306, 41.712751), "Korabl", 0.00025,
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.85674, 41.717549), "Horosho", 0.00025,
+                BuildingType.OTHER)
 )
 
 const val minLat = 57.855300
 const val maxLat = 57.858790
 const val minLong = 41.708843
 const val maxLong = 41.717549
+
 const val defaultLat = 57.85760 //coordinates of dormitory
 const val defaultLong = 41.71000
 const val LAT = "LAT"
