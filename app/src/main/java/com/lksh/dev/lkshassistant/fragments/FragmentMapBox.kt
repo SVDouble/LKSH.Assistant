@@ -235,7 +235,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             mapView!!.setZoomLevelMin(16)
             mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
             Log.d(TAG, "Map fragment setup successfully")
-            drawPos()
+            //drawPos()
             Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 
         } catch (e: Exception) {
