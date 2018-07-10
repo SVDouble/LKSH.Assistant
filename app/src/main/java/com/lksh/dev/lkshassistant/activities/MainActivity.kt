@@ -20,6 +20,7 @@ import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 
 const val TAG = "_LKSH"
 
@@ -83,12 +84,11 @@ class MainActivity : AppCompatActivity(),
                             Manifest.permission.ACCESS_COARSE_LOCATION), 0)
         }
 
+        /* Initialize navigation and pager */
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
                 arrayOf(FragmentMapBox(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
-        /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
@@ -104,23 +104,27 @@ class MainActivity : AppCompatActivity(),
         map.swipingEnabled = false
         header.visibility = GONE
 
-        /* Initializate search */
+        /* Initialize search */
+        search.isSubmitButtonEnabled = false
+        search.queryHint = "Enter user or building"
         search.setOnClickListener {
-            (it as SearchView).isIconified = false
+            search.isIconified = false
             map.visibility = GONE
             search_results.visibility = VISIBLE
         }
-
-        search.setOnCloseListener {
-            search_results.visibility = GONE
-            map.visibility = VISIBLE
-            true
+        search.onQueryTextFocusChange { v, hasFocus ->
+            if (hasFocus) {
+                search.onActionViewExpanded()
+                search.isIconified = false
+                search_results.visibility = VISIBLE
+                map.visibility = GONE
+            } else {
+                search.onActionViewCollapsed()
+                search.isIconified = true
+                search_results.visibility = GONE
+                map.visibility = VISIBLE
+            }
         }
-        //search.isActivated = true
-        search.queryHint = "Enter user or building"
-        //search.onActionViewExpanded()
-        //search.isIconified = false
-        //search.clearFocus()
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAdapter.filter.filter(newText)
@@ -144,8 +148,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
-    }
+    override fun onFragmentInteraction(uri: Uri) {}
 
     fun hideFragment() {
         supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
