@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.TimetableInteraction
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.fragment_info.*
 
@@ -27,12 +28,13 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class InfoFragment : Fragment() {
+class InfoFragment : Fragment(), TimetableInteraction {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private lateinit var timetableFragment: TimetableFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +58,9 @@ class InfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        timetableFragment = TimetableFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(activity!!.supportFragmentManager,
-                arrayOf(TimetableFragment(), BuildingInfoFragment()))
+                arrayOf(timetableFragment, BuildingInfoFragment()))
 
         // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter
@@ -78,6 +81,10 @@ class InfoFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onTimetableUpdate() {
+        timetableFragment.onTimetableUpdate()
     }
 
     /**

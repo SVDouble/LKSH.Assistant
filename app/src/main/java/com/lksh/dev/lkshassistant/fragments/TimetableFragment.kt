@@ -1,7 +1,6 @@
 package com.lksh.dev.lkshassistant.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.activities.MainActivity
-import com.lksh.dev.lkshassistant.activities.StartActivity
-import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
-import kotlinx.android.synthetic.main.fragment_profile.*
+import com.lksh.dev.lkshassistant.activities.TimetableInteraction
 import kotlinx.android.synthetic.main.fragment_timetable.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,17 +17,7 @@ import kotlinx.android.synthetic.main.fragment_timetable.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [TimetableFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [TimetableFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
-
-class TimetableFragment : Fragment() {
+class TimetableFragment : Fragment(), TimetableInteraction {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -43,12 +29,6 @@ class TimetableFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        timetable.text = Prefs.getInstance(context!!).timetable
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +55,11 @@ class TimetableFragment : Fragment() {
         super.onDetach()
         listener = null
     }
+
+    override fun onTimetableUpdate() {
+        timetable.text = Prefs.getInstance(context!!).timetable
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this

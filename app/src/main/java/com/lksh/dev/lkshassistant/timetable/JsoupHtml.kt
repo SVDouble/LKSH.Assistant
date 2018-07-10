@@ -4,27 +4,27 @@ import android.content.Context
 import android.util.Log
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.SingletonHolder
+import com.lksh.dev.lkshassistant.activities.TAG
 import org.jsoup.Jsoup
-import java.net.SocketTimeoutException
 
 class JsoupHtml(val ctx: Context) {
 
     fun shouldParseHtml() {
-        //1. Fetching the HTML from a given URL
-        Log.d("_LKSH", "fetch data")
-        try {
-            Jsoup.connect("https://ejudge.lksh.ru").timeout(5000).get().run {
-                //2. Parses and scrapes the HTML response
-                Log.d("_LKSH", "Connected!")
-                select("div.schedule__item").forEachIndexed { index, element ->
-                    val event = element.text()
-                    Prefs.getInstance(ctx).timetable = event + "\n"
-                    Log.d("_LKSH", event)
-                }
+        Prefs.getInstance(ctx).timetable = ""
+        Jsoup.connect("http://ejudge.lksh.ru").timeout(5000).get().run {
+            select("div.schedule__item").forEachIndexed { index, element ->
+                Prefs.getInstance(ctx).timetable += element.text()
+                Prefs.getInstance(ctx).timetable += "\n"
+                //Log.d(TAG, element.text())
             }
-        } catch (e: SocketTimeoutException) {
-            Log.d("_LKSH", "Can't connect to ejudge")
+            Log.d(TAG, Prefs.getInstance(ctx).timetable)
+            (ctx as JsoupInteraction).timetableLoaded()
         }
+    }
+
+
+    interface JsoupInteraction {
+        fun timetableLoaded()
     }
 
     companion object : SingletonHolder<JsoupHtml, Context>(::JsoupHtml)

@@ -1,12 +1,8 @@
 package com.lksh.dev.lkshassistant.activities
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -18,7 +14,6 @@ import com.lksh.dev.lkshassistant.timetable.JsoupHtml
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.viewPager
 
 const val TAG = "_LKSH"
 
@@ -29,7 +24,10 @@ class MainActivity : AppCompatActivity(),
         InfoFragment.OnFragmentInteractionListener,
         BuildingInfoFragment.OnFragmentInteractionListener,
         TimetableFragment.OnFragmentInteractionListener,
-        FragmentMapBox.OnFragmentInteractionListener {
+        FragmentMapBox.OnFragmentInteractionListener,
+        JsoupHtml.JsoupInteraction {
+
+    private lateinit var infoFragment: InfoFragment
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -69,8 +67,9 @@ class MainActivity : AppCompatActivity(),
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+        infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMapBox(), InfoFragment(), ProfileFragment()))
+                arrayOf(FragmentMapBox(), infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -89,11 +88,18 @@ class MainActivity : AppCompatActivity(),
         header.visibility = GONE
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
+    override fun onFragmentInteraction(uri: Uri) {}
+
+    override fun timetableLoaded() {
+        infoFragment.onTimetableUpdate()
+        Log.d(TAG, "MAIN: timetable update")
     }
 
     fun hideFragment() {
         supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
     }
+}
 
+interface TimetableInteraction {
+    fun onTimetableUpdate()
 }
