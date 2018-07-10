@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
@@ -16,6 +17,8 @@ import com.lksh.dev.lkshassistant.fragments.*
 import com.lksh.dev.lkshassistant.timetable.JsoupHtml
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.support.v4.viewPager
 
 const val TAG = "_LKSH"
 
@@ -60,7 +63,9 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //JsoupHtml.getInstance(this).shouldParseHtml()
+        doAsync {
+            JsoupHtml.getInstance(this@MainActivity).shouldParseHtml()
+        }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
