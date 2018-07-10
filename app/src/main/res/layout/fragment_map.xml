@@ -27,6 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:layout_margin="16dp"
-        android:checked="true" />
+        android:checked="false" />
 
 </FrameLayout>
