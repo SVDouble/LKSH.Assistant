@@ -65,7 +65,7 @@ class BuildingInfoFragment : Fragment() {
             row.number.text = if (i == 0) "№" else i.toString()
             row.name.text = "${data.name} ${data.surname}"
             row.parallel.text = data.parallel
-            row.room.text = data.room
+            row.room.text = if (i == 0) "room" else  data.room
             table.addView(row, i)
         }
     }
