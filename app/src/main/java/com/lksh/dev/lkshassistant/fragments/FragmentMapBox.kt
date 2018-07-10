@@ -183,7 +183,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
 
     private fun drawPos() {
         val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.00025,
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001,
                 BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         posMarker = marker
@@ -197,7 +197,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
         val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.00025, BuildingType.USER), this)
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001, BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         if (center)
             mapView!!.model.mapViewPosition.center = pos
