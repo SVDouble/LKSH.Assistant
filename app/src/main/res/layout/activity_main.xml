@@ -42,13 +42,23 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header" />
 
-        <view
+        <com.lksh.dev.lkshassistant.views.NoSwipePager
             android:id="@+id/map"
-            class="com.lksh.dev.lkshassistant.views.NoSwipePager"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorGrey"
             app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
+            app:layout_constraintBottom_toTopOf="@id/navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/search.results"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
