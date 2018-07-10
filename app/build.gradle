@@ -69,6 +69,7 @@ dependencies {
     //annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
     implementation 'com.aurelhubert:ahbottomnavigation:2.0.4'
+    implementation 'org.jsoup:jsoup:1.10.3'
     implementation 'org.mapsforge:mapsforge-core:0.9.1'
     implementation 'org.mapsforge:mapsforge-map:0.9.1'
     implementation 'org.mapsforge:mapsforge-map-reader:0.9.1'
