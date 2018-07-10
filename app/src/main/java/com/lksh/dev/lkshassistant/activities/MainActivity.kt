@@ -9,10 +9,15 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.views.SearchResult
+import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,6 +31,8 @@ class MainActivity : AppCompatActivity(),
         BuildingInfoFragment.OnFragmentInteractionListener,
         TimetableFragment.OnFragmentInteractionListener,
         FragmentMapBox.OnFragmentInteractionListener {
+
+    private lateinit var searchAdapter: SearchResultAdapter
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -60,7 +67,6 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         /* Request permissions */
-
         if (ContextCompat.checkSelfPermission(this@MainActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
@@ -97,6 +103,37 @@ class MainActivity : AppCompatActivity(),
         })
         map.swipingEnabled = false
         header.visibility = GONE
+
+        /* Initializate search */
+        search.setOnClickListener {
+            (it as SearchView).isIconified = false
+        }
+        //search.isActivated = true
+        search.queryHint = "Enter user or building"
+        //search.onActionViewExpanded()
+        //search.isIconified = false
+        //search.clearFocus()
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                //searchAdapter
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+        })
+
+        /* Search results init */
+        val dataset = arrayListOf<SearchResult>()
+        searchAdapter = SearchResultAdapter(this, dataset)
+        searchAdapter.notifyDataSetChanged()
+        search_results.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            itemAnimator = DefaultItemAnimator()
+            adapter = searchAdapter
+        }
     }
 
     override fun onFragmentInteraction(uri: Uri) {
