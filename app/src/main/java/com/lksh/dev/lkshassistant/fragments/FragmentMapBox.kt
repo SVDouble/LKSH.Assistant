@@ -156,7 +156,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     private fun setHouseMarkers() {
         for (house in houseCoordinates) {
             val marker = TappableMarker(ResourcesCompat.getDrawable(resources,
-                    android.R.drawable.btn_radio, null)!!,
+                    R.drawable.invisible, null)!!,
                     house, this)
             mapView!!.layerManager.layers.add(marker)
         }
