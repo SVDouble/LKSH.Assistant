@@ -7,55 +7,73 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.sqlite_helper.DBHandler
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.activity_start.*
+import org.jetbrains.anko.doAsync
 
 
-class StartActivity : AppCompatActivity() {
+class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
 
     private val prefs by lazy {
         Prefs.getInstance(applicationContext)
     }
 
+    private lateinit var db: DBHandler
+
     private val listener: (View) -> Unit = {
-        var isLogin = false
-        val login = loginField.text.toString()
-        val password = passwordField.text.toString()
-        val usrDataList = DBWrapper.getInstance(this).listUsers("%")
-
-        if (login.isNotEmpty() && password.isNotEmpty()) {
-            if (usrDataList.size > 0) {
-                for (temp in usrDataList) {
-                    if (temp.login == login && temp.password == password) {
-                        finish()
-                        isLogin = true
-                        prefs.login = login
-                        prefs.password = password
-                        prefs.loginState = true
-                        startActivity(Intent(this, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                        break
-                    }
-                }
-                if (!isLogin)
-                    Toast.makeText(this,
-                            "Invalid login or password",
-                            Toast.LENGTH_LONG).show()
-            }
-
-        } else
+        if (!::db.isInitialized) {
             Toast.makeText(this,
-                    "Empty fields",
-                    Toast.LENGTH_LONG).show()
+                    "Please wait: db is loading",
+                    Toast.LENGTH_SHORT).show()
+        } else {
+            var isLogin = false
+            val login = loginField.text.toString()
+            val password = passwordField.text.toString()
+            val usrDataList = DBWrapper.getInstance(this).listUsers("%")
+
+            if (login.isNotEmpty() && password.isNotEmpty()) {
+                if (usrDataList.size > 0) {
+                    for (temp in usrDataList) {
+                        if (temp.login == login && temp.password == password) {
+                            finish()
+                            isLogin = true
+                            prefs.login = login
+                            prefs.password = password
+                            prefs.loginState = true
+                            startActivity(Intent(this, MainActivity::class.java)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                            break
+                        }
+                    }
+                    if (!isLogin)
+                        Toast.makeText(this,
+                                "Invalid login or password",
+                                Toast.LENGTH_SHORT).show()
+                }
+
+            } else
+                Toast.makeText(this,
+                        "Empty fields",
+                        Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
+
+        /* Init DB */
+        Log.d(TAG, "Start loading!")
+        doAsync {
+            DBWrapper.getInstanceWithCallback(this@StartActivity)
+            DBWrapper.initDb(applicationContext, resources)
+        }
 
         /* Request permissions */
         if (ContextCompat.checkSelfPermission(this@StartActivity,
@@ -77,13 +95,16 @@ class StartActivity : AppCompatActivity() {
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.INTERNET), 0)
         }
+        login_button.setOnClickListener(listener)
+    }
 
+    override fun onDbLoad() {
+        db = DBWrapper.getInstance(this)
+        Log.d(TAG, "Really loaded!")
         if (prefs.loginState) {
             finish()
             startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-        } else {
-            login_button.setOnClickListener(listener)
         }
     }
 }

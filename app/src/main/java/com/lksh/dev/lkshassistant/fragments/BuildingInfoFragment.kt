@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.MainActivity
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
-import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 import com.lksh.dev.lkshassistant.views.UserCardAdapter
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
@@ -49,7 +48,9 @@ class BuildingInfoFragment : Fragment() {
         content_focusable.setOnClickListener {
             (activity as? MainActivity)?.hideFragment()
         }
-        val dataset = DBWrapper.getInstance(context!!).listHouse(houseId ?: "%")
+        val dataset = DBWrapper.getInstance(context!!)
+                .listHouse(houseId ?: "%")
+                .sortedBy { it.room.toIntOrNull() ?: 0 }
 //        viewAdapter = UserCardAdapter(context!!, dataset)
 //        viewAdapter.notifyDataSetChanged()
 //        recycler.apply {
@@ -59,14 +60,24 @@ class BuildingInfoFragment : Fragment() {
 //        }
         table.isStretchAllColumns = false
         table.bringToFront()
-        dataset.add(0, UserData(0, "", "", "house", "parallel", "name", "", 0, ""))
+
+        table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
+                .apply {
+                    number.text = "%"
+                    name.text = "name"
+                    parallel.text = "parallel"
+                    room.text = "room"
+                }, 0)
+
         dataset.forEachIndexed { i, data ->
-            val row = layoutInflater.inflate(R.layout.part_rv_building, null, false)
-            row.number.text = if (i == 0) "№" else i.toString()
-            row.name.text = "${data.name} ${data.surname}"
-            row.parallel.text = data.parallel
-            row.room.text = if (i == 0) "room" else  data.room
-            table.addView(row, i)
+            table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
+                    .apply {
+                        number.text = (i + 1).toString()
+                        name.text = "${data.name} ${data.surname}"
+                        parallel.text = data.parallel
+                        room.text = data.room
+                    }, i + 1)
+
         }
     }
 

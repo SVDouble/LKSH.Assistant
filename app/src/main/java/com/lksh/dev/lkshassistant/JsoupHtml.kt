@@ -1,9 +1,7 @@
-package com.lksh.dev.lkshassistant.timetable
+package com.lksh.dev.lkshassistant
 
 import android.content.Context
 import android.util.Log
-import com.lksh.dev.lkshassistant.Prefs
-import com.lksh.dev.lkshassistant.SingletonHolder
 import com.lksh.dev.lkshassistant.activities.TAG
 import org.jsoup.Jsoup
 

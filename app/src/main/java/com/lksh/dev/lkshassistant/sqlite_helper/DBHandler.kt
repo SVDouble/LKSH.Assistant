@@ -6,8 +6,10 @@ import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
+import android.util.Log
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.TAG
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
@@ -133,6 +135,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
 class DBWrapper private constructor() {
     companion object {
+        var listeners: MutableList<DbInteraction> = mutableListOf()
         var db: DBHandler? = null
 
         @JvmStatic
@@ -142,61 +145,50 @@ class DBWrapper private constructor() {
             return db!!
         }
 
+        @JvmStatic
+        fun getInstanceWithCallback(ctx: Context): DBHandler {
+            val listener = ctx as? DbInteraction
+            if (listener != null)
+                listeners.add(listener)
+            return getInstance(ctx)
+        }
+
+        @JvmStatic
+        fun initDb(ctx: Context, resources: Resources) {
+            getInstance(ctx)
+
+            val usrDataList = db!!.listUsers("%")
+            val inputStream = resources.openRawResource(R.raw.june2018_pass)
+            val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
+                it.split(",")
+            }
+
+            Prefs.getInstance(ctx).dbVersion = 0
+            if (usrDataList.size == 0 || lines[0][0].toInt() > Prefs.getInstance(ctx).dbVersion) {
+                Prefs.getInstance(ctx).dbVersion = lines[0][0].toInt()
+                for (temp in usrDataList) {
+                    db!!.removeUser(temp._id)
+                }
+
+                val values = ContentValues()
+                for (i in 1..(lines.size - 1)) {
+                    values.put(DBHandler.LOGIN, lines[i][0])
+                    values.put(DBHandler.PASSWORD, lines[i][15])
+                    values.put(DBHandler.HOUSE, lines[i][12])
+                    values.put(DBHandler.PARALLEL, lines[i][11])
+                    values.put(DBHandler.NAME, lines[i][2])
+                    values.put(DBHandler.SURNAME, lines[i][1])
+                    values.put(DBHandler.ADMIN, "0")
+                    values.put(DBHandler.ROOM, lines[i][13])
+                    db!!.addUser(values)
+                }
+            }
+            Log.d(TAG, "Init database ${listeners.size}")
+            listeners.forEach { it.onDbLoad() }
+        }
+    }
+
+    interface DbInteraction {
+        fun onDbLoad()
     }
 }
-
-fun initDb(ctx: Context, db: DBHandler, resources: Resources) {
-    var usrDataList = db.listUsers("%")
-
-    val inputStream = resources.openRawResource(R.raw.june2018_pass)                                 //file reading
-    val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
-        it.split(",")
-    }
-
-    Prefs.getInstance(ctx).dbVersion = 0
-    if (usrDataList.size == 0 || lines[0][0].toInt() > Prefs.getInstance(ctx).dbVersion) {
-        //var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-        Prefs.getInstance(ctx).dbVersion = lines[0][0].toInt()
-        for (temp in usrDataList) {
-            db.removeUser(temp._id)
-        }
-
-        for (temp in usrDataList) {
-
-        }
-        var temppassword = ""
-        var templogin = ""
-        var temphouse = ""
-        var tempparallel = ""
-        var tempname = ""
-        var tempsurname = ""
-        var tempadmin = ""
-        var temproom = ""
-        val values = ContentValues()
-
-
-        for (i in 1..(lines.size - 1)) {                   //put into db
-            temppassword = lines[i][15]
-            templogin = lines[i][0]
-            temphouse = lines[i][12]
-            tempparallel = lines[i][11]
-            tempname = lines[i][2]
-            tempsurname = lines[i][1]
-            tempadmin = "0"
-            temproom = lines[i][13]
-            //Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
-
-            values.put(DBHandler.LOGIN, templogin)
-            values.put(DBHandler.PASSWORD, temppassword)
-            values.put(DBHandler.HOUSE, temphouse)
-            values.put(DBHandler.PARALLEL, tempparallel)
-            values.put(DBHandler.NAME, tempname)
-            values.put(DBHandler.SURNAME, tempsurname)
-            values.put(DBHandler.ADMIN, tempadmin)
-            values.put(DBHandler.ROOM, temproom)
-            db.addUser(values)
-        }
-    }
-}
-
-
