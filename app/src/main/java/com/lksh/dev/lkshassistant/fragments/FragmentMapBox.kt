@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,6 +37,10 @@ import kotlin.concurrent.thread
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
+interface OnMapInteractionListener {
+    fun dispatchClickBuilding(name: String)
+}
+
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -45,7 +50,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class FragmentMapBox : Fragment() {
+class FragmentMapBox : Fragment(), OnMapInteractionListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -150,8 +155,8 @@ class FragmentMapBox : Fragment() {
 
     private fun setHouseMarkers() {
         for (house in houseCoordinates) {
-            val marker = TappableMarker(resources.getDrawable(android.R.drawable.btn_radio),
-                    house.latLong, house.name, house.radius)
+            val marker = TappableMarker(ResourcesCompat.getDrawable(getResources(), android.R.drawable.btn_radio, null)!!,
+                    house.latLong, house.name, house.radius, this)
             mapView!!.layerManager.layers.add(marker)
         }
     }
@@ -173,8 +178,8 @@ class FragmentMapBox : Fragment() {
     }
 
     private fun drawPos() {
-        val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
+        val drawable = ResourcesCompat.getDrawable(getResources(), android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025, this)
         mapView!!.layerManager.layers.add(marker)
         posMarker = marker
 
@@ -187,8 +192,8 @@ class FragmentMapBox : Fragment() {
     private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat()) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
-        val drawable = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025)
+        val drawable = ResourcesCompat.getDrawable(getResources(), android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025, this)
         mapView!!.layerManager.layers.add(marker)
         mapView!!.model.mapViewPosition.center = pos
         posMarker = marker
@@ -246,6 +251,10 @@ class FragmentMapBox : Fragment() {
             Log.d("MAP", "${mapFile.absolutePath} already exists")
         }
         return mapFile
+    }
+
+    override fun dispatchClickBuilding(name: String) {
+        activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(name)).commit()
     }
 
     override fun onDetach() {
