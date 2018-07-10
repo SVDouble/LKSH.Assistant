@@ -39,11 +39,13 @@ class LocationTrackingService : Service() {
 
     private fun requestLocationUpdates(locationManager: LocationManager?, provider: String) {
         try {
-            locationManager?.requestLocationUpdates(provider, internal, distance, locationListeners[1])
+            val locationListener = LTRLocationListener(provider)
+            locationManager?.requestLocationUpdates(provider, internal, distance, locationListener)
+            locationListeners.add(locationListener to provider)
         } catch (e: SecurityException) {
             Log.e(tag, "Fail to request location update", e)
         } catch (e: IllegalArgumentException) {
-            Log.e(tag, "$provider provider does not exist", e)
+            Log.e(tag, "$provider provider does not exist")
         }
     }
 
@@ -56,8 +58,13 @@ class LocationTrackingService : Service() {
     override fun onCreate() {
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        requestLocationUpdates(locationManager, LocationManager.NETWORK_PROVIDER)
-        requestLocationUpdates(locationManager, LocationManager.GPS_PROVIDER)
+        val providers = arrayOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
+        for (provider in providers)
+            try {
+                requestLocationUpdates(locationManager, provider)
+            } catch (e: Exception) {
+                Log.e(tag, e.message, e)
+            }
     }
 
     override fun onDestroy() {
@@ -65,7 +72,7 @@ class LocationTrackingService : Service() {
         if (locationManager != null)
             for (locationListener in locationListeners) { // <- fix
                 try {
-                    locationManager?.removeUpdates(locationListener)
+                    locationManager?.removeUpdates(locationListener.first)
                 } catch (e: Exception) {
                     Log.w(tag, "Failed to remove location listeners")
                 }
@@ -76,9 +83,10 @@ class LocationTrackingService : Service() {
         const val tag = "LocationTrackingService"
         const val internal = 1000.toLong() // In milliseconds
         const val distance = 0f // In meters
-        val locationListeners = arrayOf(
-                LTRLocationListener(LocationManager.GPS_PROVIDER),
-                LTRLocationListener(LocationManager.NETWORK_PROVIDER)
+        val locationListeners = arrayListOf<Pair<LTRLocationListener, String>>(
+
+                /*LTRLocationListener(LocationManager.GPS_PROVIDER),
+                LTRLocationListener(LocationManager.NETWORK_PROVIDER)*/
         )
 
         class LTRLocationListener(provider: String) : android.location.LocationListener {
