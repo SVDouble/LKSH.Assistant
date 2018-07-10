@@ -38,7 +38,7 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 interface OnMapInteractionListener {
-    fun dispatchClickBuilding(name: String)
+    fun dispatchClickBuilding(marker: HouseInfo)
 }
 
 /**
@@ -60,7 +60,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     private var myPos = LatLong(defaultLat, defaultLong)
     private var posMarker: TappableMarker? = null
     private var working = true
-    private var trackMe = true
+    private var trackMe = false
     private var locationManager: LocationManager? = null
     private var mapView: MapView? = null
 
@@ -116,10 +116,10 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             centerByMe()
         }
 
-        Log.d(tag, "tracking: $trackMe")
+        Log.d(TAG, "tracking: $trackMe")
         posAutoSwitch.setOnCheckedChangeListener { _, checked ->
             trackMe = checked
-            Log.d(tag, "tracking: $trackMe")
+            Log.d(TAG, "tracking: $trackMe")
         }
     }
 
@@ -127,7 +127,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         locationManager = activity!!.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         thread(name = "PosThread", isDaemon = true) {
             Looper.prepare()
-            val tag = "LKSH_GPS_THR"
+            val TAG = "LKSH_MAP_GPS_THR"
             while (true) {
                 if (working) {
                     try {
@@ -137,26 +137,27 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                         locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                 0L, 0f, locationListener)
                     } catch (e: SecurityException) {
-                        Log.d(tag, e.message, e)
+                        Log.d(TAG, e.message, e)
                     }
                     if (trackMe) {
                         centerByMe(false)
-                        //Log.d(tag, "Updated pos")
+                        //Log.d(TAG, "Updated pos")
                     } else {
-                        //Log.d(tag, "not updated pos")
+                        //Log.d(TAG, "not updated pos")
                     }
                 }
-                //Log.d(tag, "iteration completed")
-                Thread.sleep(500) // 2 updates/s
+                //Log.d(TAG, "iteration completed")
+                Thread.sleep(1000 * 2) // 0.5 updates/s
             }
         }
-        Log.d(tag, "GPS started")
+        Log.d(TAG, "GPS started")
     }
 
     private fun setHouseMarkers() {
         for (house in houseCoordinates) {
-            val marker = TappableMarker(ResourcesCompat.getDrawable(getResources(), android.R.drawable.btn_radio, null)!!,
-                    house.latLong, house.name, house.radius, this)
+            val marker = TappableMarker(ResourcesCompat.getDrawable(resources,
+                    android.R.drawable.btn_radio, null)!!,
+                    house, this)
             mapView!!.layerManager.layers.add(marker)
         }
     }
@@ -178,8 +179,9 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     }
 
     private fun drawPos() {
-        val drawable = ResourcesCompat.getDrawable(getResources(), android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025, this)
+        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.00025,
+                BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         posMarker = marker
 
@@ -192,22 +194,23 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat()) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
-        val drawable = ResourcesCompat.getDrawable(getResources(), android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, myPos, "Your position", 0.00025, this)
+        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
+        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.00025, BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         mapView!!.model.mapViewPosition.center = pos
         posMarker = marker
         Log.d("LKSH_MAP", "set center to ${pos.latitude} ${pos.longitude} ($accuracy)")
         if (accuracy != 0.toFloat())
-            Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m",
+                    Toast.LENGTH_SHORT).show()
     }
 
     private fun setupMap() {
-        val tag = tag + "_INIT"
+        val TAG = TAG + "_INIT"
         if (mapView == null)
             throw NullPointerException("mapView is empty")
         try {
-            Log.d(tag, "map fragment setup started")
+            Log.d(TAG, "map fragment setup started")
             AndroidGraphicFactory.createInstance(activity!!.application)
             mapView!!.isClickable = true
             mapView!!.mapScaleBar.isVisible = true
@@ -228,12 +231,12 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             mapView!!.setZoomLevelMax(22)
             mapView!!.setZoomLevelMin(16)
             mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
-            Log.d(tag, "Map fragment setup successfully")
+            Log.d(TAG, "Map fragment setup successfully")
             drawPos()
-            Log.d(tag, "dining room's position is marked (but it isn't exactly)")
+            Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
 
         } catch (e: Exception) {
-            Log.e(tag, e.message, e)
+            Log.e(TAG, e.message, e)
         }
     }
 
@@ -253,8 +256,11 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         return mapFile
     }
 
-    override fun dispatchClickBuilding(name: String) {
-        activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(name)).commit()
+    override fun dispatchClickBuilding(marker: HouseInfo) {
+        if (marker.buildingType == BuildingType.HOUSE)
+            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(marker.name)).commit()
+        else
+            Toast.makeText(activity!!.applicationContext, "This is ${marker.name}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDetach() {
@@ -274,7 +280,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         AndroidGraphicFactory.clearResourceMemoryCache()
         super.onDestroy()
     }
-
 
     override fun onPause() {
         working = false
