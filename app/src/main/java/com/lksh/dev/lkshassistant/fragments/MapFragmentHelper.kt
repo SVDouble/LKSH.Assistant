@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.Fragments
+package com.lksh.dev.lkshassistant.fragments
 
 import android.app.Service
 import android.content.Context
@@ -15,7 +15,7 @@ import org.mapsforge.map.layer.overlay.Marker
 import kotlin.math.sqrt
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double):
+class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double) :
         Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
                 /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
                 /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
@@ -25,6 +25,7 @@ class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, va
         Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
         return true
     }
+
     private fun sqr(x: Double) = x * x
     private fun getDistance(latLong: LatLong, latLong2: LatLong) =
             sqrt(sqr(latLong.latitude - latLong2.latitude) +
@@ -49,12 +50,14 @@ class LocationTrackingService : Service() {
         super.onStartCommand(intent, flags, startId)
         return START_STICKY
     }
+
     override fun onCreate() {
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         requestLocationUpdates(locationManager, LocationManager.NETWORK_PROVIDER)
         requestLocationUpdates(locationManager, LocationManager.GPS_PROVIDER)
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (locationManager != null)
@@ -66,6 +69,7 @@ class LocationTrackingService : Service() {
                 }
             }
     }
+
     companion object {
         const val tag = "LocationTrackingService"
         const val internal = 1000.toLong() // In milliseconds
@@ -86,6 +90,7 @@ class LocationTrackingService : Service() {
                 else
                     Log.d("LKSH_LOCATION-SERVICE", "null location")
             }
+
             override fun onProviderDisabled(provider: String?) {}
             override fun onProviderEnabled(provider: String?) {}
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -94,6 +99,7 @@ class LocationTrackingService : Service() {
 }
 
 data class HouseInfo(val latLong: LatLong, val name: String, val radius: Double)
+
 val houseCoordinates = arrayOf(
         HouseInfo(LatLong(57.858785, 41.71165), "0", 0.00015),
         HouseInfo(LatLong(57.857963, 41.712258), "1", 0.00015),

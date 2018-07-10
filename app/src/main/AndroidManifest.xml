@@ -31,7 +31,7 @@
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name=".Fragments.LocationTrackingService" />
+        <service android:name=".fragments.LocationTrackingService" />
 
         <activity android:name=".activities.UserList" />
 
