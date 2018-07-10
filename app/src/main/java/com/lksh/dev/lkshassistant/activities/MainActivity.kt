@@ -13,6 +13,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.timetable.JsoupHtml
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -59,23 +60,7 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /* Request permissions */
-
-        if (ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@MainActivity,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this@MainActivity,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION), 0)
-        }
+        //JsoupHtml.getInstance(this).shouldParseHtml()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 

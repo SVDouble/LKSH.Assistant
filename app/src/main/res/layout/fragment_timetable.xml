@@ -6,9 +6,9 @@
     tools:context=".fragments.TimetableFragment">
 
     <TextView
+        android:id="@+id/timetable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Random.org"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>
