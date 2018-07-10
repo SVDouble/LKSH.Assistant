@@ -113,7 +113,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         setHouseMarkers()
 
         setMyPosButton.setOnClickListener {
-            centerByMe()
+            showMyPos(center = true)
         }
 
         Log.d(TAG, "tracking: $trackMe")
@@ -132,19 +132,17 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                 if (working) {
                     try {
                         // Request location updates
-                        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                                0L, 0f, locationListener)
-                        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                0L, 0f, locationListener)
+                        for (locListener in LocationTrackingService.locationListeners)
+                            locationManager?.requestLocationUpdates(locListener.second, 0L,
+                                    0f, locationListener)
+                        if (LocationTrackingService.locationListeners.size == 0)
+                            Toast.makeText(activity!!.applicationContext,
+                                    "I can't get location providers. Do you turn on GPS?",
+                                    Toast.LENGTH_SHORT).show()
                     } catch (e: SecurityException) {
                         Log.d(TAG, e.message, e)
                     }
-                    if (trackMe) {
-                        centerByMe(false)
-                        //Log.d(TAG, "Updated pos")
-                    } else {
-                        //Log.d(TAG, "not updated pos")
-                    }
+                    showMyPos(false, trackMe)
                 }
                 //Log.d(TAG, "iteration completed")
                 Thread.sleep(1000 * 2) // 0.5 updates/s
@@ -162,20 +160,25 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         }
     }
 
-    private fun centerByMe(showAccuracy: Boolean = true) {
-        val gpsLocation = LocationTrackingService.locationListeners[0].lastLocation
-        val networkLocation = LocationTrackingService.locationListeners[1].lastLocation
-        val endLocation: Location
+    private fun showMyPos(showAccuracy: Boolean = true, center: Boolean) {
+        var endLocationAccuracy = 55.0f
+        var endLocation: Location? = null
 
-        endLocation = if (!gpsLocation.hasAccuracy() && !networkLocation.hasAccuracy()) {
-            Toast.makeText(activity!!.applicationContext, "Unable to get location",
+        for  (locationListener in LocationTrackingService.locationListeners) {
+            if (locationListener.first.lastLocation.hasAccuracy() &&
+                    locationListener.first.lastLocation.accuracy < endLocationAccuracy) {
+                endLocation = locationListener.first.lastLocation
+                endLocationAccuracy = endLocation.accuracy
+            }
+        }
+
+        if (endLocation == null)
+            Toast.makeText(activity!!.applicationContext, "Unable to get your position",
                     Toast.LENGTH_SHORT).show()
-            return
-        } else if (!gpsLocation.hasAccuracy() || (networkLocation.hasAccuracy()
-                        && networkLocation.accuracy < gpsLocation.accuracy)) networkLocation
-        else gpsLocation
-        updateMyLocation(endLocation.latitude, long = endLocation.longitude)
-        setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat())
+        else {
+            updateMyLocation(endLocation.latitude, long = endLocation.longitude)
+            setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat(), center)
+        }
     }
 
     private fun drawPos() {
@@ -184,20 +187,20 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                 BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
         posMarker = marker
-
     }
 
     private fun updateMyLocation(lat: Double, long: Double) {
         myPos = LatLong(lat, long)
     }
 
-    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat()) {
+    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat(), center: Boolean) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
         val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
         val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.00025, BuildingType.USER), this)
         mapView!!.layerManager.layers.add(marker)
-        mapView!!.model.mapViewPosition.center = pos
+        if (center)
+            mapView!!.model.mapViewPosition.center = pos
         posMarker = marker
         Log.d("LKSH_MAP", "set center to ${pos.latitude} ${pos.longitude} ($accuracy)")
         if (accuracy != 0.toFloat())
