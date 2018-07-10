@@ -15,14 +15,15 @@ import org.mapsforge.map.layer.overlay.Marker
 import kotlin.math.sqrt
 
 //icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
-class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double) :
+class TappableMarker(icon: Drawable, localLatLong: LatLong, val name: String, val radius: Double, val listener: OnMapInteractionListener) :
         Marker(localLatLong, AndroidGraphicFactory.convertToBitmap(icon),
                 /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
                 /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
         if (tapLatLong == null || getDistance(tapLatLong, latLong) > radius)
             return false
-        Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
+        listener.dispatchClickBuilding(name)
+        //Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
         return true
     }
 
