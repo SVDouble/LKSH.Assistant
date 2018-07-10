@@ -1,7 +1,5 @@
 package com.lksh.dev.lkshassistant.activities
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -16,13 +14,12 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.timetable.JsoupHtml
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
-import com.lksh.dev.lkshassistant.timetable.JsoupHtml
-import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
 
 const val TAG = "_LKSH"
@@ -142,14 +139,14 @@ class MainActivity : AppCompatActivity(),
             itemAnimator = DefaultItemAnimator()
             adapter = searchAdapter
         }
+    }
+
     override fun onFragmentInteraction(uri: Uri) {}
 
     override fun timetableLoaded() {
         infoFragment.onTimetableUpdate()
         Log.d(TAG, "MAIN: timetable update")
     }
-
-    override fun onFragmentInteraction(uri: Uri) {}
 
     fun hideFragment() {
         supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
