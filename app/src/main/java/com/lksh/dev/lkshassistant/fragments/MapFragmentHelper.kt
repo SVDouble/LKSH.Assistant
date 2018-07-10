@@ -160,6 +160,8 @@ val houseCoordinates = arrayOf(
         HouseInfo(LatLong(57.857413, 41.710131), "Stolovaya", 0.0005, 
                 BuildingType.OTHER),
         HouseInfo(LatLong(57.856306, 41.712751), "Korabl", 0.00025,
+                BuildingType.OTHER),
+        HouseInfo(LatLong(57.85674, 41.717549), "Horosho", 0.00025,
                 BuildingType.OTHER)
 )
 
