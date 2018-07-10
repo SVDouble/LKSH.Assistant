@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.Fragments
+package com.lksh.dev.lkshassistant.fragments
 
 import android.content.Context
 import android.content.Intent
@@ -8,11 +8,12 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import com.lksh.dev.lkshassistant.AddUser
-import com.lksh.dev.lkshassistant.DBWrapper
+import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
-import kotlinx.android.synthetic.main.activity_user_list.*
+import com.lksh.dev.lkshassistant.activities.MainActivity
+import com.lksh.dev.lkshassistant.activities.StartActivity
+import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -23,13 +24,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [UserListFragment.OnFragmentInteractionListener] interface
+ * [ProfileFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [UserListFragment.newInstance] factory method to
+ * Use the [ProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class UserListFragment : Fragment() {
+class ProfileFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -46,7 +47,7 @@ class UserListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_list, container, false)
+        return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -54,29 +55,18 @@ class UserListFragment : Fragment() {
         listener?.onFragmentInteraction(uri)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val user = DBWrapper.getInstance(context!!).listUsers(Prefs.getInstance(context!!).login)[0]
 
-        var usrDataList = DBWrapper.getInstance(context!!).listUsers("%")
-        if (usrDataList.size > 0) {
-            var lazyData = ArrayList<String>()
-            for (temp in usrDataList) {
-                lazyData.add(/*temp.ID.toString() + */
-                        "Login : " + temp.login + "\n" +
-                                "Name : " + temp.name + "\n" +
-                                "Surname : " + temp.surname + "\n" +
-                                "House : " + temp.house + "\n" +
-                                "Parallel : " + temp.parallel + "\n" +
-                                "Password : " + temp.password + "\n" +
-                                "Admin : " + temp.admin)
-            }
-            var adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, lazyData)
-            userlist.adapter = adapter
-        }
-
-        add_new.setOnClickListener {
-            val intent = Intent(context!!, AddUser::class.java)
-            startActivity(intent)
+        profile_name.text = "Name: ${user.name}"
+        profile_surname.text = "Surname: ${user.surname}"
+        profile_parallel.text = "Parallel: ${user.parallel}"
+        profile_house.text =  "House: ${user.house}"
+        info_logout.setOnClickListener {
+            Prefs.getInstance(context!!).loginState = false
+            (activity as? MainActivity)?.finish()
+            startActivity(Intent(context, StartActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
     }
 
@@ -101,7 +91,7 @@ class UserListFragment : Fragment() {
      * activity.
      *
      *
-     * See the Android Training lesson [Communicating with Other Fragments]
+     * See the Android Training lesson [Communicating with Other fragments]
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
@@ -117,12 +107,12 @@ class UserListFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment UserListFragment.
+         * @return A new instance of fragment ProfileFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                UserListFragment().apply {
+                ProfileFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)

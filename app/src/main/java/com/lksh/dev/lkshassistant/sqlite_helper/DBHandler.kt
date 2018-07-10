@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.sqlite_helper
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,7 +6,7 @@ import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
-import kotlinx.android.synthetic.main.activity_add_user.*
+import com.lksh.dev.lkshassistant.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
@@ -46,7 +46,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
     fun updateUser(values: ContentValues, id: Int) = sqlObj.update(TABLE_NAME, values, "id=?", arrayOf(id.toString()))
 
-    fun listUsers(key: String) : ArrayList<UserData> {
+    fun listUsers(key: String): ArrayList<UserData> {
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
@@ -73,7 +73,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         return arraylist
     }
 
-    fun listHouse(key: String) : ArrayList<UserData> {
+    fun listHouse(key: String): ArrayList<UserData> {
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
@@ -101,7 +101,7 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
         return arraylist
     }
 
-    fun listParallel(key : String) : ArrayList<UserData> {
+    fun listParallel(key: String): ArrayList<UserData> {
         val arraylist = ArrayList<UserData>()
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
@@ -145,10 +145,9 @@ class DBWrapper private constructor() {
 }
 
 
-
 fun initDb(db: DBHandler, resources: Resources) {
     var usrDataList = db.listUsers("%")
-    if(usrDataList.size > 0){
+    if (usrDataList.size > 0) {
         for (temp in usrDataList) {
             db.removeUser(temp._id)
         }
@@ -172,7 +171,7 @@ fun initDb(db: DBHandler, resources: Resources) {
     }
 
 
-    for (i in lines){                   //put into db
+    for (i in lines) {                   //put into db
         temppassword = i[1]
         templogin = i[0]
         temphouse = i[5]

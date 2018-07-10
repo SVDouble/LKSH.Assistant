@@ -1,9 +1,12 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.activities
 
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.sqlite_helper.DBHandler
+import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.activity_add_user.*
 import java.util.*
 
@@ -13,17 +16,17 @@ class AddUser : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user)
 
-        submit_btn.setOnClickListener{
+        submit_btn.setOnClickListener {
             var a = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
             var temppassword = ""
-            Array(12) { Random().nextInt(a.length)}.forEach { temppassword += a[it] }
+            Array(12) { Random().nextInt(a.length) }.forEach { temppassword += a[it] }
             var templogin = login.text.toString()
             var temphouse = house.text.toString()
             var tempparallel = parallel.text.toString()
             var tempname = name.text.toString()
             var tempsurname = surname.text.toString()
             var tempadmin = 0
-            if (templogin == "adminadmin"){
+            if (templogin == "adminadmin") {
                 tempadmin = 1
             }
 

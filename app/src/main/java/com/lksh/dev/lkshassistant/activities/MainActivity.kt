@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant
+package com.lksh.dev.lkshassistant.activities
 
 import android.net.Uri
 import android.os.Bundle
@@ -7,19 +7,21 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.lksh.dev.lkshassistant.Fragments.*
-import com.lksh.dev.lkshassistant.Views.SectionsPagerAdapter
+import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val TAG = "_LKSH"
 
 class MainActivity : AppCompatActivity(),
         ProfileFragment.OnFragmentInteractionListener,
-        FragmentMap.OnFragmentInteractionListener,
+        FragmentMapSvg.OnFragmentInteractionListener,
         UserListFragment.OnFragmentInteractionListener,
         InfoFragment.OnFragmentInteractionListener,
         BuildingInfoFragment.OnFragmentInteractionListener,
-        TimetableFragment.OnFragmentInteractionListener {
+        TimetableFragment.OnFragmentInteractionListener,
+        FragmentMapBox.OnFragmentInteractionListener {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity(),
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMap(), InfoFragment(), ProfileFragment()))
+                arrayOf(FragmentMapBox(), InfoFragment(), ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         /* Handle bottom navigation clicks */
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
