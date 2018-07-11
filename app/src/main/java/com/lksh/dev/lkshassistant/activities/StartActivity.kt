@@ -47,7 +47,7 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
                             prefs.password = password
                             prefs.loginState = true
                             startActivity(Intent(this, MainActivity::class.java)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
                             break
                         }
                     }
@@ -67,13 +67,6 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
-
-        /* Init DB */
-        Log.d(TAG, "Start loading!")
-        doAsync {
-            DBWrapper.getInstanceWithCallback(this@StartActivity)
-            DBWrapper.initDb(applicationContext, resources)
-        }
 
         /* Request permissions */
         if (ContextCompat.checkSelfPermission(this@StartActivity,
@@ -98,13 +91,24 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         login_button.setOnClickListener(listener)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        /* Init DB */
+        Log.d(TAG, "Loading database!")
+        doAsync {
+            DBWrapper.registerCallback(this@StartActivity, true)
+            DBWrapper.initDb(applicationContext, resources)
+            db = DBWrapper.getInstance(this@StartActivity)
+            Log.d(TAG, "Successfully loaded")
+        }
+    }
+
     override fun onDbLoad() {
-        db = DBWrapper.getInstance(this)
-        Log.d(TAG, "Really loaded!")
         if (prefs.loginState) {
             finish()
             startActivity(Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
         }
     }
 }

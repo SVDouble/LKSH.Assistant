@@ -31,7 +31,8 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
 
         <service android:name=".fragments.LocationTrackingService" />
 

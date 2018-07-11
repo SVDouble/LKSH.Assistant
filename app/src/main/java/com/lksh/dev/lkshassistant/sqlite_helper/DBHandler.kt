@@ -6,10 +6,8 @@ import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
-import android.util.Log
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.activities.TAG
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.*
@@ -135,8 +133,9 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
 class DBWrapper private constructor() {
     companion object {
-        var listeners: MutableList<DbInteraction> = mutableListOf()
-        var db: DBHandler? = null
+        private var listeners: MutableList<DbInteraction> = mutableListOf()
+        private var db: DBHandler? = null
+        var lockCallbacks = false
 
         @JvmStatic
         fun getInstance(ctx: Context): DBHandler {
@@ -146,11 +145,12 @@ class DBWrapper private constructor() {
         }
 
         @JvmStatic
-        fun getInstanceWithCallback(ctx: Context): DBHandler {
+        fun registerCallback(ctx: Context, lock: Boolean = false) {
             val listener = ctx as? DbInteraction
-            if (listener != null)
+            if (!lockCallbacks && listener != null) {
                 listeners.add(listener)
-            return getInstance(ctx)
+                lockCallbacks = lock
+            }
         }
 
         @JvmStatic
@@ -183,7 +183,6 @@ class DBWrapper private constructor() {
                     db!!.addUser(values)
                 }
             }
-            Log.d(TAG, "Init database ${listeners.size}")
             listeners.forEach { it.onDbLoad() }
         }
     }
