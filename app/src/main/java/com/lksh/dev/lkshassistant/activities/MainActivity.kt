@@ -12,9 +12,10 @@ import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import com.lksh.dev.lkshassistant.JsoupHtml
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.fragments.*
-import com.lksh.dev.lkshassistant.timetable.JsoupHtml
+import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
@@ -131,7 +132,8 @@ class MainActivity : AppCompatActivity(),
         })
 
         /* Search results init */
-        val dataset = arrayListOf(SearchResult(SearchResult.Type.USER, "Arkadiy"), SearchResult(SearchResult.Type.USER, "Gregoriy"))
+        val users = DBWrapper.getInstance(this).listUsers("%")
+        val dataset = Array(users.size) { i -> SearchResult(SearchResult.Type.USER, "${users[i].name} ${users[i].surname}") }
         searchAdapter = SearchResultAdapter(this, dataset)
         searchAdapter.notifyDataSetChanged()
         search_results.apply {

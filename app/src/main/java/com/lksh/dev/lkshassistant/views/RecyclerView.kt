@@ -51,7 +51,7 @@ data class SearchResult(val type: Type, val title: String) {
     }
 }
 
-class SearchResultAdapter(private val mContext: Context, private val dataset: ArrayList<SearchResult>) :
+class SearchResultAdapter(private val mContext: Context, private val dataset: Array<SearchResult>) :
         RecyclerView.Adapter<SearchResultAdapter.ViewHolder>(), Filterable {
 
     private var currentData = arrayListOf<SearchResult>()
