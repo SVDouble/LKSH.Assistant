@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(),
 
         /* Initialize search */
         search.isSubmitButtonEnabled = false
-        search.queryHint = "Enter user or building"
+        search.queryHint = "Введите имя ученика"
         search.setOnClickListener {
             search.isIconified = false
             map.visibility = GONE
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(),
 
         /* Search results init */
         val users = DBWrapper.getInstance(this).listUsers("%")
-        val dataset = Array(users.size) { i -> SearchResult(SearchResult.Type.USER, "${users[i].name} ${users[i].surname}") }
+        val dataset = Array(users.size) { i -> SearchResult(SearchResult.Type.USER, users[i]) }
         searchAdapter = SearchResultAdapter(this, dataset)
         searchAdapter.notifyDataSetChanged()
         search_results.apply {
@@ -141,6 +141,14 @@ class MainActivity : AppCompatActivity(),
             itemAnimator = DefaultItemAnimator()
             adapter = searchAdapter
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+//        if (intent.hasExtra("FLAG_OPEN_MAP")) {
+//            Log.d(TAG, "${intent.getStringExtra("FLAG_OPEN_MAP")}")
+//            FragmentMapBox.showOnActivated(intent.getStringExtra("FLAG_OPEN_MAP"))
+//        }
     }
 
     override fun onFragmentInteraction(uri: Uri) {}
