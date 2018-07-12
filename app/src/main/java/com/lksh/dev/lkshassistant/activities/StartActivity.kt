@@ -15,15 +15,8 @@ import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.sqlite_helper.DBHandler
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
-import kotlinx.android.synthetic.main.activity_add_user.*
 import kotlinx.android.synthetic.main.activity_start.*
 import org.jetbrains.anko.doAsync
-import android.support.v4.content.LocalBroadcastManager
-import android.view.Window.ID_ANDROID_CONTENT
-import android.opengl.ETC1.getHeight
-import android.view.ViewTreeObserver
-import android.view.ViewGroup
-import android.view.Window
 
 
 class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
@@ -76,6 +69,7 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
+        Log.d(TAG, "START: OnCreate loaded!")
 //        attachKeyboardListeners()
 
         startLabel.typeface = Fonts.getInstance(this).montserrat
@@ -109,6 +103,7 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     override fun onStart() {
         super.onStart()
 
+        Log.d(TAG, "START: OnStart loaded!")
         /* Init DB */
         Log.d(TAG, "Loading database!")
         doAsync {
@@ -116,8 +111,10 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
             DBWrapper.initDb(applicationContext, resources)
             db = DBWrapper.getInstance(this@StartActivity)
             Log.d(TAG, "Successfully loaded")
+            runOnUiThread {
+                onDbLoad()
+            }
         }
-        onDbLoad() /* Костыль! Нужно обновлять registerCallback! */
     }
 
     override fun onDestroy() {
@@ -129,6 +126,8 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     }
 
     override fun onDbLoad() {
+
+        Log.d(TAG, "START: OnDbLoad!")
         if (prefs.loginState) {
             startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
