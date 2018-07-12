@@ -28,40 +28,25 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     private lateinit var db: DBHandler
 
     private val listener: (View) -> Unit = {
+        Log.d(TAG, "loginClicked: try to login")
+
+        val login = loginField.text.toString()
+        val psw = passwordField.text.toString()
         if (!::db.isInitialized) {
+            Log.d(TAG, "loginClicked: failed, db is not initialized")
             Toast.makeText(this,
                     "Please wait: db is loading",
                     Toast.LENGTH_SHORT).show()
+        } else if (login.isEmpty() || psw.isEmpty()) {
+            Toast.makeText(this,
+                    "Please fill in all fields",
+                    Toast.LENGTH_SHORT).show()
         } else {
-            var isLogin = false
-            val login = loginField.text.toString()
-            val password = passwordField.text.toString()
-            val usrDataList = DBWrapper.getInstance(this).listUsers("%")
-
-            if (login.isNotEmpty() && password.isNotEmpty()) {
-                if (usrDataList.size > 0) {
-                    for (temp in usrDataList) {
-                        if (temp.login == login && temp.password == password) {
-                            isLogin = true
-                            prefs.login = login
-                            prefs.password = password
-                            prefs.loginState = true
-                            startActivity(Intent(this, MainActivity::class.java)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
-                            finish()
-                            break
-                        }
-                    }
-                    if (!isLogin)
-                        Toast.makeText(this,
-                                "Invalid login or password",
-                                Toast.LENGTH_SHORT).show()
-                }
-
-            } else
+            if (!login(login, psw)) {
                 Toast.makeText(this,
-                        "Empty fields",
+                        "Wrong login or password",
                         Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -69,15 +54,16 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
-        Log.d(TAG, "START: OnCreate loaded!")
 //        attachKeyboardListeners()
 
+        /* Apply fonts */
         startLabel.typeface = Fonts.getInstance(this).montserrat
         loginField.typeface = Fonts.getInstance(this).montserrat
         passwordField.typeface = Fonts.getInstance(this).montserrat
         login_btn.typeface = Fonts.getInstance(this).montserrat
 
         /* Request permissions */
+        Log.d(TAG, "onCreate: requesting permissions")
         if (ContextCompat.checkSelfPermission(this@StartActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
@@ -98,22 +84,14 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
                             Manifest.permission.INTERNET), 0)
         }
         login_button.setOnClickListener(listener)
-    }
 
-    override fun onStart() {
-        super.onStart()
-
-        Log.d(TAG, "START: OnStart loaded!")
         /* Init DB */
-        Log.d(TAG, "Loading database!")
+        Log.d(TAG, "onCreate: loading db")
         doAsync {
-            DBWrapper.registerCallback(this@StartActivity, true)
+            DBWrapper.registerCallback(this@StartActivity, "StartActivity")
             DBWrapper.initDb(applicationContext, resources)
             db = DBWrapper.getInstance(this@StartActivity)
-            Log.d(TAG, "Successfully loaded")
-            runOnUiThread {
-                onDbLoad()
-            }
+            Log.d(TAG, "Successfully loaded db")
         }
     }
 
@@ -127,53 +105,66 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
 
     override fun onDbLoad() {
 
-        Log.d(TAG, "START: OnDbLoad!")
-        if (prefs.loginState) {
-            startActivity(Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
-            finish()
-        } else {
+        Log.d(TAG, "onDbLoad: try automatically login")
+        if (!login()) {
+            Log.d(TAG, "onDbLoad: failed, enable login fields")
             loginField.visibility = View.VISIBLE
             passwordField.visibility = View.VISIBLE
             cardView.visibility = View.VISIBLE
         }
     }
-    /*
-    /* Keyboard listener */
-    private val keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-        val heightDiff = rootLayout!!.rootView.height - rootLayout!!.height
-        val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
 
-        val broadcastManager = LocalBroadcastManager.getInstance(this@StartActivity)
-
-        if (heightDiff <= contentViewTop) {
-            onHideKeyboard()
-        } else {
-            val keyboardHeight = heightDiff - contentViewTop
-            onShowKeyboard(keyboardHeight)
+    private fun login(login: String = "", psw: String = ""): Boolean {
+        val user = DBWrapper.getInstance(applicationContext).listUsers("%")
+                .filter { it.login == login && it.password == psw }
+        if (user.isEmpty())
+            return false
+        else {
+            if (user.size != 1)
+                Log.d(TAG, "login: warning, same user records detected")
+            startActivity(Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+            finish()
         }
+        return true
     }
 
-    private var keyboardListenersAttached = false
-    private var rootLayout: ViewGroup? = null
+/*
+/* Keyboard listener */
+private val keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+    val heightDiff = rootLayout!!.rootView.height - rootLayout!!.height
+    val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
 
-    private fun onShowKeyboard(keyboardHeight: Int) {
-        Log.d(TAG, "Keyboard show!")
-        imageView.visibility = View.GONE
+    val broadcastManager = LocalBroadcastManager.getInstance(this@StartActivity)
+
+    if (heightDiff <= contentViewTop) {
+        onHideKeyboard()
+    } else {
+        val keyboardHeight = heightDiff - contentViewTop
+        onShowKeyboard(keyboardHeight)
     }
-    private fun onHideKeyboard() {
-        Log.d(TAG, "Keyboard hide!")
-        imageView.visibility = View.VISIBLE
+}
+
+private var keyboardListenersAttached = false
+private var rootLayout: ViewGroup? = null
+
+private fun onShowKeyboard(keyboardHeight: Int) {
+    Log.d(TAG, "Keyboard show!")
+    imageView.visibility = View.GONE
+}
+private fun onHideKeyboard() {
+    Log.d(TAG, "Keyboard hide!")
+    imageView.visibility = View.VISIBLE
+}
+
+private fun attachKeyboardListeners() {
+    if (keyboardListenersAttached) {
+        return
     }
 
-    private fun attachKeyboardListeners() {
-        if (keyboardListenersAttached) {
-            return
-        }
-
-        rootLayout = findViewById<View>(R.id.activity_start) as ViewGroup
-        rootLayout!!.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
-        keyboardListenersAttached = true
-    }
-    */
+    rootLayout = findViewById<View>(R.id.activity_start) as ViewGroup
+    rootLayout!!.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
+    keyboardListenersAttached = true
+}
+*/
 }

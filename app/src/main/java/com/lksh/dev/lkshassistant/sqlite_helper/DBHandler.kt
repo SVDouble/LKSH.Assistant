@@ -6,8 +6,10 @@ import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteQueryBuilder
+import android.util.Log
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.TAG
 import org.jetbrains.anko.runOnUiThread
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -151,9 +153,8 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
 class DBWrapper private constructor() {
     companion object {
-        private var listeners: MutableList<DbInteraction> = mutableListOf()
+        private var listeners: MutableMap<String, DbInteraction> = mutableMapOf()
         private var db: DBHandler? = null
-        var lockCallbacks = false
 
         @JvmStatic
         fun getInstance(ctx: Context): DBHandler {
@@ -163,12 +164,9 @@ class DBWrapper private constructor() {
         }
 
         @JvmStatic
-        fun registerCallback(ctx: Context, lock: Boolean = false) {
-            val listener = ctx as? DbInteraction
-            if (!lockCallbacks && listener != null) {
-                listeners.add(listener)
-                lockCallbacks = lock
-            }
+        fun registerCallback(ctx: Context, key: String) {
+            listeners[key] = ctx as DbInteraction
+            Log.d(TAG, "registerCallback: registered $key")
         }
 
         @JvmStatic
@@ -212,7 +210,7 @@ class DBWrapper private constructor() {
                 }
             }
             ctx.runOnUiThread {
-                listeners.forEach { it.onDbLoad() }
+                listeners.forEach { it.value.onDbLoad() }
             }
         }
     }
