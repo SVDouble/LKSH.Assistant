@@ -1,6 +1,7 @@
 package com.lksh.dev.lkshassistant.activities
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.Auth
 import com.lksh.dev.lkshassistant.Fonts
@@ -20,7 +22,9 @@ import kotlinx.android.synthetic.main.activity_start.*
 import org.jetbrains.anko.doAsync
 
 
-class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
+class StartActivity : AppCompatActivity(),
+        DBWrapper.DbInteraction,
+        KeyboardVisibilityListener {
 
     private val prefs by lazy {
         Prefs.getInstance(applicationContext)
@@ -38,10 +42,6 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
             Toast.makeText(this,
                     "Please wait: db is loading",
                     Toast.LENGTH_SHORT).show()
-//        } else if (login.isEmpty() || psw.isEmpty()) {
-//            Toast.makeText(this,
-//                    "Please fill in all fields",
-//                    Toast.LENGTH_SHORT).show()
         } else if (!Auth.login(applicationContext, login, psw)) {
             Toast.makeText(this,
                     "Wrong login or password",
@@ -56,7 +56,9 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
-//        attachKeyboardListeners()
+
+        Log.d(TAG, "StartActivity: launched")
+        setKeyboardVisibilityListener(this, this)
 
         /* Apply fonts */
         startLabel.typeface = Fonts.getInstance(this).montserrat
@@ -97,14 +99,6 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         }
     }
 
-    override fun onDestroy() {
-//        if (keyboardListenersAttached) {
-//            rootLayout!!.viewTreeObserver
-//                    .removeOnGlobalLayoutListener(keyboardLayoutListener)
-//        }
-        super.onDestroy()
-    }
-
     override fun onDbLoad() {
 
         Log.d(TAG, "onDbLoad: try automatically login")
@@ -124,42 +118,46 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         finish()
     }
 
-/*
-/* Keyboard listener */
-private val keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-    val heightDiff = rootLayout!!.rootView.height - rootLayout!!.height
-    val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
+    var mAppHeight: Int = 0
+    var currentOrientation = -1
 
-    val broadcastManager = LocalBroadcastManager.getInstance(this@StartActivity)
+    fun setKeyboardVisibilityListener(activity: Activity, keyboardVisibilityListener: KeyboardVisibilityListener) {
+        val contentView = activity.findViewById<View>(android.R.id.content)
+        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            private var mPreviousHeight: Int = 0
+            override fun onGlobalLayout() {
+                val newHeight = contentView.height
+                if (newHeight == mPreviousHeight)
+                    return
+                mPreviousHeight = newHeight
+                if (activity.resources.configuration.orientation != currentOrientation) {
+                    currentOrientation = activity.resources.configuration.orientation
+                    mAppHeight = 0
+                }
+                if (newHeight >= mAppHeight) {
+                    mAppHeight = newHeight
+                }
+                if (newHeight != 0) {
+                    if (mAppHeight > newHeight) {
+                        keyboardVisibilityListener.onKeyboardVisibilityChanged(true)
+                    } else {
+                        keyboardVisibilityListener.onKeyboardVisibilityChanged(false)
+                    }
+                }
+            }
+        })
+    }
 
-    if (heightDiff <= contentViewTop) {
-        onHideKeyboard()
-    } else {
-        val keyboardHeight = heightDiff - contentViewTop
-        onShowKeyboard(keyboardHeight)
+    override fun onKeyboardVisibilityChanged(keyboardVisible: Boolean) {
+        if (keyboardVisible) {
+            imageView.visibility = View.GONE
+        } else {
+            imageView.visibility = View.VISIBLE
+        }
+
     }
 }
 
-private var keyboardListenersAttached = false
-private var rootLayout: ViewGroup? = null
-
-private fun onShowKeyboard(keyboardHeight: Int) {
-    Log.d(TAG, "Keyboard show!")
-    imageView.visibility = View.GONE
-}
-private fun onHideKeyboard() {
-    Log.d(TAG, "Keyboard hide!")
-    imageView.visibility = View.VISIBLE
-}
-
-private fun attachKeyboardListeners() {
-    if (keyboardListenersAttached) {
-        return
-    }
-
-    rootLayout = findViewById<View>(R.id.activity_start) as ViewGroup
-    rootLayout!!.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
-    keyboardListenersAttached = true
-}
-*/
+interface KeyboardVisibilityListener {
+    fun onKeyboardVisibilityChanged(keyboardVisible: Boolean)
 }

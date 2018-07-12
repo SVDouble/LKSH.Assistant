@@ -1,6 +1,5 @@
 package com.lksh.dev.lkshassistant.activities
 
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -21,7 +20,6 @@ import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
-import org.jetbrains.anko.backgroundColorResource
 import org.jetbrains.anko.doAsync
 
 const val TAG = "_LKSH"
@@ -68,6 +66,8 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Log.d(TAG, "MainActivity: launched")
 
         /* Initialize tmetable */
         doAsync {

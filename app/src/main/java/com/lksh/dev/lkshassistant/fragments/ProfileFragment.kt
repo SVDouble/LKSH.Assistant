@@ -4,12 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.lksh.dev.lkshassistant.Auth
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.MainActivity
@@ -58,7 +57,7 @@ class ProfileFragment : Fragment() {
         profile_parallel.text = "Parallel: ${user.parallel}"
         profile_house.text =  "House: ${user.house}"
         info_logout.setOnClickListener {
-            Prefs.getInstance(context!!).loginState = false
+            Auth.logout(context!!)
             (activity as? MainActivity)?.finish()
             startActivity(Intent(context, StartActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
