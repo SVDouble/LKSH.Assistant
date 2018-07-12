@@ -1,18 +1,14 @@
 package com.lksh.dev.lkshassistant.fragments
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.activities.TAG
 import com.lksh.dev.lkshassistant.activities.TimetableInteraction
 import com.lksh.dev.lkshassistant.views.TimetableAdapter
 import com.lksh.dev.lkshassistant.views.TimetableEvent
@@ -21,7 +17,8 @@ import kotlinx.android.synthetic.main.fragment_timetable.*
 class TimetableFragment : Fragment(), TimetableInteraction {
 
     private lateinit var timetableAdapter: TimetableAdapter
-    private var dataset: Array<TimetableEvent> = arrayOf()
+    private var timetable = ""
+    private var dataset: ArrayList<TimetableEvent> = arrayListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -31,29 +28,33 @@ class TimetableFragment : Fragment(), TimetableInteraction {
 
     override fun onResume() {
         super.onResume()
-        val info = Prefs.getInstance(context!!).timetable
-        Log.d(TAG, "Timetable resumed!\n${info.split("\n")[0]}")
-        if (info.isNotEmpty())
-            timetable_info?.text = info
+        timetable = Prefs.getInstance(context!!).timetable
+        updateRecycler()
     }
 
     override fun onTimetableUpdate() {
-        val tt = Prefs.getInstance(context!!).timetable.split("\n")
-        timetable_info.text = "Info"
-        dataset = Array(tt.size) { i -> TimetableEvent(tt[i].substringBefore(" "), tt[i].substringAfter(" ")) }
+        timetable = Prefs.getInstance(context!!).timetable
+        updateRecycler()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         /* Search results init */
-        val dataset = arrayOf<TimetableEvent>()
         timetableAdapter = TimetableAdapter(context!!, dataset)
+
         timetableAdapter.notifyDataSetChanged()
         timetable_recycler.apply {
             layoutManager = LinearLayoutManager(context!!)
             itemAnimator = DefaultItemAnimator()
             adapter = timetableAdapter
         }
+    }
+
+    private fun updateRecycler() {
+        val tt = timetable.split("\n")
+        val data = Array(tt.size) { i -> TimetableEvent(tt[i].substringBefore(" "), tt[i].substringAfter(" ")) }
+        dataset.addAll(data.filter { !dataset.contains(it) })
+        timetableAdapter.notifyDataSetChanged()
     }
 }
