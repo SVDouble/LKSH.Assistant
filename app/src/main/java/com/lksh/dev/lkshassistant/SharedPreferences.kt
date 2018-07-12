@@ -11,7 +11,7 @@ class Prefs private constructor(context: Context) {
     private val STRING_PASSWORD = "psw"
     private val INT_DB_VERSION = "db_version"
     private val STRING_TIMETABLE = "timetable"
-    private val STRING_TIMETABLE_VERSION = "timetable_version"
+    //private val STRING_TIMETABLE_VERSION = "timetable_version"
     val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
 
     var login: String
@@ -30,9 +30,9 @@ class Prefs private constructor(context: Context) {
         get() = prefs.getInt(INT_DB_VERSION, -1)
         set(value) = prefs.edit().putInt(INT_DB_VERSION, value).apply()
 
-    var timetableVersion: String
-        get() = prefs.getString(STRING_TIMETABLE_VERSION, "")
-        set(value) = prefs.edit().putString(STRING_TIMETABLE_VERSION, value).apply()
+//    var timetableVersion: String
+//        get() = prefs.getString(STRING_TIMETABLE_VERSION, "")
+//        set(value) = prefs.edit().putString(STRING_TIMETABLE_VERSION, value).apply()
 
     var timetable: String
         get() = prefs.getString(STRING_TIMETABLE, "")

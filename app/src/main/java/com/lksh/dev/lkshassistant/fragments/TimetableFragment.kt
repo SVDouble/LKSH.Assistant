@@ -1,14 +1,18 @@
 package com.lksh.dev.lkshassistant.fragments
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.TAG
 import com.lksh.dev.lkshassistant.activities.TimetableInteraction
 import com.lksh.dev.lkshassistant.views.TimetableAdapter
 import com.lksh.dev.lkshassistant.views.TimetableEvent
@@ -23,6 +27,14 @@ class TimetableFragment : Fragment(), TimetableInteraction {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_timetable, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val info = Prefs.getInstance(context!!).timetable
+        Log.d(TAG, "Timetable resumed!\n${info.split("\n")[0]}")
+        if (info.isNotEmpty())
+            timetable_info?.text = info
     }
 
     override fun onTimetableUpdate() {

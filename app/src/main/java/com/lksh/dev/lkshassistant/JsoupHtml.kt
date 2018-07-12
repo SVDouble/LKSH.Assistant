@@ -3,20 +3,22 @@ package com.lksh.dev.lkshassistant
 import android.content.Context
 import android.util.Log
 import com.lksh.dev.lkshassistant.activities.TAG
+import org.jetbrains.anko.runOnUiThread
 import org.jsoup.Jsoup
 
 class JsoupHtml(val ctx: Context) {
 
     fun shouldParseHtml() {
-        Prefs.getInstance(ctx).timetable = ""
+        var timetable = ""
         Jsoup.connect("http://ejudge.lksh.ru").timeout(5000).get().run {
             select("div.schedule__item").forEachIndexed { index, element ->
-                Prefs.getInstance(ctx).timetable += element.text()
-                Prefs.getInstance(ctx).timetable += "\n"
+                timetable += element.text() + "\n"
                 //Log.d(TAG, element.text())
             }
-            Log.d(TAG, Prefs.getInstance(ctx).timetable)
-            (ctx as JsoupInteraction).timetableLoaded()
+            ctx.runOnUiThread {
+                Prefs.getInstance(ctx).timetable = timetable
+                (ctx as JsoupInteraction).timetableLoaded()
+            }
         }
     }
 

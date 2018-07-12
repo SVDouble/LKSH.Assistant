@@ -21,6 +21,7 @@ import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
+import org.jetbrains.anko.backgroundColorResource
 import org.jetbrains.anko.doAsync
 
 const val TAG = "_LKSH"
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity(),
 
         /* Initialize navigation and pager */
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        navigation.setBackgroundColor(Color.YELLOW)
+
 
         infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
@@ -117,6 +118,7 @@ class MainActivity : AppCompatActivity(),
                 map.visibility = VISIBLE
             }
         }
+
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAdapter.filter.filter(newText)
@@ -144,8 +146,8 @@ class MainActivity : AppCompatActivity(),
     override fun onFragmentInteraction(uri: Uri) {}
 
     override fun timetableLoaded() {
-        infoFragment.onTimetableUpdate()
         Log.d(TAG, "MAIN: timetable update")
+        infoFragment.onTimetableUpdate()
     }
 
     fun hideFragment() {
