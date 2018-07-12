@@ -1,6 +1,8 @@
 package com.lksh.dev.lkshassistant.views
 
 import android.content.Context
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.TAG
+import com.lksh.dev.lkshassistant.activities.UserProfile
 import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 import org.jetbrains.anko.backgroundColor
 
@@ -87,7 +90,7 @@ class TimetableAdapter(private val mContext: Context, private val dataset: Array
 
 
 /* Search */
-data class SearchResult(val type: Type, val title: String) {
+data class SearchResult(val type: Type, val user: UserData) {
     enum class Type {
         USER, HOUSE
     }
@@ -114,11 +117,16 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = currentData[position]
-        holder.title.text = data.title
+        holder.title.text = "${data.user.name} ${data.user.surname}"
         holder.image.setImageResource(when (data.type) {
             SearchResult.Type.USER -> android.R.drawable.ic_media_pause
             SearchResult.Type.HOUSE -> android.R.drawable.ic_media_ff
         })
+        holder.itemView.setOnClickListener {
+            Log.d(TAG, "Open user profile")
+            mContext.startActivity(Intent(mContext, UserProfile::class.java).putExtra("USER", arrayOf(data.user.login,
+                    data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+        }
     }
 
     override fun getItemCount() = currentData.size
@@ -132,7 +140,7 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
 
             if (constraint != null && constraint.isNotEmpty()) {
                 for (i in 0 until dataset.size) {
-                    if (dataset[i].title.toUpperCase().contains(constraint.toString().toUpperCase())) {
+                    if ("${dataset[i].user.name} ${dataset[i].user.surname}".toUpperCase().contains(constraint.toString().toUpperCase())) {
                         filterList.add(dataset[i])
                     }
                 }

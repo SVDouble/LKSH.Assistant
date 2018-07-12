@@ -1,6 +1,6 @@
 package com.lksh.dev.lkshassistant.sqlite_helper
 
-class UserData(var _id: Int,
+data class UserData(var _id: Int,
                var login: String,
                var password: String,
                var house: String,
