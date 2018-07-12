@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.sqlite_helper.UserData
+import org.jetbrains.anko.backgroundColor
 
 
 /* Example */
@@ -38,6 +39,43 @@ class UserCardAdapter(private val mContext: Context, private val dataset: ArrayL
         holder.name.text = data.name
         holder.parallel.text = data.parallel
         holder.home.text = data.house
+    }
+
+    override fun getItemCount() = dataset.size
+}
+
+
+/* Timetable */
+data class TimetableEvent(
+        val time: String,
+        val eventInfo: String
+) {
+    val isCurrentEvent: Boolean
+        get() = false
+}
+
+class TimetableAdapter(private val mContext: Context, private val dataset: Array<TimetableEvent>) :
+        RecyclerView.Adapter<TimetableAdapter.ViewHolder>() {
+
+    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        val time = v.findViewById<TextView>(R.id.time)!!
+        val event = v.findViewById<TextView>(R.id.event)!!
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup,
+                                    viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.part_rv_timetable, parent, false)
+        // set the view's size, margins, paddings and layout parameters
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val data = dataset[position]
+        holder.time.text = data.time
+        holder.time.backgroundColor = if (data.isCurrentEvent)
+            android.R.color.holo_green_light
+        else android.R.color.holo_blue_light
     }
 
     override fun getItemCount() = dataset.size
@@ -95,10 +133,8 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
                     }
                 }
             }
-
             results.count = filterList.size
             results.values = filterList
-
             return results
         }
 

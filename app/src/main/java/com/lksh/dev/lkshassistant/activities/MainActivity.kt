@@ -31,14 +31,11 @@ class MainActivity : AppCompatActivity(),
         UserListFragment.OnFragmentInteractionListener,
         InfoFragment.OnFragmentInteractionListener,
         BuildingInfoFragment.OnFragmentInteractionListener,
-        TimetableFragment.OnFragmentInteractionListener,
         FragmentMapBox.OnFragmentInteractionListener,
         JsoupHtml.JsoupInteraction {
 
     private lateinit var infoFragment: InfoFragment
-
     private lateinit var searchAdapter: SearchResultAdapter
-
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -71,6 +68,7 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        /* Initialize tmetable */
         doAsync {
             JsoupHtml.getInstance(this@MainActivity).shouldParseHtml()
         }

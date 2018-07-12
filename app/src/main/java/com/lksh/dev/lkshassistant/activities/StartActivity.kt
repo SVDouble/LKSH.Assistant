@@ -41,13 +41,13 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
                 if (usrDataList.size > 0) {
                     for (temp in usrDataList) {
                         if (temp.login == login && temp.password == password) {
-                            finish()
                             isLogin = true
                             prefs.login = login
                             prefs.password = password
                             prefs.loginState = true
                             startActivity(Intent(this, MainActivity::class.java)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+                            finish()
                             break
                         }
                     }
@@ -106,9 +106,13 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
 
     override fun onDbLoad() {
         if (prefs.loginState) {
-            finish()
             startActivity(Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+            finish()
+        } else {
+            loginField.visibility = View.VISIBLE
+            passwordField.visibility = View.VISIBLE
+            cardView.visibility = View.VISIBLE
         }
     }
 }

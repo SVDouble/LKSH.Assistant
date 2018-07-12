@@ -20,7 +20,6 @@ class JsoupHtml(val ctx: Context) {
         }
     }
 
-
     interface JsoupInteraction {
         fun timetableLoaded()
     }
