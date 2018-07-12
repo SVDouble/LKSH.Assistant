@@ -42,7 +42,6 @@ class TimetableFragment : Fragment(), TimetableInteraction {
 
         /* Search results init */
         timetableAdapter = TimetableAdapter(context!!, dataset)
-
         timetableAdapter.notifyDataSetChanged()
         timetable_recycler.apply {
             layoutManager = LinearLayoutManager(context!!)

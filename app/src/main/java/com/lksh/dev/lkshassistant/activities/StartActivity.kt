@@ -118,6 +118,7 @@ class StartActivity : AppCompatActivity(),
         finish()
     }
 
+    /* Keyboard events: open and close */
     var mAppHeight: Int = 0
     var currentOrientation = -1
 

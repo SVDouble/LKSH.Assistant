@@ -13,7 +13,10 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.JsoupHtml
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.fragments.FragmentMapBox
+import com.lksh.dev.lkshassistant.fragments.FragmentMapSvg
+import com.lksh.dev.lkshassistant.fragments.InfoFragment
+import com.lksh.dev.lkshassistant.fragments.ProfileFragment
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
@@ -25,12 +28,7 @@ import org.jetbrains.anko.doAsync
 const val TAG = "_LKSH"
 
 class MainActivity : AppCompatActivity(),
-        ProfileFragment.OnFragmentInteractionListener,
         FragmentMapSvg.OnFragmentInteractionListener,
-        UserListFragment.OnFragmentInteractionListener,
-        InfoFragment.OnFragmentInteractionListener,
-        BuildingInfoFragment.OnFragmentInteractionListener,
-        FragmentMapBox.OnFragmentInteractionListener,
         JsoupHtml.JsoupInteraction {
 
     private lateinit var infoFragment: InfoFragment

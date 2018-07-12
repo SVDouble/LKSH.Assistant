@@ -34,9 +34,7 @@
 
         <service android:name=".fragments.LocationTrackingService" />
 
-        <activity android:name=".activities.UserList" />
-        <activity android:name=".activities.AddUser" />
-        <activity android:name=".activities.UserProfile"></activity>
+        <activity android:name=".activities.ProfileActivity" />
     </application>
 
 </manifest>

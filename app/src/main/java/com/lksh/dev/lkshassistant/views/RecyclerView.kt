@@ -2,7 +2,6 @@ package com.lksh.dev.lkshassistant.views
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,8 +12,8 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.ProfileActivity
 import com.lksh.dev.lkshassistant.activities.TAG
-import com.lksh.dev.lkshassistant.activities.UserProfile
 import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 import org.jetbrains.anko.backgroundColor
 
@@ -124,7 +123,7 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
         })
         holder.itemView.setOnClickListener {
             Log.d(TAG, "Open user profile")
-            mContext.startActivity(Intent(mContext, UserProfile::class.java).putExtra("USER", arrayOf(data.user.login,
+            mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
                     data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
         }
     }

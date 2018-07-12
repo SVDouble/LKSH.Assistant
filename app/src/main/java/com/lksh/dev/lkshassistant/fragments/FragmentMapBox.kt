@@ -1,11 +1,9 @@
 package com.lksh.dev.lkshassistant.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.support.v4.app.Fragment
@@ -16,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-
 import com.lksh.dev.lkshassistant.R
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.mapsforge.core.graphics.Filter
@@ -33,8 +30,6 @@ import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_LAT = "lat"
 private const val ARG_LONG = "long"
 
@@ -42,17 +37,7 @@ interface OnMapInteractionListener {
     fun dispatchClickBuilding(marker: HouseInfo)
 }
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [FragmentMapBox.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [FragmentMapBox.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
 class FragmentMapBox : Fragment(), OnMapInteractionListener {
-    private var listener: OnFragmentInteractionListener? = null
 
     private var isFirstStart = true
     private val TAG = "LKSH_MAP_F"
@@ -140,7 +125,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                     }
                     showMyPos(false, trackMe)
                 }
-                //Log.d(TAG, "iteration completed")
                 Thread.sleep(1000 * 2) // 0.5 updates/s
             }
         }
@@ -272,16 +256,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        Log.d(TAG, "attached")
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "view created")
@@ -318,11 +292,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         super.onDestroyView()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
     override fun onDestroy() {
         if (mapView != null)
             mapView!!.destroyAll()
@@ -330,34 +299,9 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         super.onDestroy()
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
     companion object {
         private var gotoPos: LatLong? = null
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentMapBox.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
                 FragmentMapBox().apply {
