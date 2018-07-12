@@ -7,7 +7,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
@@ -27,16 +26,17 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory
 import org.mapsforge.map.android.util.AndroidUtil
 import org.mapsforge.map.android.view.MapView
 import org.mapsforge.map.layer.renderer.TileRendererLayer
+import org.mapsforge.map.model.MapViewPosition
 import org.mapsforge.map.reader.MapFile
 import org.mapsforge.map.rendertheme.InternalRenderTheme
 import java.io.File
+import java.io.IOException
 import kotlin.concurrent.thread
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_LAT = "lat"
 private const val ARG_LONG = "long"
-const val ARG_HOUSE_NAME = "house"
 
 interface OnMapInteractionListener {
     fun dispatchClickBuilding(marker: HouseInfo)
@@ -52,18 +52,19 @@ interface OnMapInteractionListener {
  *
  */
 class FragmentMapBox : Fragment(), OnMapInteractionListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
+    private var isFirstStart = true
     private val TAG = "LKSH_MAP_F"
-    private var myPos = LatLong(defaultLat, defaultLong)
+    private var myPos: LatLong? = null
     private var posMarker: TappableMarker? = null
     private var working = true
     private var trackMe = false
     private var locationManager: LocationManager? = null
     private var mapView: MapView? = null
+    private var mapViewPos: MapViewPosition? = null
+    private lateinit var mapDataStore: MapFile
+    private var tileRendererLayer: TileRendererLayer? = null
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
@@ -75,21 +76,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         override fun onProviderDisabled(provider: String) {}
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
     fun setNightTheme() {
         mapView!!.model.displayModel.filter = Filter.INVERT
     }
@@ -98,22 +84,39 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         mapView!!.model.displayModel.filter = Filter.NONE
     }
 
-    private fun initAll() {
-        myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
+    private fun initCycle() {
+        Log.d(TAG + "_I_CYCLE", "start")
         setupMap()
-        activity!!.startService(Intent(activity, LocationTrackingService::class.java))
-        startGPSTrackingThread()
         setHouseMarkers()
-
         setMyPosButton.setOnClickListener {
             showMyPos(center = true)
+            //nextTheme()
         }
-
         Log.d(TAG, "tracking: $trackMe")
         posAutoSwitch.setOnCheckedChangeListener { _, checked ->
             trackMe = checked
             Log.d(TAG, "tracking: $trackMe")
         }
+        posAutoSwitch.isChecked = trackMe
+        Log.d(TAG + "_I_CYCLE", "end")
+    }
+
+    private fun nextTheme() {
+        mapView!!.model.displayModel.filter = when (mapView!!.model.displayModel.filter) {
+            Filter.NONE -> Filter.INVERT
+            Filter.INVERT -> Filter.GRAYSCALE
+            Filter.GRAYSCALE -> Filter.GRAYSCALE_INVERT
+            Filter.GRAYSCALE_INVERT -> Filter.NONE
+        }
+    }
+
+    private fun initOnce() {
+        Log.d(TAG + "_I_ONCE", "start")
+        mapDataStore = MapFile(prepareMapData())
+        activity!!.startService(Intent(activity, LocationTrackingService::class.java))
+        startGPSTrackingThread()
+        myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
+        Log.d(TAG + "_I_ONCE", "end")
     }
 
     private fun startGPSTrackingThread() {
@@ -158,7 +161,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         var endLocationAccuracy = 55.0f
         var endLocation: Location? = null
 
-        for  (locationListener in LocationTrackingService.locationListeners) {
+        for (locationListener in LocationTrackingService.locationListeners) {
             if (locationListener.first.lastLocation.hasAccuracy() &&
                     locationListener.first.lastLocation.accuracy < endLocationAccuracy) {
                 endLocation = locationListener.first.lastLocation
@@ -171,7 +174,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                     Toast.LENGTH_SHORT).show()
         else {
             updateMyLocation(endLocation.latitude, long = endLocation.longitude)
-            setLocation(myPos, if (showAccuracy) endLocation.accuracy else 0.toFloat(), center)
+            setLocation(myPos!!, if (showAccuracy) endLocation.accuracy else 0.toFloat(), center)
         }
     }
 
@@ -183,15 +186,31 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
         val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, HouseInfo(myPos, "Your position", 0.0001, BuildingType.USER), this)
+        val marker = TappableMarker(drawable, HouseInfo(pos, "Your position", 0.0001, BuildingType.NONE), this)
+        posMarker = marker
         mapView!!.layerManager.layers.add(marker)
+        //set marker on my position.
+
         if (center)
             mapView!!.model.mapViewPosition.center = pos
-        posMarker = marker
-        Log.d("LKSH_MAP", "set center to ${pos.latitude} ${pos.longitude} ($accuracy)")
         if (accuracy != 0.toFloat())
             Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m",
                     Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setMapPos() {
+        if (mapViewPos != null) {
+            mapView!!.model.mapViewPosition.mapPosition = mapViewPos!!.mapPosition
+//                mapView!!.model.mapViewPosition.center = mapViewPos!!.center
+//                mapView!!.model.mapViewPosition.zoomLevel = mapViewPos!!.zoomLevel
+            mapView!!.model.mapViewPosition.mapLimit = mapViewPos!!.mapLimit
+        } else {
+            mapView!!.setCenter(myPos)
+            mapView!!.setZoomLevel(19.toByte())
+            mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
+        }
+        mapView!!.setZoomLevelMax(22)
+        mapView!!.setZoomLevelMin(16)
     }
 
     private fun setupMap() {
@@ -206,31 +225,26 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             mapView!!.setBuiltInZoomControls(false)
             mapView!!.mapZoomControls.isShowMapZoomControls = false
 
-            val mapDataStore = MapFile(prepareMapData())
+            setMapPos()
             val tileCache = AndroidUtil.createTileCache(activity!!.applicationContext, "mapcache",
-                    mapView!!.model.displayModel.tileSize, 1f,
-                    mapView!!.model.frameBufferModel.overdrawFactor)
-            val tileRendererLayer = TileRendererLayer(tileCache, mapDataStore,
+                    mapView!!.model.displayModel.tileSize, 1f, //256
+                    mapView!!.model.frameBufferModel.overdrawFactor) //1.2
+            tileRendererLayer = TileRendererLayer(tileCache, mapDataStore,
                     mapView!!.model.mapViewPosition, AndroidGraphicFactory.INSTANCE)
-            tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.DEFAULT)
+            tileRendererLayer!!.setXmlRenderTheme(InternalRenderTheme.DEFAULT)
             mapView!!.layerManager.layers.add(tileRendererLayer)
-
-            mapView!!.setCenter(myPos)
-            mapView!!.setZoomLevel(19.toByte())
-            mapView!!.setZoomLevelMax(22)
-            mapView!!.setZoomLevelMin(16)
-            mapView!!.model.mapViewPosition.mapLimit = BoundingBox(minLat, minLong, maxLat, maxLong)
+            Log.d(TAG, "tileSize: ${mapView!!.model.displayModel.tileSize}; overdrawFactor: ${mapView!!.model.frameBufferModel.overdrawFactor}")
             Log.d(TAG, "Map fragment setup successfully")
-            //drawPos()
-            //Log.d(TAG, "dining room's position is marked (but it isn't exactly)")
-
+        } catch (e: IOException) {
+            Log.i(TAG, "Map create failed. The app have all needed permissions?")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
         }
     }
 
     private fun prepareMapData(): File {
-        val mapFolder = File(Environment.getExternalStorageDirectory(), "lksh")
+        val mapPath = activity!!.applicationContext.filesDir
+        val mapFolder = File(mapPath, "lksh")
         if (!mapFolder.exists())
             mapFolder.mkdir()
         Log.d("MAP", mapFolder.absolutePath)
@@ -252,22 +266,36 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             Toast.makeText(activity!!.applicationContext, "This is ${marker.name}", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_map, container, false)
+    }
+
+    override fun onAttach(context: Context) {
+        Log.d(TAG, "attached")
+        super.onAttach(context)
+        if (context is OnFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "view created")
+        if (isFirstStart)
+            initOnce()
         mapView = view.findViewById(R.id.mapViewFr)
-        initAll()
-    }
-
-    override fun onDestroy() {
-        if (mapView != null)
-            mapView!!.destroyAll()
-        AndroidGraphicFactory.clearResourceMemoryCache()
-        super.onDestroy()
+        initCycle()
+        isFirstStart = false
+        if (gotoPos != null) {
+            val curPos = mapView!!.model.mapViewPosition.center
+            mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
+                    - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
+                    (19 - mapView!!.model.mapViewPosition.zoomLevel) .toByte(), true)
+        }
     }
 
     override fun onPause() {
@@ -278,6 +306,28 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     override fun onResume() {
         super.onResume()
         working = true
+    }
+
+    override fun onDestroyView() {
+        mapViewPos = mapView!!.model.mapViewPosition
+//        mapView!!.destroyAll()
+//        mapView!!.destroy()
+//        mapView = null
+        //need to destroy mapView to avoid memory leak
+        //but it follows from this is bug in next map init: map isn't visible
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+    override fun onDestroy() {
+        if (mapView != null)
+            mapView!!.destroyAll()
+        AndroidGraphicFactory.clearResourceMemoryCache()
+        super.onDestroy()
     }
 
     /**
@@ -297,6 +347,8 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     }
 
     companion object {
+        private var gotoPos: LatLong? = null
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -314,5 +366,21 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                         putString(ARG_LAT, param2)
                     }
                 }
+
+        fun showOnActivated(name: String): Boolean {
+            gotoPos = findHouseLatLong(name)
+            return gotoPos != null
+        }
+
+        fun showOnActivated(latLong: LatLong) {
+            gotoPos = latLong
+        }
+
+        private fun findHouseLatLong(name: String): LatLong? {
+            for (house in houseCoordinates)
+                if (house.name == name)
+                    return house.latLong
+            return null
+        }
     }
 }

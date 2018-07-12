@@ -38,14 +38,6 @@ class ProfileFragment : Fragment() {
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -69,10 +61,6 @@ class ProfileFragment : Fragment() {
             Prefs.getInstance(context!!).loginState = false
             (activity as? MainActivity)?.finish()
             startActivity(Intent(context, StartActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-        }
-        info_showOnMap.setOnClickListener {
-            Log.d("LKSH_PROFILE","Moving to map")
-            activity!!.findViewById<BottomNavigationView>(R.id.navigation).selectedItemId = R.id.navigation_home
         }
     }
 
