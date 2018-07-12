@@ -17,17 +17,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_dialog_email"
+        android:src="@android:drawable/ic_menu_mylocation"
+        app:backgroundTint="#ff7049"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Switch
         android:id="@+id/posAutoSwitch"
-        android:layout_width="40dp"
+        android:layout_width="45dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
+        android:layout_gravity="end|top"
         android:layout_margin="16dp"
-        android:layout_marginBottom="24dp"
-        android:checked="false" />
+        android:layout_marginTop="294dp"
+        android:checked="false"
+        android:textColorLink="#ff7049" />
 
 </FrameLayout>

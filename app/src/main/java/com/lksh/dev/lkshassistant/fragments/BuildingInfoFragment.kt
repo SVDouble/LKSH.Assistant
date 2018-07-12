@@ -61,9 +61,10 @@ class BuildingInfoFragment : Fragment() {
         table.isStretchAllColumns = false
         table.bringToFront()
 
+
         table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
                 .apply {
-                    number.text = "%"
+                    number.text = "№"
                     name.text = "name"
                     parallel.text = "parallel"
                     room.text = "room"

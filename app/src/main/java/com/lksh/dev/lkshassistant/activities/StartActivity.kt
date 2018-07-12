@@ -10,12 +10,20 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.lksh.dev.lkshassistant.Fonts
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.sqlite_helper.DBHandler
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
+import kotlinx.android.synthetic.main.activity_add_user.*
 import kotlinx.android.synthetic.main.activity_start.*
 import org.jetbrains.anko.doAsync
+import android.support.v4.content.LocalBroadcastManager
+import android.view.Window.ID_ANDROID_CONTENT
+import android.opengl.ETC1.getHeight
+import android.view.ViewTreeObserver
+import android.view.ViewGroup
+import android.view.Window
 
 
 class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
@@ -41,13 +49,13 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
                 if (usrDataList.size > 0) {
                     for (temp in usrDataList) {
                         if (temp.login == login && temp.password == password) {
-                            finish()
                             isLogin = true
                             prefs.login = login
                             prefs.password = password
                             prefs.loginState = true
                             startActivity(Intent(this, MainActivity::class.java)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+                            finish()
                             break
                         }
                     }
@@ -67,6 +75,13 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
+
+//        attachKeyboardListeners()
+
+        startLabel.typeface = Fonts.getInstance(this).montserrat
+        loginField.typeface = Fonts.getInstance(this).montserrat
+        passwordField.typeface = Fonts.getInstance(this).montserrat
+        login_btn.typeface = Fonts.getInstance(this).montserrat
 
         /* Request permissions */
         if (ContextCompat.checkSelfPermission(this@StartActivity,
@@ -102,13 +117,64 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
             db = DBWrapper.getInstance(this@StartActivity)
             Log.d(TAG, "Successfully loaded")
         }
+        onDbLoad() /* Костыль! Нужно обновлять registerCallback! */
+    }
+
+    override fun onDestroy() {
+//        if (keyboardListenersAttached) {
+//            rootLayout!!.viewTreeObserver
+//                    .removeOnGlobalLayoutListener(keyboardLayoutListener)
+//        }
+        super.onDestroy()
     }
 
     override fun onDbLoad() {
         if (prefs.loginState) {
-            finish()
             startActivity(Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK))
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+            finish()
+        } else {
+            loginField.visibility = View.VISIBLE
+            passwordField.visibility = View.VISIBLE
+            cardView.visibility = View.VISIBLE
         }
     }
+    /*
+    /* Keyboard listener */
+    private val keyboardLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+        val heightDiff = rootLayout!!.rootView.height - rootLayout!!.height
+        val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
+
+        val broadcastManager = LocalBroadcastManager.getInstance(this@StartActivity)
+
+        if (heightDiff <= contentViewTop) {
+            onHideKeyboard()
+        } else {
+            val keyboardHeight = heightDiff - contentViewTop
+            onShowKeyboard(keyboardHeight)
+        }
+    }
+
+    private var keyboardListenersAttached = false
+    private var rootLayout: ViewGroup? = null
+
+    private fun onShowKeyboard(keyboardHeight: Int) {
+        Log.d(TAG, "Keyboard show!")
+        imageView.visibility = View.GONE
+    }
+    private fun onHideKeyboard() {
+        Log.d(TAG, "Keyboard hide!")
+        imageView.visibility = View.VISIBLE
+    }
+
+    private fun attachKeyboardListeners() {
+        if (keyboardListenersAttached) {
+            return
+        }
+
+        rootLayout = findViewById<View>(R.id.activity_start) as ViewGroup
+        rootLayout!!.viewTreeObserver.addOnGlobalLayoutListener(keyboardLayoutListener)
+        keyboardListenersAttached = true
+    }
+    */
 }
