@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.lksh.dev.lkshassistant.Auth
 import com.lksh.dev.lkshassistant.Fonts
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
@@ -37,17 +38,18 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
             Toast.makeText(this,
                     "Please wait: db is loading",
                     Toast.LENGTH_SHORT).show()
-        } else if (login.isEmpty() || psw.isEmpty()) {
+//        } else if (login.isEmpty() || psw.isEmpty()) {
+//            Toast.makeText(this,
+//                    "Please fill in all fields",
+//                    Toast.LENGTH_SHORT).show()
+        } else if (!Auth.login(applicationContext, login, psw)) {
             Toast.makeText(this,
-                    "Please fill in all fields",
+                    "Wrong login or password",
                     Toast.LENGTH_SHORT).show()
         } else {
-            if (!login(login, psw)) {
-                Toast.makeText(this,
-                        "Wrong login or password",
-                        Toast.LENGTH_SHORT).show()
-            }
+            startMain()
         }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +108,9 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
     override fun onDbLoad() {
 
         Log.d(TAG, "onDbLoad: try automatically login")
-        if (!login()) {
+        if (Auth.login(applicationContext)) {
+            startMain()
+        } else {
             Log.d(TAG, "onDbLoad: failed, enable login fields")
             loginField.visibility = View.VISIBLE
             passwordField.visibility = View.VISIBLE
@@ -114,19 +118,10 @@ class StartActivity : AppCompatActivity(), DBWrapper.DbInteraction {
         }
     }
 
-    private fun login(login: String = "", psw: String = ""): Boolean {
-        val user = DBWrapper.getInstance(applicationContext).listUsers("%")
-                .filter { it.login == login && it.password == psw }
-        if (user.isEmpty())
-            return false
-        else {
-            if (user.size != 1)
-                Log.d(TAG, "login: warning, same user records detected")
-            startActivity(Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
-            finish()
-        }
-        return true
+    private fun startMain() {
+        startActivity(Intent(this, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+        finish()
     }
 
 /*

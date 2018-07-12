@@ -8,7 +8,6 @@ class Prefs private constructor(context: Context) {
     private val PREFS_FILENAME = "com.lksh.dev.lkshassistant.prefs"
     private val BOOL_LOGIN_STATE = "login_state"
     private val STRING_LOGIN = "login"
-    private val STRING_PASSWORD = "psw"
     private val INT_DB_VERSION = "db_version"
     private val STRING_TIMETABLE = "timetable"
     //private val STRING_TIMETABLE_VERSION = "timetable_version"
@@ -17,10 +16,6 @@ class Prefs private constructor(context: Context) {
     var login: String
         get() = prefs.getString(STRING_LOGIN, "")
         set(value) = prefs.edit().putString(STRING_LOGIN, value).apply()
-
-    var password: String
-        get() = prefs.getString(STRING_PASSWORD, "")
-        set(value) = prefs.edit().putString(STRING_PASSWORD, value).apply()
 
     var loginState: Boolean
         get() = prefs.getBoolean(BOOL_LOGIN_STATE, false)
