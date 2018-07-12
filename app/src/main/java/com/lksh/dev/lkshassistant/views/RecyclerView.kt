@@ -59,7 +59,7 @@ data class TimetableEvent(
         get() = false
 }
 
-class TimetableAdapter(private val mContext: Context, private val dataset: Array<TimetableEvent>) :
+class TimetableAdapter(private val mContext: Context, private val dataset: ArrayList<TimetableEvent>) :
         RecyclerView.Adapter<TimetableAdapter.ViewHolder>() {
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -76,11 +76,13 @@ class TimetableAdapter(private val mContext: Context, private val dataset: Array
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Log.d(TAG, "Update recycler")
         val data = dataset[position]
         holder.time.text = data.time
-        holder.time.backgroundColor = if (data.isCurrentEvent)
+        holder.itemView.backgroundColor = if (data.isCurrentEvent)
             android.R.color.holo_green_light
         else android.R.color.holo_blue_light
+        holder.event.text = data.eventInfo
     }
 
     override fun getItemCount() = dataset.size
