@@ -377,6 +377,8 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         }
 
         private fun findHouseLatLong(name: String): LatLong? {
+            if (name.length == 3 && name.startsWith("ГК"))
+                return findHouseLatLong("ГК")
             for (house in houseCoordinates)
                 if (house.name == name)
                     return house.latLong
