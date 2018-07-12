@@ -4,11 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.lksh.dev.lkshassistant.Prefs
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.activities.TAG
 import com.lksh.dev.lkshassistant.activities.TimetableInteraction
 import kotlinx.android.synthetic.main.fragment_timetable.*
 
@@ -42,6 +44,14 @@ class TimetableFragment : Fragment(), TimetableInteraction {
         listener?.onFragmentInteraction(uri)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val info = Prefs.getInstance(context!!).timetable
+        Log.d(TAG, "Timetable resumed!\n${info.split("\n")[0]}")
+        if (info.isNotEmpty())
+            timetable?.text = info
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
@@ -57,7 +67,7 @@ class TimetableFragment : Fragment(), TimetableInteraction {
     }
 
     override fun onTimetableUpdate() {
-        timetable.text = Prefs.getInstance(context!!).timetable
+        timetable?.text = Prefs.getInstance(context!!).timetable
     }
 
 

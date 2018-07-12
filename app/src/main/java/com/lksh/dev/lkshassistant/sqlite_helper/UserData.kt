@@ -8,4 +8,7 @@ class UserData(var _id: Int,
                var name: String,
                var surname: String,
                var admin: Int,
-               var room: String)
+               var room: String,
+               var grade: String,
+               var city: String,
+               var school: String)

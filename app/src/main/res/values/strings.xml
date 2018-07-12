@@ -1,10 +1,14 @@
 <resources>
-    <string name="app_name">LKSH Assistant</string>
-    <string name="nav_title_map">Map</string>
-    <string name="nav_title_info">Info</string>
-    <string name="nav_title_profile">Profile</string>
+    <string name="app_name">ЛКШ.Ассистент</string>
+    <string name="nav_title_map">Карта</string>
+    <string name="nav_title_info">Информация</string>
+    <string name="nav_title_profile">Профиль</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tabs_timetable_title">Timetable</string>
-    <string name="tabs_brief_title">Brief</string>
+    <string name="tabs_timetable_title">Расписание</string>
+    <string name="tabs_brief_title">Все участники</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="login">Войти</string>
+    <string name="lksh">летняя\nкомпьютерная\nшкола</string>
+    <string name="passwordHint">Пароль</string>
+    <string name="username">Имя пользователя</string>
 </resources>
