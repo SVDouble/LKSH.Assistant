@@ -21,7 +21,8 @@ class TappableMarker(icon: Drawable, private val houseInfo: HouseInfo,
                 /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
                 /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
-        if (tapLatLong == null || getDistance(tapLatLong, latLong) > houseInfo.radius)
+        if (tapLatLong == null || getDistance(tapLatLong, latLong) > houseInfo.radius ||
+                houseInfo.buildingType == BuildingType.NONE)
             return false
         listener.dispatchClickBuilding(houseInfo)
         //Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
@@ -95,10 +96,10 @@ class LocationTrackingService : Service() {
             override fun onLocationChanged(location: Location?) {
                 lastLocation.set(location)
                 if (location != null)
-                    Log.d("LKSH_LOCATION-SERVICE", "update location to ${location.latitude}, " +
+                    Log.v("LKSH_LOCATION-SERVICE", "update location to ${location.latitude}, " +
                             "${location.longitude} (${location.accuracy})")
                 else
-                    Log.d("LKSH_LOCATION-SERVICE", "null location")
+                    Log.v("LKSH_LOCATION-SERVICE", "null location")
             }
 
             override fun onProviderDisabled(provider: String?) {}
@@ -113,7 +114,8 @@ data class HouseInfo(val latLong: LatLong, val name: String, val radius: Double,
 enum class BuildingType {
     HOUSE,
     OTHER,
-    USER
+    USER,
+    NONE
 }
 
 val houseCoordinates = arrayOf(
