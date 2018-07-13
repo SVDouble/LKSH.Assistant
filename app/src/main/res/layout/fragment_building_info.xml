@@ -18,41 +18,67 @@
         android:padding="16dp">
 
         <LinearLayout
-            android:id="@+id/contacts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/contacts"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold"
-                android:textSize="24sp" />
+                android:orientation="vertical">
 
-            <include
-                android:id="@+id/directrorContacts"
-                layout="@layout/fragment_contact"
+                <TextView
+                    android:id="@+id/header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    android:textSize="24sp" />
+
+                <include
+                    android:id="@+id/directrorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/subdirectrorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/doctorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/goodRules"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                android:orientation="vertical">
 
-            <include
-                android:id="@+id/subdirectrorContacts"
-                layout="@layout/fragment_contact"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                <TextView
+                    android:id="@+id/goodRulesHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    android:textSize="24sp" />
 
-            <include
-                android:id="@+id/doctorContacts"
-                layout="@layout/fragment_contact"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                <include
+                    android:id="@+id/doctorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
 
+
+            </LinearLayout>
         </LinearLayout>
-
-
 
     </ScrollView>
 </FrameLayout>
