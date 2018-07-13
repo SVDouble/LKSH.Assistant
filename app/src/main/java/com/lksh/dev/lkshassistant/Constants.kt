@@ -18,8 +18,5 @@ object Constant {
             House(Pair(0.579, 0.899), "33"),
             House(Pair(0.588, 0.944), "34"),
             House(Pair(0.48, 0.948), "35")
-
-
-
     )
 }
