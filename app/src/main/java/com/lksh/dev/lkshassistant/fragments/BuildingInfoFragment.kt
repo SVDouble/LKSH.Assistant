@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.MainActivity
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
+import org.w3c.dom.Text
 
 private const val ARG_HOUSE_ID = "house_id"
 
@@ -34,7 +36,12 @@ class BuildingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        header.text = "Buklet"
+        header.text = "Buk"
+
+        directrorContacts.findViewById<TextView>(R.id.name).text = "Test"
+        directrorContacts.findViewById<TextView>(R.id.role).text = "Test"
+        directrorContacts.findViewById<TextView>(R.id.phone).text = "Test"
+
     }
 
     override fun onStart() {

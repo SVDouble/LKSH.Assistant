@@ -32,19 +32,19 @@
                 android:textSize="24sp" />
 
             <include
-                android:id="directrorContacts"
+                android:id="@+id/directrorContacts"
                 layout="@layout/fragment_contact"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
 
             <include
-                android:id="subdirectrorContacts"
+                android:id="@+id/subdirectrorContacts"
                 layout="@layout/fragment_contact"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
 
             <include
-                android:id="doctorContacts"
+                android:id="@+id/doctorContacts"
                 layout="@layout/fragment_contact"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
