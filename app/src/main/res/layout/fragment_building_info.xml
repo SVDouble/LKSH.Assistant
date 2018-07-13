@@ -18,12 +18,13 @@
         android:padding="16dp">
 
         <LinearLayout
+            android:id="@+id/contacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/headerContacts"
+                android:id="@+id/header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -50,6 +51,8 @@
                 android:layout_width="match_parent"/>
 
         </LinearLayout>
+
+
 
     </ScrollView>
 </FrameLayout>
