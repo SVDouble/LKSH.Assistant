@@ -36,8 +36,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        header.text = "Buk"
-
+        headerContacts.text = "Контакты"
         directrorContacts.findViewById<TextView>(R.id.name).text = "Test"
         directrorContacts.findViewById<TextView>(R.id.role).text = "Test"
         directrorContacts.findViewById<TextView>(R.id.phone).text = "Test"
