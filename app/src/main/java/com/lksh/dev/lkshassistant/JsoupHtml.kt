@@ -1,8 +1,6 @@
 package com.lksh.dev.lkshassistant
 
 import android.content.Context
-import android.util.Log
-import com.lksh.dev.lkshassistant.activities.TAG
 import org.jetbrains.anko.runOnUiThread
 import org.jsoup.Jsoup
 

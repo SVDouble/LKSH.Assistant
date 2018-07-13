@@ -24,7 +24,7 @@ class Prefs private constructor(context: Context) {
     var dbVersion: Int
         get() = prefs.getInt(INT_DB_VERSION, -1)
         set(value) = prefs.edit().putInt(INT_DB_VERSION, value).apply()
-    
+
     var timetable: String
         get() = prefs.getString(STRING_TIMETABLE, "")
         set(value) = prefs.edit().putString(STRING_TIMETABLE, value).apply()

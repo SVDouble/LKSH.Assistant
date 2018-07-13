@@ -268,7 +268,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             val curPos = mapView!!.model.mapViewPosition.center
             mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
                     - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
-                    (19 - mapView!!.model.mapViewPosition.zoomLevel) .toByte(), true)
+                    (19 - mapView!!.model.mapViewPosition.zoomLevel).toByte(), true)
         }
     }
 

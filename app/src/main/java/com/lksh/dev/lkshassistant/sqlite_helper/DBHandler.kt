@@ -111,7 +111,6 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
 
 
-
             } while (cursor.moveToNext())
         }
         return arraylist
@@ -142,7 +141,6 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 val city = cursor.getString((cursor.getColumnIndex(CITY)))
 
                 arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
-
 
 
             } while (cursor.moveToNext())
@@ -200,7 +198,7 @@ class DBWrapper private constructor() {
                     if (lines[i][12] == "ГК2" || lines[i][12] == "ГК1") {
                         values.put(DBHandler.HOUSE, "ГК")
                     } else {
-                        values.put(DBHandler.HOUSE, lines[i][12] )
+                        values.put(DBHandler.HOUSE, lines[i][12])
                     }
 
                     values.put(DBHandler.ROOM, lines[i][13])

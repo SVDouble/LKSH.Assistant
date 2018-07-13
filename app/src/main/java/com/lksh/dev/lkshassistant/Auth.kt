@@ -11,19 +11,21 @@ class Auth private constructor() {
         fun login(ctx: Context, login: String = "", psw: String = ""): Boolean {
             val user = DBWrapper.getInstance(ctx).listUsers("%")
                     .filter { it.login == login && it.password == psw }
-            if (Prefs.getInstance(ctx).loginState) {
-                Log.d(TAG, "login: login succeed")
-            } else if (user.isEmpty()) {
-                Log.d(TAG, "login: login failed")
-                return false
-            } else {
-                if (user.size != 1)
-                    Log.d(TAG, "login: warning, same user records detected")
-                Prefs.getInstance(ctx).apply {
-                    this.loginState = true
-                    this.login = user[0].login
+            when {
+                Prefs.getInstance(ctx).loginState -> Log.d(TAG, "login: login succeed")
+                user.isEmpty() -> {
+                    Log.d(TAG, "login: login failed")
+                    return false
                 }
-                Log.d(TAG, "login: login succeed")
+                else -> {
+                    if (user.size != 1)
+                        Log.d(TAG, "login: warning, same user records detected")
+                    Prefs.getInstance(ctx).apply {
+                        this.loginState = true
+                        this.login = user[0].login
+                    }
+                    Log.d(TAG, "login: login succeed")
+                }
             }
             return true
         }

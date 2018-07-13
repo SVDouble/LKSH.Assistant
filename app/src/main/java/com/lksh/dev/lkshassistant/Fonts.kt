@@ -2,7 +2,6 @@ package com.lksh.dev.lkshassistant
 
 import android.content.Context
 import android.graphics.Typeface
-import com.lksh.dev.lkshassistant.SingletonHolder
 
 
 class Fonts private constructor(context: Context) {
