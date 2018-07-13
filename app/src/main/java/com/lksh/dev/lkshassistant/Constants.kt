@@ -1,7 +1,7 @@
 package com.lksh.dev.lkshassistant
 
 data class House(val coord: Pair<Double, Double>,
-                 val strNumber: String)
+                    val strNumber: String)
 
 object Constant {
     val POINTS = arrayOf(House(Pair(0.34, 0.053), "0"),
@@ -18,7 +18,5 @@ object Constant {
             House(Pair(0.579, 0.899), "33"),
             House(Pair(0.588, 0.944), "34"),
             House(Pair(0.48, 0.948), "35")
-
-
     )
 }

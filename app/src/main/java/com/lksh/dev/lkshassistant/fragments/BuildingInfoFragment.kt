@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.MainActivity
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
+import org.w3c.dom.Text
 
 private const val ARG_HOUSE_ID = "house_id"
 
@@ -34,41 +36,17 @@ class BuildingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        header.text = if (houseId == null) "All users" else ("House " + houseId)
-        content_focusable.setOnClickListener {
-            (activity as? MainActivity)?.hideFragment()
-        }
-        val dataset = DBWrapper.getInstance(context!!)
-                .listHouse(houseId ?: "%")
-                .sortedBy { it.room.toIntOrNull() ?: 0 }
-        table.isStretchAllColumns = false
-        table.bringToFront()
+        headerContacts.text = "Контакты"
+        directrorContacts.findViewById<TextView>(R.id.name).text = "Test"
+        directrorContacts.findViewById<TextView>(R.id.role).text = "Test"
+        directrorContacts.findViewById<TextView>(R.id.phone).text = "Test"
 
-
-        table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
-                .apply {
-                    number.text = "№"
-                    name.text = "name"
-                    parallel.text = "parallel"
-                    room.text = "room"
-                }, 0)
-
-        dataset.forEachIndexed { i, data ->
-            table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
-                    .apply {
-                        number.text = (i + 1).toString()
-                        name.text = "${data.name} ${data.surname}"
-                        parallel.text = data.parallel
-                        room.text = data.room
-                    }, i + 1)
-
-        }
     }
 
     override fun onStart() {
         super.onStart()
 
-        view?.background = ColorDrawable(Color.argb(100, 0, 0, 0))
+        view?.background = ColorDrawable(Color.argb(0, 0, 0, 0))
     }
 
     companion object {
