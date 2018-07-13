@@ -21,34 +21,147 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/headerContacts"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/contacts"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold"
-                android:textSize="24sp" />
+                android:orientation="vertical">
 
-            <include
-                android:id="@+id/directrorContacts"
-                layout="@layout/fragment_contact"
+                <TextView
+                    android:id="@+id/header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    android:textSize="24sp" />
+
+                <include
+                    android:id="@+id/directrorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/subdirectrorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/doctorContacts"
+                    layout="@layout/fragment_contact"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/goodRules"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                android:orientation="vertical">
 
-            <include
-                android:id="@+id/subdirectrorContacts"
-                layout="@layout/fragment_contact"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                <TextView
+                    android:id="@+id/goodRulesHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    android:textSize="24sp" />
 
-            <include
-                android:id="@+id/doctorContacts"
-                layout="@layout/fragment_contact"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                <include
+                    android:id="@+id/goodRule1"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
 
+                <include
+                    android:id="@+id/goodRule2"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule3"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule4"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+
+                    android:id="@+id/goodRule5"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule6"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule7"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule8"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule9"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule10"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+                <include
+                    android:id="@+id/goodRule11"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule12"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule13"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule14"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+                <include
+                    android:id="@+id/goodRule15"
+                    layout="@layout/fragment_rules"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"/>
+
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>
