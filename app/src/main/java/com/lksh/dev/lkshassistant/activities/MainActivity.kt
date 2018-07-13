@@ -13,10 +13,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.JsoupHtml
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.fragments.FragmentMapBox
-import com.lksh.dev.lkshassistant.fragments.FragmentMapSvg
-import com.lksh.dev.lkshassistant.fragments.InfoFragment
-import com.lksh.dev.lkshassistant.fragments.ProfileFragment
+import com.lksh.dev.lkshassistant.fragments.*
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
@@ -24,6 +21,7 @@ import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
+
 
 const val TAG = "_LKSH"
 
@@ -126,13 +124,21 @@ class MainActivity : AppCompatActivity(),
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
-
         })
 
         /* Search results init */
         val users = DBWrapper.getInstance(this).listUsers("%")
-        val dataset = Array(users.size) { i -> SearchResult(SearchResult.Type.USER, users[i]) }
-        searchAdapter = SearchResultAdapter(this, dataset)
+        val dataset = arrayListOf<SearchResult>()
+        houseCoordinates.mapTo(dataset) { SearchResult(SearchResult.Type.HOUSE, null, it) }
+        users.mapTo(dataset) { SearchResult(SearchResult.Type.USER, it, null) }
+        searchAdapter = SearchResultAdapter(this, dataset,
+                object : SearchResultAdapter.OnHouseClickListener {
+                    override fun onCLick(houseId: String) {
+                        search.clearFocus()
+                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                                BuildingInfoFragment.newInstance(houseId)).commit()
+                    }
+                })
         searchAdapter.notifyDataSetChanged()
         search_results.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)

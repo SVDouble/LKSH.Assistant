@@ -7,7 +7,6 @@ import com.lksh.dev.lkshassistant.R
 import kotlinx.android.synthetic.main.activity_user_profile.*
 
 class ProfileActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)

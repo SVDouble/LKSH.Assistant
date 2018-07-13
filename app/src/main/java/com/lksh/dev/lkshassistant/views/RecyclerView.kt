@@ -14,14 +14,15 @@ import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.ProfileActivity
 import com.lksh.dev.lkshassistant.activities.TAG
+import com.lksh.dev.lkshassistant.fragments.HouseInfo
 import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 import org.jetbrains.anko.backgroundColor
 
 
 /* Example */
-class UserCardAdapter(private val mContext: Context, private val dataset: ArrayList<UserData>) :
+class UserCardAdapter(private val mContext: Context,
+                      private val dataset: ArrayList<UserData>) :
         RecyclerView.Adapter<UserCardAdapter.ViewHolder>() {
-
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val number = v.findViewById<TextView>(R.id.number)!!
         val name = v.findViewById<TextView>(R.id.name)!!
@@ -89,14 +90,19 @@ class TimetableAdapter(private val mContext: Context, private val dataset: Array
 
 
 /* Search */
-data class SearchResult(val type: Type, val user: UserData) {
+data class SearchResult(val type: Type, val user: UserData?, val house: HouseInfo?) {
     enum class Type {
         USER, HOUSE
     }
 }
 
-class SearchResultAdapter(private val mContext: Context, private val dataset: Array<SearchResult>) :
+class SearchResultAdapter(private val mContext: Context,
+                          private val dataset: ArrayList<SearchResult>,
+                          private val mHouseListener: OnHouseClickListener) :
         RecyclerView.Adapter<SearchResultAdapter.ViewHolder>(), Filterable {
+    interface OnHouseClickListener {
+        fun onCLick(houseId: String)
+    }
 
     private var currentData = arrayListOf<SearchResult>()
     private val resultFilter = ValueFilter()
@@ -116,16 +122,30 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = currentData[position]
-        holder.title.text = "${data.user.name} ${data.user.surname}"
-        holder.image.setImageResource(when (data.type) {
-            SearchResult.Type.USER -> android.R.drawable.ic_media_pause
-            SearchResult.Type.HOUSE -> android.R.drawable.ic_media_ff
-        })
-        holder.itemView.setOnClickListener {
-            Log.d(TAG, "Open user profile")
-            mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
-                    data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+        var title = ".."
+        var icon = 0
+        if (data.type == SearchResult.Type.USER
+                && data.user != null) {
+            title = "${data.user.name} ${data.user.surname}"
+            icon = android.R.drawable.ic_media_pause
+            holder.itemView.setOnClickListener {
+                Log.d(TAG, "Open user profile")
+                mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
+                        data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+            }
+        } else if (data.type == SearchResult.Type.HOUSE
+                && data.house != null) {
+            title = data.house.name
+            icon = android.R.drawable.ic_media_ff
+            holder.itemView.setOnClickListener {
+                Log.d(TAG, "Open house page")
+                mHouseListener.onCLick(title)
+            }
         }
+
+        holder.title.text = title
+        holder.image.setImageResource(icon)
+
     }
 
     override fun getItemCount() = currentData.size
@@ -138,10 +158,15 @@ class SearchResultAdapter(private val mContext: Context, private val dataset: Ar
             val filterList = ArrayList<SearchResult>()
 
             if (constraint != null && constraint.isNotEmpty()) {
-                for (i in 0 until dataset.size) {
-                    if ("${dataset[i].user.name} ${dataset[i].user.surname}".toUpperCase().contains(constraint.toString().toUpperCase())) {
-                        filterList.add(dataset[i])
-                    }
+                for (i in dataset) if (i.type == SearchResult.Type.HOUSE
+                        && i.house != null
+                        && i.house.name.toUpperCase().contains(constraint.toString().toUpperCase())) {
+                    filterList.add(i)
+                }
+                for (i in dataset) if (i.type == SearchResult.Type.USER
+                        && i.user != null
+                        && "${i.user.name} ${i.user.surname}".toUpperCase().contains(constraint.toString().toUpperCase())) {
+                    filterList.add(i)
                 }
             }
             results.count = filterList.size
