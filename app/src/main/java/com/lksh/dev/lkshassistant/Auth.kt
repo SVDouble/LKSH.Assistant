@@ -8,34 +8,28 @@ import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 class Auth private constructor() {
     companion object {
         @JvmStatic
-        fun login(ctx: Context, login: String = "", psw: String = ""): Boolean {
+        fun login(ctx: Context, login: String = "", password: String = ""): Boolean { // true -> successful login
             val user = DBWrapper.getInstance(ctx).listUsers("%")
-                    .filter { it.login == login && it.password == psw }
-            when {
-                Prefs.getInstance(ctx).loginState -> Log.d(TAG, "login: login succeed")
-                user.isEmpty() -> {
-                    Log.d(TAG, "login: login failed")
-                    return false
-                }
-                else -> {
-                    if (user.size != 1)
-                        Log.d(TAG, "login: warning, same user records detected")
-                    Prefs.getInstance(ctx).apply {
-                        this.loginState = true
-                        this.login = user[0].login
-                    }
-                    Log.d(TAG, "login: login succeed")
-                }
+                    .filter { it.login == login && it.password == password }
+
+            if (user.size != 1){
+                return Prefs.getInstance(ctx).isLoggedIn
             }
+
+            Prefs.getInstance(ctx).apply {
+                this.isLoggedIn = true
+                this.login = user[0].login
+            }
+
             return true
         }
 
         @JvmStatic
         fun logout(ctx: Context) {
-            Prefs.getInstance(ctx).apply {
-                loginState = false
-                login = ""
-            }
+                Prefs.getInstance(ctx).apply {
+                    isLoggedIn = false
+                    login = ""
+                }
         }
     }
 }

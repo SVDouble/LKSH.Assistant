@@ -9,6 +9,7 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.util.Log
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.JsoupHtml
@@ -32,27 +33,39 @@ class MainActivity : AppCompatActivity(),
     private lateinit var infoFragment: InfoFragment
     private lateinit var searchAdapter: SearchResultAdapter
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private val NAV_BAR_PAGES_COUNT = 3
+
+    private fun setVisibility(element: View, isVisible: Boolean) {
+        if (isVisible){
+            element.visibility = VISIBLE
+        } else {
+            element.visibility = GONE
+        }
+    }
+
+    private fun prepareElements(isHeaderVisible: Boolean, isSearchVisible: Boolean, headerTitle: String = "", smoothElement: Int = 0){
+
+        setVisibility(header, isHeaderVisible)
+        setVisibility(search, isSearchVisible)
+
+        header.text = headerTitle
+
+        map.setCurrentItem(smoothElement, false)
+
+    }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                header.visibility = GONE
-                search.visibility = VISIBLE
-                map.setCurrentItem(0, false)
+                prepareElements(false, true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                header.visibility = VISIBLE
-                search.visibility = GONE
-                header.text = getString(R.string.nav_title_info)
-                map.setCurrentItem(1, false)
+                prepareElements(true, false, getString(R.string.nav_title_info), 1)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                header.visibility = VISIBLE
-                search.visibility = GONE
-                header.text = getString(R.string.nav_title_profile)
-                map.setCurrentItem(2, false)
+                prepareElements(true, false, getString(R.string.nav_title_profile), 2)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -93,7 +106,12 @@ class MainActivity : AppCompatActivity(),
         map.swipingEnabled = false
         header.visibility = GONE
 
-        /* Initialize search */
+        /* Search init */
+        searchInit()
+        searchResultsInit()
+    }
+
+    private fun searchInit(){
         search.isSubmitButtonEnabled = false
         search.queryHint = "Введите имя ученика"
         search.setOnClickListener {
@@ -125,8 +143,9 @@ class MainActivity : AppCompatActivity(),
                 return false
             }
         })
+    }
 
-        /* Search results init */
+    private fun searchResultsInit(){
         val users = DBWrapper.getInstance(this).listUsers("%")
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset) { SearchResult(SearchResult.Type.HOUSE, null, it) }
@@ -147,13 +166,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-//        if (intent.hasExtra("FLAG_OPEN_MAP")) {
-//            Log.d(TAG, "${intent.getStringExtra("FLAG_OPEN_MAP")}")
-//            FragmentMapBox.showOnActivated(intent.getStringExtra("FLAG_OPEN_MAP"))
-//        }
-    }
 
     override fun onFragmentInteraction(uri: Uri) {}
 
