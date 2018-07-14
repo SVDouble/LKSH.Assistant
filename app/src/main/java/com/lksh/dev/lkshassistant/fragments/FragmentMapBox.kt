@@ -299,6 +299,12 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         super.onDestroy()
     }
 
+    fun showOnActivated(name: String): Boolean {
+        gotoPos = findHouseLatLong(name)
+        mapView!!.model.mapViewPosition.center = gotoPos
+        return gotoPos != null
+    }
+
     companion object {
         private var gotoPos: LatLong? = null
 
@@ -310,11 +316,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                         putString(ARG_LAT, param2)
                     }
                 }
-
-        fun showOnActivated(name: String): Boolean {
-            gotoPos = findHouseLatLong(name)
-            return gotoPos != null
-        }
 
         fun showOnActivated(latLong: LatLong) {
             gotoPos = latLong

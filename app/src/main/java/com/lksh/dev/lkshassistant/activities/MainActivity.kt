@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
 
-
 const val TAG = "_LKSH"
 
 class MainActivity : AppCompatActivity(),
@@ -32,6 +31,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var infoFragment: InfoFragment
     private lateinit var searchAdapter: SearchResultAdapter
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+
+    private lateinit var mMapBoxFragment: FragmentMapBox
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -75,8 +76,9 @@ class MainActivity : AppCompatActivity(),
 
 
         infoFragment = InfoFragment()
+        mMapBoxFragment = FragmentMapBox()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMapBox(), infoFragment, ProfileFragment()))
+                arrayOf(mMapBoxFragment, infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -135,8 +137,8 @@ class MainActivity : AppCompatActivity(),
                 object : SearchResultAdapter.OnHouseClickListener {
                     override fun onCLick(houseId: String) {
                         search.clearFocus()
-                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                                BuildingInfoFragment.newInstance(houseId)).commit()
+
+                        mMapBoxFragment.showOnActivated(houseId)
                     }
                 })
         searchAdapter.notifyDataSetChanged()
