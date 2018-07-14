@@ -15,8 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.StartActivity"
-            android:parentActivityName=".activities.MainActivity"
+            android:name="com.lksh.dev.lkshassistant.presentation.activities.StartActivity"
+            android:parentActivityName="com.lksh.dev.lkshassistant.presentation.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden|adjustResize">
@@ -27,14 +27,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.lksh.dev.lkshassistant.presentation.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustNothing" />
 
-        <service android:name=".fragments.LocationTrackingService" />
+        <service android:name="com.lksh.dev.lkshassistant.presentation.fragments.LocationTrackingService" />
 
-        <activity android:name=".activities.ProfileActivity" />
+        <activity android:name="com.lksh.dev.lkshassistant.presentation.activities.ProfileActivity" />
     </application>
 
 </manifest>
