@@ -32,7 +32,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        header.text = if (houseId == null) "All users" else ("House " + houseId)
+        header.text = if (houseId == null) "All users" else ("House $houseId")
         content_focusable.setOnClickListener {
             (activity as? MainActivity)?.hideFragment()
         }

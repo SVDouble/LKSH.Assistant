@@ -14,7 +14,7 @@ import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.activities.ProfileActivity
 import com.lksh.dev.lkshassistant.activities.TAG
-import com.lksh.dev.lkshassistant.fragments.HouseInfo
+import com.lksh.dev.lkshassistant.model.HouseInfo
 import com.lksh.dev.lkshassistant.sqlite_helper.UserData
 import org.jetbrains.anko.backgroundColor
 

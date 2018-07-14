@@ -21,7 +21,6 @@ import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.activity_start.*
 import org.jetbrains.anko.doAsync
 
-
 class StartActivity : AppCompatActivity(),
         DBWrapper.DbInteraction,
         KeyboardVisibilityListener {

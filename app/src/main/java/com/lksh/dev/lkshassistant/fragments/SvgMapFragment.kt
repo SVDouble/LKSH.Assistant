@@ -8,11 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.lksh.dev.lkshassistant.Constant
+import com.lksh.dev.lkshassistant.POINTS
 import com.lksh.dev.lkshassistant.R
 import kotlinx.android.synthetic.main.fragment_map_svg.*
 import kotlin.math.abs
-
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +25,6 @@ private const val ARG_PARAM2 = "param2"
  * to handle interaction events.
  * Use the [FragmentMapSvg.newInstance] factory method to
  * create an instance of this fragment.
- *
  */
 class FragmentMapSvg : Fragment() {
     // TODO: Rename and change types of parameters
@@ -52,16 +50,16 @@ class FragmentMapSvg : Fragment() {
         super.onStart()
 
         photo_view.setImageResource(R.drawable.ic_map)
-        //Log.i("")
+        // Log.i("")
         photo_view.setScaleLevels(1.0F, 5.0F, 10.0F)
 
         photo_view.setOnPhotoTapListener { view, x, y ->
             Log.i("TAG", "$x, $y")
-            for (build in Constant.POINTS) {
+            for (build in POINTS) {
                 val res: Pair<Double, Double> = Pair(x, y) - Pair(build.coord.first, build.coord.second)
 
                 if (abs(res.first) <= 0.015 && abs(res.second) <= 0.015) {
-//                    Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(this.context, "Домик ${build.strNumber}", Toast.LENGTH_SHORT).show()
                     activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(build.strNumber)).commit()
                 }
             }
@@ -126,5 +124,5 @@ class FragmentMapSvg : Fragment() {
 }
 
 private operator fun Pair<Float, Float>.minus(pair: Pair<Double, Double>): Pair<Double, Double> {
-    return Pair<Double, Double>(this.first - pair.first, this.second - pair.second)
+    return Pair(this.first - pair.first, this.second - pair.second)
 }

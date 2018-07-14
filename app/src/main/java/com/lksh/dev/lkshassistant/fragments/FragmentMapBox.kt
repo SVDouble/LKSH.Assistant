@@ -14,8 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.*
 import com.lksh.dev.lkshassistant.listeners.OnMapInteractionListener
+import com.lksh.dev.lkshassistant.model.HouseInfo
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.mapsforge.core.graphics.Filter
 import org.mapsforge.core.model.BoundingBox
@@ -212,8 +213,13 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat(), center: Boolean) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
-        val drawable = ResourcesCompat.getDrawable(resources, android.R.drawable.radiobutton_on_background, null)!!
-        val marker = TappableMarker(drawable, HouseInfo(pos, "Your position", 0.0001, BuildingType.NONE), this)
+        val drawable = ResourcesCompat.getDrawable(resources,
+                android.R.drawable.radiobutton_on_background,
+                null)!!
+        val marker = TappableMarker(drawable, HouseInfo(pos,
+                "Your position",
+                0.0001,
+                BuildingType.NONE), this)
         posMarker = marker
         mapView!!.layerManager.layers.add(marker)
         //set marker on my position.
@@ -258,7 +264,8 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                     mapView!!.model.mapViewPosition, AndroidGraphicFactory.INSTANCE)
             tileRendererLayer!!.setXmlRenderTheme(InternalRenderTheme.DEFAULT)
             mapView!!.layerManager.layers.add(tileRendererLayer)
-            Log.d(TAG, "tileSize: ${mapView!!.model.displayModel.tileSize}; overdrawFactor: ${mapView!!.model.frameBufferModel.overdrawFactor}")
+            Log.d(TAG, "tileSize: ${mapView!!.model.displayModel.tileSize}; " +
+                    "overdrawFactor: ${mapView!!.model.frameBufferModel.overdrawFactor}")
             Log.d(TAG, "Map fragment setup successfully")
         } catch (e: IOException) {
             Log.i(TAG, "Map create failed. The app have all needed permissions?")
@@ -286,9 +293,12 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
 
     override fun dispatchClickBuilding(marker: HouseInfo) {
         if (marker.buildingType == BuildingType.HOUSE)
-            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main, BuildingInfoFragment.newInstance(marker.name)).commit()
+            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                    BuildingInfoFragment.newInstance(marker.name)).commit()
         else
-            Toast.makeText(activity!!.applicationContext, "This is ${marker.name}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity!!.applicationContext,
+                    "This is ${marker.name}",
+                    Toast.LENGTH_SHORT).show()
     }
 
     fun setPosByHouseName(name: String): Boolean {
