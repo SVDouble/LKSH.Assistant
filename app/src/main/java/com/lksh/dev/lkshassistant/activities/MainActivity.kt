@@ -20,6 +20,8 @@ import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
+import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
 
 
