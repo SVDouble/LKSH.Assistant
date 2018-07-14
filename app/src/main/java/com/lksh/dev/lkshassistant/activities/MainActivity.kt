@@ -15,12 +15,11 @@ import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.JsoupHtml
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.fragments.*
+import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
-import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
 
 
@@ -36,14 +35,14 @@ class MainActivity : AppCompatActivity(),
     private val NAV_BAR_PAGES_COUNT = 3
 
     private fun setVisibility(element: View, isVisible: Boolean) {
-        if (isVisible){
+        if (isVisible) {
             element.visibility = VISIBLE
         } else {
             element.visibility = GONE
         }
     }
 
-    private fun prepareElements(isHeaderVisible: Boolean, isSearchVisible: Boolean, headerTitle: String = "", smoothElement: Int = 0){
+    private fun prepareElements(isHeaderVisible: Boolean, isSearchVisible: Boolean, headerTitle: String = "", smoothElement: Int = 0) {
 
         setVisibility(header, isHeaderVisible)
         setVisibility(search, isSearchVisible)
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity(),
         searchResultsInit()
     }
 
-    private fun searchInit(){
+    private fun searchInit() {
         search.isSubmitButtonEnabled = false
         search.queryHint = "Введите имя ученика"
         search.setOnClickListener {
@@ -145,7 +144,7 @@ class MainActivity : AppCompatActivity(),
         })
     }
 
-    private fun searchResultsInit(){
+    private fun searchResultsInit() {
         val users = DBWrapper.getInstance(this).listUsers("%")
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset) { SearchResult(SearchResult.Type.HOUSE, null, it) }
