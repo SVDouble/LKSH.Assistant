@@ -17,7 +17,7 @@ class Prefs private constructor(context: Context) {
         get() = prefs.getString(STRING_LOGIN, "")
         set(value) = prefs.edit().putString(STRING_LOGIN, value).apply()
 
-    var loginState: Boolean
+    var isLoggedIn: Boolean
         get() = prefs.getBoolean(BOOL_LOGIN_STATE, false)
         set(value) = prefs.edit().putBoolean(BOOL_LOGIN_STATE, value).apply()
 

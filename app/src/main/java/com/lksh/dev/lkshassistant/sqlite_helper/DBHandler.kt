@@ -37,14 +37,14 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
     private var sqlObj: SQLiteDatabase = this.writableDatabase // Сущность SQLiteDatabase
 
-    override fun onCreate(p0: SQLiteDatabase?) { // Вызывается при генерации БД
+    override fun onCreate(currentDB: SQLiteDatabase?) { // Вызывается при генерации БД
         val sql1 = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ( $ID  INTEGER PRIMARY KEY, $LOGIN TEXT, $PASSWORD TEXT, $HOUSE TEXT, $PARALLEL TEXT, $NAME TEXT, $SURNAME TEXT, $ADMIN INTEGER, $ROOM TEXT, $CITY TEXT, $GRADE TEXT, $SCHOOL TEXT );"
-        p0!!.execSQL(sql1)
+        currentDB!!.execSQL(sql1)
     }
 
-    override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) { // Вызывается при обновлении версии БД
-        p0!!.execSQL("Drop table IF EXISTS $TABLE_NAME")
-        onCreate(p0)
+    override fun onUpgrade(currentDB: SQLiteDatabase?, prevDBVersion: Int, nextDBVersion: Int) {
+        currentDB!!.execSQL("Drop table IF EXISTS $TABLE_NAME")
+        onCreate(currentDB)
     }
 
     fun addUser(values: ContentValues) = sqlObj.insert(TABLE_NAME, "", values)
@@ -53,14 +53,18 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
 
     fun updateUser(values: ContentValues, id: Int) = sqlObj.update(TABLE_NAME, values, "id=?", arrayOf(id.toString()))
 
-    fun listUsers(key: String): ArrayList<UserData> {
-        val arraylist = ArrayList<UserData>()
+    private fun loadListFromDB(key: String, findIn: String? = null): ArrayList<UserData> {
+        val resultList = ArrayList<UserData>()
+        if (findIn == null){
+            return resultList
+        }
+
         val sqlQB = SQLiteQueryBuilder()
         sqlQB.tables = TABLE_NAME
         val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM, SCHOOL, GRADE, CITY)
         val selectArgs = arrayOf(key)
 
-        val cursor = sqlQB.query(sqlObj, cols, "$LOGIN like ?", selectArgs, null, null, SURNAME)
+        val cursor = sqlQB.query(sqlObj, cols, findIn + " like ?", selectArgs, null, null, SURNAME)
 
         if (cursor.moveToFirst()) {
             do {
@@ -77,75 +81,24 @@ class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_
                 val grade = cursor.getString(cursor.getColumnIndex(GRADE))
                 val city = cursor.getString((cursor.getColumnIndex(CITY)))
 
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
+                resultList.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
 
             } while (cursor.moveToNext())
         }
-        return arraylist
+        return resultList
+
+    }
+
+    fun listUsers(key: String): ArrayList<UserData> {
+        return loadListFromDB(key, LOGIN)
     }
 
     fun listHouse(key: String): ArrayList<UserData> {
-        val arraylist = ArrayList<UserData>()
-        val sqlQB = SQLiteQueryBuilder()
-        sqlQB.tables = TABLE_NAME
-        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM, SCHOOL, GRADE, CITY)
-        val selectArgs = arrayOf(key)
-
-        val cursor = sqlQB.query(sqlObj, cols, "$HOUSE like ?", selectArgs, null, null, SURNAME)
-
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndex(ID))
-                val login = cursor.getString(cursor.getColumnIndex(LOGIN))
-                val password = cursor.getString(cursor.getColumnIndex(PASSWORD))
-                val house = cursor.getString(cursor.getColumnIndex(HOUSE))
-                val parallel = cursor.getString(cursor.getColumnIndex(PARALLEL))
-                val name = cursor.getString(cursor.getColumnIndex(NAME))
-                val surname = cursor.getString(cursor.getColumnIndex(SURNAME))
-                val admin = cursor.getInt(cursor.getColumnIndex(ADMIN))
-                val room = cursor.getString((cursor.getColumnIndex(ROOM)))
-                val school = cursor.getString(cursor.getColumnIndex(SCHOOL))
-                val grade = cursor.getString(cursor.getColumnIndex(GRADE))
-                val city = cursor.getString((cursor.getColumnIndex(CITY)))
-
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
-
-
-            } while (cursor.moveToNext())
-        }
-        return arraylist
+        return loadListFromDB(key, HOUSE)
     }
 
     fun listParallel(key: String): ArrayList<UserData> {
-        val arraylist = ArrayList<UserData>()
-        val sqlQB = SQLiteQueryBuilder()
-        sqlQB.tables = TABLE_NAME
-        val cols = arrayOf(ID, LOGIN, PASSWORD, HOUSE, PARALLEL, NAME, SURNAME, ADMIN, ROOM, SCHOOL, GRADE, CITY)
-        val selectArgs = arrayOf(key)
-
-        val cursor = sqlQB.query(sqlObj, cols, "$PARALLEL like ?", selectArgs, null, null, SURNAME)
-
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndex(ID))
-                val login = cursor.getString(cursor.getColumnIndex(LOGIN))
-                val password = cursor.getString(cursor.getColumnIndex(PASSWORD))
-                val house = cursor.getString(cursor.getColumnIndex(HOUSE))
-                val parallel = cursor.getString(cursor.getColumnIndex(PARALLEL))
-                val name = cursor.getString(cursor.getColumnIndex(NAME))
-                val surname = cursor.getString(cursor.getColumnIndex(SURNAME))
-                val admin = cursor.getInt(cursor.getColumnIndex(ADMIN))
-                val room = cursor.getString((cursor.getColumnIndex(ROOM)))
-                val school = cursor.getString(cursor.getColumnIndex(SCHOOL))
-                val grade = cursor.getString(cursor.getColumnIndex(GRADE))
-                val city = cursor.getString((cursor.getColumnIndex(CITY)))
-
-                arraylist.add(UserData(id, login, password, house, parallel, name, surname, admin, room, school, city, grade))
-
-
-            } while (cursor.moveToNext())
-        }
-        return arraylist
+        return loadListFromDB(key, PARALLEL)
     }
 }
 

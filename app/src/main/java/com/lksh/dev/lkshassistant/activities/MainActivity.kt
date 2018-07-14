@@ -9,15 +9,12 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.util.Log
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.JsoupHtml
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.fragments.FragmentMapBox
-import com.lksh.dev.lkshassistant.fragments.FragmentMapSvg
-import com.lksh.dev.lkshassistant.fragments.InfoFragment
-import com.lksh.dev.lkshassistant.fragments.ProfileFragment
-import com.lksh.dev.lkshassistant.houseCoordinates
+import com.lksh.dev.lkshassistant.fragments.*
 import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import com.lksh.dev.lkshassistant.views.SearchResult
 import com.lksh.dev.lkshassistant.views.SearchResultAdapter
@@ -25,6 +22,7 @@ import com.lksh.dev.lkshassistant.views.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
+
 
 const val TAG = "_LKSH"
 
@@ -35,29 +33,39 @@ class MainActivity : AppCompatActivity(),
     private lateinit var infoFragment: InfoFragment
     private lateinit var searchAdapter: SearchResultAdapter
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private val NAV_BAR_PAGES_COUNT = 3
 
-    private lateinit var mMapBoxFragment: FragmentMapBox
+    private fun setVisibility(element: View, isVisible: Boolean) {
+        if (isVisible){
+            element.visibility = VISIBLE
+        } else {
+            element.visibility = GONE
+        }
+    }
+
+    private fun prepareElements(isHeaderVisible: Boolean, isSearchVisible: Boolean, headerTitle: String = "", smoothElement: Int = 0){
+
+        setVisibility(header, isHeaderVisible)
+        setVisibility(search, isSearchVisible)
+
+        header.text = headerTitle
+
+        map.setCurrentItem(smoothElement, false)
+
+    }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                header.visibility = GONE
-                search.visibility = VISIBLE
-                map.setCurrentItem(0, false)
+                prepareElements(false, true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                header.visibility = VISIBLE
-                search.visibility = GONE
-                header.text = getString(R.string.nav_title_info)
-                map.setCurrentItem(1, false)
+                prepareElements(true, false, getString(R.string.nav_title_info), 1)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                header.visibility = VISIBLE
-                search.visibility = GONE
-                header.text = getString(R.string.nav_title_profile)
-                map.setCurrentItem(2, false)
+                prepareElements(true, false, getString(R.string.nav_title_profile), 2)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -80,9 +88,8 @@ class MainActivity : AppCompatActivity(),
 
 
         infoFragment = InfoFragment()
-        mMapBoxFragment = FragmentMapBox()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(mMapBoxFragment, infoFragment, ProfileFragment()))
+                arrayOf(FragmentMapBox(), infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -99,7 +106,12 @@ class MainActivity : AppCompatActivity(),
         map.swipingEnabled = false
         header.visibility = GONE
 
-        /* Initialize search */
+        /* Search init */
+        searchInit()
+        searchResultsInit()
+    }
+
+    private fun searchInit(){
         search.isSubmitButtonEnabled = false
         search.queryHint = "Введите имя ученика"
         search.setOnClickListener {
@@ -131,8 +143,9 @@ class MainActivity : AppCompatActivity(),
                 return false
             }
         })
+    }
 
-        /* Search results init */
+    private fun searchResultsInit(){
         val users = DBWrapper.getInstance(this).listUsers("%")
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset) { SearchResult(SearchResult.Type.HOUSE, null, it) }
@@ -141,8 +154,8 @@ class MainActivity : AppCompatActivity(),
                 object : SearchResultAdapter.OnHouseClickListener {
                     override fun onCLick(houseId: String) {
                         search.clearFocus()
-
-                        mMapBoxFragment.setPosByHouseName(houseId)
+                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                                BuildingInfoFragment.newInstance(houseId)).commit()
                     }
                 })
         searchAdapter.notifyDataSetChanged()
@@ -153,13 +166,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-//        if (intent.hasExtra("FLAG_OPEN_MAP")) {
-//            Log.d(TAG, "${intent.getStringExtra("FLAG_OPEN_MAP")}")
-//            FragmentMapBox.setPosByHouseName(intent.getStringExtra("FLAG_OPEN_MAP"))
-//        }
-    }
 
     override fun onFragmentInteraction(uri: Uri) {}
 
