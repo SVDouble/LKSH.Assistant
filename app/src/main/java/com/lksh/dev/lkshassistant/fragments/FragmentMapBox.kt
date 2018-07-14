@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.listeners.OnMapInteractionListener
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.mapsforge.core.graphics.Filter
 import org.mapsforge.core.model.BoundingBox
@@ -30,17 +31,10 @@ import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
-private const val ARG_LAT = "lat"
-private const val ARG_LONG = "long"
-
-interface OnMapInteractionListener {
-    fun dispatchClickBuilding(marker: HouseInfo)
-}
-
 class FragmentMapBox : Fragment(), OnMapInteractionListener {
+    private val TAG = "LKSH_MAP_F"
 
     private var isFirstStart = true
-    private val TAG = "LKSH_MAP_F"
     private var myPos: LatLong? = null
     private var posMarker: TappableMarker? = null
     private var working = true
@@ -59,6 +53,55 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_map, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "view created")
+        if (isFirstStart)
+            initOnce()
+        mapView = view.findViewById(R.id.mapViewFr)
+        initCycle()
+        isFirstStart = false
+        if (gotoPos != null) {
+            val curPos = mapView!!.model.mapViewPosition.center
+            mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
+                    - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
+                    (19 - mapView!!.model.mapViewPosition.zoomLevel).toByte(), true)
+        }
+    }
+
+    override fun onPause() {
+        working = false
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        working = true
+    }
+
+    override fun onDestroyView() {
+        mapViewPos = mapView!!.model.mapViewPosition
+        // mapView!!.destroyAll()
+        // mapView!!.destroy()
+        // mapView = null
+        // need to destroy mapView to avoid memory leak
+        // but it follows from this is bug in next map init: map isn't visible
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        if (mapView != null)
+            mapView!!.destroyAll()
+        AndroidGraphicFactory.clearResourceMemoryCache()
+        super.onDestroy()
     }
 
     fun setNightTheme() {
@@ -185,8 +228,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
     private fun setMapPos() {
         if (mapViewPos != null) {
             mapView!!.model.mapViewPosition.mapPosition = mapViewPos!!.mapPosition
-//                mapView!!.model.mapViewPosition.center = mapViewPos!!.center
-//                mapView!!.model.mapViewPosition.zoomLevel = mapViewPos!!.zoomLevel
             mapView!!.model.mapViewPosition.mapLimit = mapViewPos!!.mapLimit
         } else {
             mapView!!.setCenter(myPos)
@@ -250,65 +291,18 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
             Toast.makeText(activity!!.applicationContext, "This is ${marker.name}", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "view created")
-        if (isFirstStart)
-            initOnce()
-        mapView = view.findViewById(R.id.mapViewFr)
-        initCycle()
-        isFirstStart = false
-        if (gotoPos != null) {
-            val curPos = mapView!!.model.mapViewPosition.center
-            mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
-                    - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
-                    (19 - mapView!!.model.mapViewPosition.zoomLevel).toByte(), true)
-        }
-    }
-
-    override fun onPause() {
-        working = false
-        super.onPause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        working = true
-    }
-
-    override fun onDestroyView() {
-        mapViewPos = mapView!!.model.mapViewPosition
-//        mapView!!.destroyAll()
-//        mapView!!.destroy()
-//        mapView = null
-        //need to destroy mapView to avoid memory leak
-        //but it follows from this is bug in next map init: map isn't visible
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        if (mapView != null)
-            mapView!!.destroyAll()
-        AndroidGraphicFactory.clearResourceMemoryCache()
-        super.onDestroy()
-    }
-
-    fun showOnActivated(name: String): Boolean {
+    fun setPosByHouseName(name: String): Boolean {
         gotoPos = findHouseLatLong(name)
         mapView!!.model.mapViewPosition.center = gotoPos
         return gotoPos != null
     }
 
     companion object {
+        private const val ARG_LAT = "lat"
+        private const val ARG_LONG = "long"
+
         private var gotoPos: LatLong? = null
 
-        @JvmStatic
         fun newInstance(param1: String, param2: String) =
                 FragmentMapBox().apply {
                     arguments = Bundle().apply {
@@ -316,10 +310,6 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
                         putString(ARG_LAT, param2)
                     }
                 }
-
-        fun showOnActivated(latLong: LatLong) {
-            gotoPos = latLong
-        }
 
         private fun findHouseLatLong(name: String): LatLong? {
             if (name.length == 3 && name.startsWith("ГК"))

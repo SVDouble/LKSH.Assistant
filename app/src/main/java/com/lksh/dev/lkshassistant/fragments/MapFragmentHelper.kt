@@ -8,24 +8,23 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import com.lksh.dev.lkshassistant.listeners.OnMapInteractionListener
 import org.mapsforge.core.model.LatLong
 import org.mapsforge.core.model.Point
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
 import org.mapsforge.map.layer.overlay.Marker
 import kotlin.math.sqrt
 
-//icon = resources.getDrawable(android.R.drawable.radiobutton_on_background)
 class TappableMarker(icon: Drawable, private val houseInfo: HouseInfo,
                      val listener: OnMapInteractionListener) :
         Marker(houseInfo.latLong, AndroidGraphicFactory.convertToBitmap(icon),
-                /*AndroidGraphicFactory.convertToBitmap(icon).width / 2*/ 0,
-                /*-1 * AndroidGraphicFactory.convertToBitmap(icon).height / 2*/ 0) {
+                0,
+                0) {
     override fun onTap(tapLatLong: LatLong?, layerXY: Point?, tapXY: Point?): Boolean {
         if (tapLatLong == null || getDistance(tapLatLong, latLong) > houseInfo.radius ||
                 houseInfo.buildingType == BuildingType.NONE)
             return false
         listener.dispatchClickBuilding(houseInfo)
-        //Log.d("LKSH_MARKER", "$name is tapped (${tapLatLong.latitude}:${tapLatLong.longitude}/${latLong.latitude}:${latLong.longitude})")
         return true
     }
 
@@ -84,11 +83,7 @@ class LocationTrackingService : Service() {
         const val tag = "LocationTrackingService"
         const val internal = 1000.toLong() // In milliseconds
         const val distance = 0f // In meters
-        val locationListeners = arrayListOf<Pair<LTRLocationListener, String>>(
-
-                /*LTRLocationListener(LocationManager.GPS_PROVIDER),
-                LTRLocationListener(LocationManager.NETWORK_PROVIDER)*/
-        )
+        val locationListeners = arrayListOf<Pair<LTRLocationListener, String>>()
 
         class LTRLocationListener(provider: String) : android.location.LocationListener {
             val lastLocation = Location(provider)

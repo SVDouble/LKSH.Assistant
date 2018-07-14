@@ -26,7 +26,7 @@ class InfoFragment : Fragment(), TimetableInteraction {
 
         timetableFragment = TimetableFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(activity!!.supportFragmentManager,
-                arrayOf(timetableFragment, bookletInforamtion()))
+                arrayOf(timetableFragment, BookletInformation()))
 
         /* Set up the ViewPager with the sections adapter. */
         container.adapter = mSectionsPagerAdapter

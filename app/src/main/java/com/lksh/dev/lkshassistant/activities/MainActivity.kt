@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(),
                     override fun onCLick(houseId: String) {
                         search.clearFocus()
 
-                        mMapBoxFragment.showOnActivated(houseId)
+                        mMapBoxFragment.setPosByHouseName(houseId)
                     }
                 })
         searchAdapter.notifyDataSetChanged()
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity(),
         super.onStart()
 //        if (intent.hasExtra("FLAG_OPEN_MAP")) {
 //            Log.d(TAG, "${intent.getStringExtra("FLAG_OPEN_MAP")}")
-//            FragmentMapBox.showOnActivated(intent.getStringExtra("FLAG_OPEN_MAP"))
+//            FragmentMapBox.setPosByHouseName(intent.getStringExtra("FLAG_OPEN_MAP"))
 //        }
     }
 

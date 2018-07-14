@@ -1,18 +1,14 @@
 package com.lksh.dev.lkshassistant.utils
 
-import com.lksh.dev.lkshassistant.R
-import android.view.View
-import com.lksh.dev.lkshassistant.R.id.*
-import kotlinx.android.synthetic.main.fragment_building_info.view.*
 
-
-data class RuleItem (val isPositive: Boolean,
-                         val text: String){
+data class RuleItem(val isPositive: Boolean,
+                    val text: String) {
 
 }
 
 object RulesLkshData {
     var rules = mutableListOf<RuleItem>()
+
     init {
         rules.add(RuleItem(true, "Ходить на официальные мероприятия"))
         rules.add(RuleItem(true, "Не жечь домики"))

@@ -13,8 +13,6 @@ import com.lksh.dev.lkshassistant.sqlite_helper.DBWrapper
 import kotlinx.android.synthetic.main.fragment_building_info.*
 import kotlinx.android.synthetic.main.part_rv_building.view.*
 
-private const val ARG_HOUSE_ID = "house_id"
-
 class BuildingInfoFragment : Fragment() {
     private var houseId: String? = null
 
@@ -61,7 +59,6 @@ class BuildingInfoFragment : Fragment() {
                         parallel.text = data.parallel
                         room.text = data.room
                     }, i + 1)
-
         }
     }
 
@@ -72,7 +69,8 @@ class BuildingInfoFragment : Fragment() {
     }
 
     companion object {
-        @JvmStatic
+        private const val ARG_HOUSE_ID = "house_id"
+
         fun newInstance(houseId: String) =
                 BuildingInfoFragment().apply {
                     arguments = Bundle().apply {
