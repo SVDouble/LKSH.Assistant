@@ -8,7 +8,6 @@
     android:background="@drawable/gradient"
     tools:context=".presentation.activities.StartActivity">
 
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"

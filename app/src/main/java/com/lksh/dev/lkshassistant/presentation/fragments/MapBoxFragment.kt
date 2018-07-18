@@ -33,7 +33,7 @@ import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
-class FragmentMapBox : Fragment(), OnMapInteractionListener {
+class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private val TAG = "LKSH_MAP_F"
 
     private var isFirstStart = true
@@ -315,7 +315,7 @@ class FragmentMapBox : Fragment(), OnMapInteractionListener {
         private var gotoPos: LatLong? = null
 
         fun newInstance(param1: String, param2: String) =
-                FragmentMapBox().apply {
+                MapBoxFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_LONG, param1)
                         putString(ARG_LAT, param2)

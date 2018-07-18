@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(),
 
         infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(FragmentMapBox(), infoFragment, ProfileFragment()))
+                arrayOf(MapBoxFragment(), infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
