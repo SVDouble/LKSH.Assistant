@@ -8,7 +8,6 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.util.Log
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
@@ -18,6 +17,7 @@ import com.lksh.dev.lkshassistant.map.MapBoxFragment
 import com.lksh.dev.lkshassistant.ui.fragments.BuildingInfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.InfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.ProfileFragment
+import com.lksh.dev.lkshassistant.ui.setVisibility
 import com.lksh.dev.lkshassistant.ui.views.SearchResult
 import com.lksh.dev.lkshassistant.ui.views.SearchResultAdapter
 import com.lksh.dev.lkshassistant.ui.views.SectionsPagerAdapter
@@ -35,15 +35,6 @@ class MainActivity : AppCompatActivity(),
     private lateinit var infoFragment: InfoFragment
     private lateinit var searchAdapter: SearchResultAdapter
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
-    private val NAV_BAR_PAGES_COUNT = 3
-
-    private fun setVisibility(element: View, isVisible: Boolean) {
-        if (isVisible) {
-            element.visibility = VISIBLE
-        } else {
-            element.visibility = GONE
-        }
-    }
 
     private fun prepareElements(isHeaderVisible: Boolean, isSearchVisible: Boolean, headerTitle: String = "", smoothElement: Int = 0) {
 
@@ -88,7 +79,6 @@ class MainActivity : AppCompatActivity(),
         /* Initialize navigation and pager */
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-
         infoFragment = InfoFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
                 arrayOf(MapBoxFragment(), infoFragment, ProfileFragment()))
@@ -115,22 +105,22 @@ class MainActivity : AppCompatActivity(),
 
     private fun searchInit() {
         search.isSubmitButtonEnabled = false
-        search.queryHint = "Введите имя ученика"
+        search.queryHint = "Введите имя ученика или номер домика"
         search.setOnClickListener {
             search.isIconified = false
             map.visibility = GONE
-            search_results.visibility = VISIBLE
+            search_rv.visibility = VISIBLE
         }
         search.onQueryTextFocusChange { v, hasFocus ->
             if (hasFocus) {
                 search.onActionViewExpanded()
                 search.isIconified = false
-                search_results.visibility = VISIBLE
+                search_rv.visibility = VISIBLE
                 map.visibility = GONE
             } else {
                 search.onActionViewCollapsed()
                 search.isIconified = true
-                search_results.visibility = GONE
+                search_rv.visibility = GONE
                 map.visibility = VISIBLE
             }
         }
@@ -154,14 +144,14 @@ class MainActivity : AppCompatActivity(),
         users.mapTo(dataset) { SearchResult(SearchResult.Type.USER, it, null) }
         searchAdapter = SearchResultAdapter(this, dataset,
                 object : SearchResultAdapter.OnHouseClickListener {
-                    override fun onCLick(houseId: String) {
+                    override fun onSearchResultClick(houseId: String) {
                         search.clearFocus()
                         supportFragmentManager.beginTransaction().add(R.id.activity_main,
                                 BuildingInfoFragment.newInstance(houseId)).commit()
                     }
                 })
         searchAdapter.notifyDataSetChanged()
-        search_results.apply {
+        search_rv.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             itemAnimator = DefaultItemAnimator()
             adapter = searchAdapter
@@ -171,10 +161,6 @@ class MainActivity : AppCompatActivity(),
     override fun timetableLoaded() {
         Log.d(TAG, "MAIN: timetable update")
         infoFragment.onTimetableUpdate()
-    }
-
-    fun hideFragment() {
-        supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentById(R.id.activity_main)).commit()
     }
 }
 

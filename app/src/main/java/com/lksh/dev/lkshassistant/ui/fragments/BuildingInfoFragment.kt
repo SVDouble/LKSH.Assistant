@@ -4,16 +4,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
 import com.lksh.dev.lkshassistant.ui.activities.MainActivity
-import com.lksh.dev.lkshassistant.ui.activities.TAG
+import com.lksh.dev.lkshassistant.ui.hideFragmentById
 import kotlinx.android.synthetic.main.fragment_building_info.*
-import kotlinx.android.synthetic.main.part_rv_building.*
 
 class BuildingInfoFragment : Fragment() {
     private var houseId: String? = null
@@ -31,12 +30,12 @@ class BuildingInfoFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_building_info, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        header.text = if (houseId == null) "All users" else ("House $houseId")
+        header.text = "House $houseId"
         content_focusable.setOnClickListener {
-            (activity as? MainActivity)?.hideFragment()
+            hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
         val dataset = DBWrapper.getInstance(context!!)
                 .listHouse(houseId ?: "%")
@@ -44,22 +43,21 @@ class BuildingInfoFragment : Fragment() {
         table.isStretchAllColumns = false
         table.bringToFront()
 
-        Log.d(TAG, "Table is ${table ?: "oops!"}")
-        table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
+        table.addView(layoutInflater.inflate(R.layout.part_rv_building, table, false)
                 .apply {
-                    number.text = "№"
-                    name.text = "name"
-                    parallel.text = "parallel"
-                    room.text = "room"
+                    findViewById<TextView>(R.id.number).text = "№"
+                    findViewById<TextView>(R.id.name).text = "name"
+                    findViewById<TextView>(R.id.parallel).text = "parallel"
+                    findViewById<TextView>(R.id.room).text = "room"
                 }, 0)
 
         dataset.forEachIndexed { i, data ->
-            table.addView(layoutInflater.inflate(R.layout.part_rv_building, null, false)
+            table.addView(layoutInflater.inflate(R.layout.part_rv_building, table, false)
                     .apply {
-                        number.text = (i + 1).toString()
-                        name.text = "${data.name} ${data.surname}"
-                        parallel.text = data.parallel
-                        room.text = data.room
+                        findViewById<TextView>(R.id.number).text = (i + 1).toString()
+                        findViewById<TextView>(R.id.name).text = "${data.name} ${data.surname}"
+                        findViewById<TextView>(R.id.parallel).text = data.parallel
+                        findViewById<TextView>(R.id.room).text = data.room
                     }, i + 1)
         }
     }

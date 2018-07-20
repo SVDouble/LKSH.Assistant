@@ -101,7 +101,7 @@ class SearchResultAdapter(private val mContext: Context,
                           private val mHouseListener: OnHouseClickListener) :
         RecyclerView.Adapter<SearchResultAdapter.ViewHolder>(), Filterable {
     interface OnHouseClickListener {
-        fun onCLick(houseId: String)
+        fun onSearchResultClick(houseId: String)
     }
 
     private var currentData = arrayListOf<SearchResult>()
@@ -124,28 +124,27 @@ class SearchResultAdapter(private val mContext: Context,
         val data = currentData[position]
         var title = ".."
         var icon = 0
-        if (data.type == SearchResult.Type.USER
-                && data.user != null) {
-            title = "${data.user.name} ${data.user.surname}"
-            icon = android.R.drawable.ic_media_pause
-            holder.itemView.setOnClickListener {
-                Log.d(TAG, "Open user profile")
-                mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
-                        data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+        when (data.type) {
+            SearchResult.Type.USER -> {
+                title = "${data.user!!.name} ${data.user.surname}"
+                icon = android.R.drawable.ic_media_pause
+                holder.itemView.setOnClickListener {
+                    Log.d(TAG, "Open user profile")
+                    mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
+                            data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+                }
             }
-        } else if (data.type == SearchResult.Type.HOUSE
-                && data.house != null) {
-            title = data.house.name
-            icon = android.R.drawable.ic_media_ff
-            holder.itemView.setOnClickListener {
-                Log.d(TAG, "Open house page")
-                mHouseListener.onCLick(title)
+            SearchResult.Type.HOUSE -> {
+                title = data.house!!.name
+                icon = android.R.drawable.ic_media_ff
+                holder.itemView.setOnClickListener {
+                    Log.d(TAG, "Open house page")
+                    mHouseListener.onSearchResultClick(title)
+                }
             }
         }
-
         holder.title.text = title
         holder.image.setImageResource(icon)
-
     }
 
     override fun getItemCount() = currentData.size
