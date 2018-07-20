@@ -12,7 +12,7 @@ class JsoupHtml(val ctx: Context) {
     private val URL_REQUEST = "http://ejudge.lksh.ru"
     private val CSS_QUERY = "div.schedule__item"
 
-    fun shouldParseHtml() {
+    fun parseHtml() {
         var timetable = ""
         Jsoup.connect(URL_REQUEST).timeout(TIMEOUT).get().run {
             select(CSS_QUERY).forEach { timetable += "${it.text()}\n" }

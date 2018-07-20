@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(),
 
         /* Initialize tmetable */
         doAsync {
-            JsoupHtml.getInstance(this@MainActivity).shouldParseHtml()
+            JsoupHtml.getInstance(this@MainActivity).parseHtml()
         }
 
         /* Initialize navigation and pager */

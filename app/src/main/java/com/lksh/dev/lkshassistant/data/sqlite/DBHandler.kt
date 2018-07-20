@@ -9,10 +9,9 @@ import android.database.sqlite.SQLiteQueryBuilder
 import android.util.Log
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.data.Prefs
+import com.lksh.dev.lkshassistant.data.parseCsv
 import com.lksh.dev.lkshassistant.ui.activities.TAG
 import org.jetbrains.anko.runOnUiThread
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.util.*
 
 class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -125,10 +124,7 @@ class DBWrapper private constructor() {
             getInstance(ctx)
 
             val usrDataList = db!!.listUsers("%")
-            val inputStream = resources.openRawResource(R.raw.june2018_pass)
-            val lines = BufferedReader(InputStreamReader(inputStream)).readLines().map {
-                it.split(",")
-            }
+            val lines = parseCsv(ctx, R.raw.june2018_pass)
 
             Prefs.getInstance(ctx).dbVersion = 0
             if (usrDataList.size == 0 || lines[0][0].toInt() > Prefs.getInstance(ctx).dbVersion) {
