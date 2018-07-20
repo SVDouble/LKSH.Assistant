@@ -9,7 +9,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.activities.MainActivity">
+        tools:context=".ui.activities.MainActivity">
 
 
         <!--<android.support.design.widget.AppBarLayout-->
@@ -43,7 +43,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header" />
 
-        <com.lksh.dev.lkshassistant.presentation.views.NoSwipePager
+        <com.lksh.dev.lkshassistant.ui.views.NoSwipePager
             android:id="@+id/map"
             android:layout_width="0dp"
             android:layout_height="0dp"
