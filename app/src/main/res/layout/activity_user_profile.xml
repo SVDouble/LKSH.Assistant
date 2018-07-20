@@ -4,7 +4,7 @@
     android:id="@+id/fragment_profile_l"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.fragments.ProfileFragment">
+    tools:context=".ui.fragments.ProfileFragment">
 
 
     <android.support.v7.widget.CardView
