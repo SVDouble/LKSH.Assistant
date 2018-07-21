@@ -1,0 +1,163 @@
+[
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.858785,
+    "longitude": 41.71165,
+    "name": "Домик 0",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.857963,
+    "longitude": 41.712258,
+    "name": "Домик 1",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.858197,
+    "longitude": 41.712056,
+    "name": "Домик 2",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.858433,
+    "longitude": 41.712241,
+    "name": "Домик 3",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.857929,
+    "longitude": 41.712768,
+    "name": "Домик 4",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.856296,
+    "longitude": 41.711431,
+    "name": "Домик 5",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.856514,
+    "longitude": 41.711359,
+    "name": "Домик 6",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.858274,
+    "longitude": 41.712611,
+    "name": "Домик 8",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.857621,
+    "longitude": 41.712989,
+    "name": "Домик 10",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.856478,
+    "longitude": 41.713326,
+    "name": "Домик 17",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.855682,
+    "longitude": 41.713292,
+    "name": "Домик 32",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.85552,
+    "longitude": 41.713419,
+    "name": "Домик 33",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.855341,
+    "longitude": 41.71351,
+    "name": "Домик 34",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.855307,
+    "longitude": 41.712678,
+    "name": "Домик 35",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
+    "latitude": 57.857403,
+    "longitude": 41.711691,
+    "name": "Главный корпус",
+    "radius": 2.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.858095,
+    "longitude": 41.711262,
+    "name": "Клуб",
+    "radius": 2.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.857525,
+    "longitude": 41.712398,
+    "name": "Комповник",
+    "radius": 2.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.856865,
+    "longitude": 41.712037,
+    "name": "Романтик",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.857136,
+    "longitude": 41.711321,
+    "name": "Гараж",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.857064,
+    "longitude": 41.711265,
+    "name": "Гнездо",
+    "radius": 5.0E-5
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.857413,
+    "longitude": 41.710131,
+    "name": "Столовая",
+    "radius": 5.0E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.856306,
+    "longitude": 41.712751,
+    "name": "Корабль",
+    "radius": 2.5E-4
+  },
+  {
+    "buildingType": "OTHER",
+    "latitude": 57.85674,
+    "longitude": 41.717549,
+    "name": "Хорошо",
+    "radius": 2.5E-4
+  }
+]

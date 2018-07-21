@@ -145,9 +145,9 @@ class DBWrapper private constructor() {
                     values.put(DBHandler.PARALLEL, lines[i][11])
 
                     if (lines[i][12] == "ГК2" || lines[i][12] == "ГК1") {
-                        values.put(DBHandler.HOUSE, "ГК")
+                        values.put(DBHandler.HOUSE, "Главный корпус")
                     } else {
-                        values.put(DBHandler.HOUSE, lines[i][12])
+                        values.put(DBHandler.HOUSE, "Домик " + lines[i][12])
                     }
 
                     values.put(DBHandler.ROOM, lines[i][13])

@@ -11,10 +11,9 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.houseCoordinates
 import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
+import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.map.MapBoxFragment
-import com.lksh.dev.lkshassistant.ui.fragments.BuildingInfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.InfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.ProfileFragment
 import com.lksh.dev.lkshassistant.ui.setVisibility

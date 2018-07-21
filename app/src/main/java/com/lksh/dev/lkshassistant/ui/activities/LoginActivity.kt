@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.data.sqlite.DBHandler
 import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
 import com.lksh.dev.lkshassistant.ui.Fonts
@@ -90,7 +89,7 @@ class LoginActivity : AppCompatActivity(),
             DBWrapper.registerCallback(this@LoginActivity, "LoginActivity")
             DBWrapper.initDb(applicationContext, resources)
             db = DBWrapper.getInstance(this@LoginActivity)
-            Log.d(TAG, "Successfully loaded db")
+            Log.d(TAG, "Successfully loaded db: ${db.listUsers("%").size} recordings")
         }
     }
 
