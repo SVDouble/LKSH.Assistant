@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity(),
                 object : SearchResultAdapter.OnHouseClickListener {
                     override fun onSearchResultClick(houseId: String) {
                         search.clearFocus()
-                        mapBoxFragment.setPosByHouseName(houseId)
+                        MapBoxFragment.setPosByHouseName(houseId)
 //                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
 //                                BuildingInfoFragment.newInstance(houseId)).commit()
                     }

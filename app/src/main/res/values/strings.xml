@@ -17,4 +17,5 @@
     <string name="preName">Имя: </string>
     <string name="preCity">Город: </string>
     <string name="preRoom">Комната: </string>
+    <string name="onBuildClickedLable">Это </string>
 </resources>
