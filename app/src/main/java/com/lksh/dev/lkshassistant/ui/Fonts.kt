@@ -6,7 +6,7 @@ import com.lksh.dev.lkshassistant.data.SingletonHolder
 
 
 class Fonts private constructor(context: Context) {
-    val montserrat = Typeface.createFromAsset(context.assets, "fonts/montserrat-med.ttf")
+    val montserrat = Typeface.createFromAsset(context.assets, "fonts/montserrat_med.ttf")
 
     companion object : SingletonHolder<Fonts, Context>(::Fonts)
 }
