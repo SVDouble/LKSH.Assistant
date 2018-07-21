@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.lksh.dev.lkshassistant.ui.activities.StartActivity"
+            android:name="com.lksh.dev.lkshassistant.ui.activities.LoginActivity"
             android:parentActivityName="com.lksh.dev.lkshassistant.ui.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"

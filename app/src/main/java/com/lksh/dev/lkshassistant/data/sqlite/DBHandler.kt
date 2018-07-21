@@ -157,12 +157,12 @@ class DBWrapper private constructor() {
                 }
             }
             ctx.runOnUiThread {
-                listeners.forEach { it.value.onDbLoad() }
+                listeners.forEach { it.value.onDbLoaded() }
             }
         }
     }
 
     interface DbInteraction {
-        fun onDbLoad()
+        fun onDbLoaded()
     }
 }

@@ -10,7 +10,7 @@ import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
 import com.lksh.dev.lkshassistant.ui.activities.MainActivity
-import com.lksh.dev.lkshassistant.ui.activities.StartActivity
+import com.lksh.dev.lkshassistant.ui.activities.LoginActivity
 import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.fragment_profile.*
 
@@ -33,7 +33,7 @@ class ProfileFragment : Fragment() {
         info_logout.setOnClickListener {
             Auth.logout(context!!)
             (activity as? MainActivity)?.finish()
-            startActivity(Intent(context, StartActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            startActivity(Intent(context, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
     }
 }

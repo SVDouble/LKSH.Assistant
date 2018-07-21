@@ -33,7 +33,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        header.text = "House $houseId"
+        header.text = houseId
         content_focusable.setOnClickListener {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
@@ -43,24 +43,26 @@ class BuildingInfoFragment : Fragment() {
         table.isStretchAllColumns = false
         table.bringToFront()
 
-        table.addView(layoutInflater.inflate(R.layout.part_rv_building, table, false)
-                .apply {
-                    findViewById<TextView>(R.id.number).text = "№"
-                    findViewById<TextView>(R.id.name).text = "name"
-                    findViewById<TextView>(R.id.parallel).text = "parallel"
-                    findViewById<TextView>(R.id.room).text = "room"
-                }, 0)
+        table.addView(createBuildingInfoPart("№", "name", "parallel", "room"), 0)
 
         dataset.forEachIndexed { i, data ->
-            table.addView(layoutInflater.inflate(R.layout.part_rv_building, table, false)
-                    .apply {
-                        findViewById<TextView>(R.id.number).text = (i + 1).toString()
-                        findViewById<TextView>(R.id.name).text = "${data.name} ${data.surname}"
-                        findViewById<TextView>(R.id.parallel).text = data.parallel
-                        findViewById<TextView>(R.id.room).text = data.room
-                    }, i + 1)
+            table.addView(createBuildingInfoPart(
+                    (i + 1).toString(),
+                    "${data.name} ${data.surname}",
+                    data.parallel,
+                    data.room
+            ), i + 1)
         }
     }
+
+    private fun createBuildingInfoPart(number: String, name: String, parallel: String, room: String) =
+            layoutInflater.inflate(R.layout.part_rv_building, table, false)
+            .apply {
+                findViewById<TextView>(R.id.number).text = number
+                findViewById<TextView>(R.id.name).text = name
+                findViewById<TextView>(R.id.parallel).text = parallel
+                findViewById<TextView>(R.id.room).text = room
+            }
 
     override fun onStart() {
         super.onStart()

@@ -21,13 +21,9 @@ import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.activity_start.*
 import org.jetbrains.anko.doAsync
 
-class StartActivity : AppCompatActivity(),
+class LoginActivity : AppCompatActivity(),
         DBWrapper.DbInteraction,
         KeyboardVisibilityListener {
-
-    private val prefs by lazy {
-        Prefs.getInstance(applicationContext)
-    }
 
     private lateinit var db: DBHandler
 
@@ -56,7 +52,7 @@ class StartActivity : AppCompatActivity(),
         setContentView(R.layout.activity_start)
 
 
-        Log.d(TAG, "StartActivity: launched")
+        Log.d(TAG, "LoginActivity: launched")
         setKeyboardVisibilityListener(this, this)
 
         /* Apply fonts */
@@ -67,20 +63,20 @@ class StartActivity : AppCompatActivity(),
 
         /* Request permissions */
         Log.d(TAG, "onCreate: requesting permissions")
-        if (ContextCompat.checkSelfPermission(this@StartActivity,
+        if (ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@StartActivity,
+                || ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@StartActivity,
+                || ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this@StartActivity,
+                || ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this@StartActivity,
+            ActivityCompat.requestPermissions(this@LoginActivity,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -91,20 +87,20 @@ class StartActivity : AppCompatActivity(),
         /* Init DB */
         Log.d(TAG, "onCreate: loading db")
         doAsync {
-            DBWrapper.registerCallback(this@StartActivity, "StartActivity")
+            DBWrapper.registerCallback(this@LoginActivity, "LoginActivity")
             DBWrapper.initDb(applicationContext, resources)
-            db = DBWrapper.getInstance(this@StartActivity)
+            db = DBWrapper.getInstance(this@LoginActivity)
             Log.d(TAG, "Successfully loaded db")
         }
     }
 
-    override fun onDbLoad() {
+    override fun onDbLoaded() {
 
-        Log.d(TAG, "onDbLoad: try automatically login")
+        Log.d(TAG, "onDbLoaded: try automatically login")
         if (Auth.login(applicationContext)) {
             startMain()
         } else {
-            Log.d(TAG, "onDbLoad: failed, enable login fields")
+            Log.d(TAG, "onDbLoaded: failed, enable login fields")
             loginField.visibility = View.VISIBLE
             passwordField.visibility = View.VISIBLE
             cardView.visibility = View.VISIBLE
@@ -118,11 +114,11 @@ class StartActivity : AppCompatActivity(),
     }
 
     /* Keyboard events: open and close */
-    var mAppHeight: Int = 0
-    var currentOrientation = -1
 
     fun setKeyboardVisibilityListener(activity: Activity, keyboardVisibilityListener: KeyboardVisibilityListener) {
         val contentView = activity.findViewById<View>(android.R.id.content)
+        var mAppHeight: Int = 0
+        var currentOrientation = -1
         contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             private var mPreviousHeight: Int = 0
             override fun onGlobalLayout() {

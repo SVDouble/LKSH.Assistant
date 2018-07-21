@@ -21,7 +21,6 @@
             android:id="@+id/bk.name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Станкевич Андрей Сергеевич"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -30,14 +29,12 @@
             android:id="@+id/bk.role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Директор"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/bk.phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+7(999) 999 9999"
             android:textColor="@color/colorAccent"
             android:textSize="18sp" />
 

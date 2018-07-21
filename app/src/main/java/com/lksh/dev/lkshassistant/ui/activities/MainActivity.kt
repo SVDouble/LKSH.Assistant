@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(),
         JsoupHtml.JsoupInteraction {
 
     private lateinit var infoFragment: InfoFragment
+    private lateinit var mapBoxFragment: MapBoxFragment
     private lateinit var searchAdapter: SearchResultAdapter
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -80,8 +81,9 @@ class MainActivity : AppCompatActivity(),
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         infoFragment = InfoFragment()
+        mapBoxFragment = MapBoxFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
-                arrayOf(MapBoxFragment(), infoFragment, ProfileFragment()))
+                arrayOf(mapBoxFragment, infoFragment, ProfileFragment()))
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity(),
             map.visibility = GONE
             search_rv.visibility = VISIBLE
         }
-        search.onQueryTextFocusChange { v, hasFocus ->
+        search.onQueryTextFocusChange { _, hasFocus ->
             if (hasFocus) {
                 search.onActionViewExpanded()
                 search.isIconified = false
@@ -140,14 +142,16 @@ class MainActivity : AppCompatActivity(),
     private fun searchResultsInit() {
         val users = DBWrapper.getInstance(this).listUsers("%")
         val dataset = arrayListOf<SearchResult>()
-        houseCoordinates.mapTo(dataset) { SearchResult(SearchResult.Type.HOUSE, null, it) }
+        houseCoordinates.mapTo(dataset)
+            { SearchResult(SearchResult.Type.HOUSE,null, it) }
         users.mapTo(dataset) { SearchResult(SearchResult.Type.USER, it, null) }
         searchAdapter = SearchResultAdapter(this, dataset,
                 object : SearchResultAdapter.OnHouseClickListener {
                     override fun onSearchResultClick(houseId: String) {
                         search.clearFocus()
-                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                                BuildingInfoFragment.newInstance(houseId)).commit()
+                        mapBoxFragment.setPosByHouseName(houseId)
+//                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
+//                                BuildingInfoFragment.newInstance(houseId)).commit()
                     }
                 })
         searchAdapter.notifyDataSetChanged()
