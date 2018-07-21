@@ -39,7 +39,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private var myPos: LatLong? = null
     private var posMarker: ClickableMarker? = null
     private var working = true
-    private var trackMe = false
     private var locationManager: LocationManager? = null
     private var mapView: MapView? = null
     private var mapViewPos: MapViewPosition? = null
@@ -70,11 +69,16 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         mapView = view.findViewById(R.id.mapViewFr)
         initCycle()
         isFirstStart = false
+        centerIfNeed()
+    }
+
+    private fun centerIfNeed() {
         if (gotoPos != null) {
             val curPos = mapView!!.model.mapViewPosition.center
             mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
                     - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
                     (19 - mapView!!.model.mapViewPosition.zoomLevel).toByte(), true)
+            gotoPos = null
         }
     }
 
@@ -86,15 +90,11 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     override fun onResume() {
         super.onResume()
         working = true
+        centerIfNeed()
     }
 
     override fun onDestroyView() {
         mapViewPos = mapView!!.model.mapViewPosition
-        // mapView!!.destroyAll()
-        // mapView!!.destroy()
-        // mapView = null
-        // need to destroy mapView to avoid memory leak
-        // but it follows from this is bug in next map init: map isn't visible
         super.onDestroyView()
     }
 
@@ -103,6 +103,17 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
             mapView!!.destroyAll()
         AndroidGraphicFactory.clearResourceMemoryCache()
         super.onDestroy()
+    }
+
+
+    override fun dispatchClickBuilding(marker: HouseInfoModel) {
+        if (marker.buildingType == BuildingType.HOUSE)
+            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                    BuildingInfoFragment.newInstance(marker.name)).commit()
+        else
+            Toast.makeText(activity!!.applicationContext,
+                    getString(R.string.onBuildClickedLable) + marker.name,
+                    Toast.LENGTH_SHORT).show()
     }
 
     fun setNightTheme() {
@@ -119,24 +130,8 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         setHouseMarkers()
         setMyPosButton.setOnClickListener {
             showMyPos(center = true)
-            //nextTheme()
         }
-        Log.d(TAG, "tracking: $trackMe")
-        posAutoSwitch.setOnCheckedChangeListener { _, checked ->
-            trackMe = checked
-            Log.d(TAG, "tracking: $trackMe")
-        }
-        posAutoSwitch.isChecked = trackMe
         Log.d(TAG + "_I_CYCLE", "end")
-    }
-
-    private fun nextTheme() {
-        mapView!!.model.displayModel.filter = when (mapView!!.model.displayModel.filter) {
-            Filter.NONE -> Filter.INVERT
-            Filter.INVERT -> Filter.GRAYSCALE
-            Filter.GRAYSCALE -> Filter.GRAYSCALE_INVERT
-            Filter.GRAYSCALE_INVERT -> Filter.NONE
-        }
     }
 
     private fun initOnce() {
@@ -158,8 +153,9 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                     try {
                         // Request location updates
                         for (locListener in LocationTrackingService.locationListeners)
-                            locationManager?.requestLocationUpdates(locListener.second, 0L,
-                                    0f, locationListener)
+                            if (!locationManager!!.isProviderEnabled(locListener.second))
+                                locationManager?.requestLocationUpdates(locListener.second,
+                                        0L, 0f, locationListener)
                         if (LocationTrackingService.locationListeners.size == 0)
                             Toast.makeText(activity!!.applicationContext,
                                     "I can't get location providers. Do you turn on GPS?",
@@ -167,7 +163,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                     } catch (e: SecurityException) {
                         Log.d(TAG, e.message, e)
                     }
-                    showMyPos(false, trackMe)
                 }
                 Thread.sleep(1000 * 2) // 0.5 updates/s
             }
@@ -210,7 +205,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         myPos = LatLong(lat, long)
     }
 
-    private fun setLocation(pos: LatLong, accuracy: Float = 0.toFloat(), center: Boolean) {
+    private fun setLocation(pos: LatLong, accuracy: Float = 0.0f, center: Boolean) {
         if (posMarker != null)
             mapView!!.layerManager.layers.remove(posMarker)
         val drawable = ResourcesCompat.getDrawable(resources,
@@ -291,22 +286,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         return mapFile
     }
 
-    override fun dispatchClickBuilding(marker: HouseInfoModel) {
-        if (marker.buildingType == BuildingType.HOUSE)
-            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                    BuildingInfoFragment.newInstance(marker.name)).commit()
-        else
-            Toast.makeText(activity!!.applicationContext,
-                    "This is ${marker.name}",
-                    Toast.LENGTH_SHORT).show()
-    }
-
-    fun setPosByHouseName(name: String): Boolean {
-        gotoPos = findHouseLatLong(name)
-        mapView!!.model.mapViewPosition.center = gotoPos
-        return gotoPos != null
-    }
-
     companion object {
         private const val ARG_LAT = "lat"
         private const val ARG_LONG = "long"
@@ -320,6 +299,11 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                         putString(ARG_LAT, param2)
                     }
                 }
+
+        fun setPosByHouseName(name: String): Boolean {
+            gotoPos = findHouseLatLong(name)
+            return gotoPos != null
+        }
 
         private fun findHouseLatLong(name: String): LatLong? {
             if (name.length == 3 && name.startsWith("ГК"))
