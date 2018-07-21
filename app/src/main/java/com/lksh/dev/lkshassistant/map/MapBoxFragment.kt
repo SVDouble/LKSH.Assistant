@@ -160,6 +160,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                             Toast.makeText(activity!!.applicationContext,
                                     "I can't get location providers. Do you turn on GPS?",
                                     Toast.LENGTH_SHORT).show()
+                        centerIfNeed()
                     } catch (e: SecurityException) {
                         Log.d(TAG, e.message, e)
                     }
