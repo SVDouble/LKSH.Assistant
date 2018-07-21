@@ -287,6 +287,12 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         return mapFile
     }
 
+    fun setPosByHouseName(name: String): Boolean {
+        gotoPos = findHouseLatLong(name)
+        mapView?.model?.mapViewPosition?.center = gotoPos
+        return gotoPos != null
+    }
+
     companion object {
         private const val ARG_LAT = "lat"
         private const val ARG_LONG = "long"
@@ -300,11 +306,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                         putString(ARG_LAT, param2)
                     }
                 }
-
-        fun setPosByHouseName(name: String): Boolean {
-            gotoPos = findHouseLatLong(name)
-            return gotoPos != null
-        }
 
         private fun findHouseLatLong(name: String): LatLong? {
             if (name.length == 3 && name.startsWith("ГК"))
