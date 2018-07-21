@@ -1,21 +1,21 @@
 <resources>
-    <string name="app_name">ЛКШ.Ассистент</string>
-    <string name="nav_title_map">Карта</string>
-    <string name="nav_title_info">Информация</string>
-    <string name="nav_title_profile">Профиль</string>
+    <string name="nav_title_map" translatable="false">Map</string>
+    <string name="nav_title_info">Info</string>
+    <string name="nav_title_profile">Profile</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tabs_timetable_title">Расписание</string>
-    <string name="tabs_brief_title">Буклет</string>
+    <string name="tabs_timetable_title">Timetable</string>
+    <string name="tabs_brief_title">Brief</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="login">Войти</string>
-    <string name="lksh">Летняя\nКомпьютерная\nШкола</string>
-    <string name="passwordHint">Пароль</string>
-    <string name="username">Имя пользователя</string>
-    <string name="preHouse">Домик: </string>
-    <string name="preParallel">Параллель: </string>
-    <string name="preSurname">Фамилия: </string>
-    <string name="preName">Имя: </string>
-    <string name="preCity">Город: </string>
-    <string name="preRoom">Комната: </string>
-    <string name="onBuildClickedLable">Это </string>
+    <string name="login">Log in</string>
+    <string name="lksh">Letnaya\nKomputernaya\nShkola</string>
+    <string name="passwordHint">Password</string>
+    <string name="username">Username</string>
+    <string name="preHouse">House: </string>
+    <string name="preParallel">Parallel: </string>
+    <string name="preSurname">Family: </string>
+    <string name="preName">Name: </string>
+    <string name="preCity">City: </string>
+    <string name="preRoom">Room: </string>
+    <string name="onBuildClickedLable">This is </string>
+    <string name="app_name" translatable="true">SIS.Assistent</string>
 </resources>

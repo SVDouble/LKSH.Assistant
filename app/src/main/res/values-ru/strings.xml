@@ -1,0 +1,21 @@
+<resources>
+    <string name="nav_title_map" translatable="false">Карта</string>
+    <string name="nav_title_info">Информация</string>
+    <string name="nav_title_profile">Профиль</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tabs_timetable_title">Расписание</string>
+    <string name="tabs_brief_title">Буклет</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="login">Войти</string>
+    <string name="lksh">Летняя\nКомпьютерная\nШкола</string>
+    <string name="passwordHint">Пароль</string>
+    <string name="username">Имя пользователя</string>
+    <string name="preHouse">Домик: </string>
+    <string name="preParallel">Параллель: </string>
+    <string name="preSurname">Фамилия: </string>
+    <string name="preName">Имя: </string>
+    <string name="preCity">Город: </string>
+    <string name="preRoom">Комната: </string>
+    <string name="onBuildClickedLable">Это </string>
+    <string name="app_name" translatable="true">ЛКШ.Ассистент</string>
+</resources>

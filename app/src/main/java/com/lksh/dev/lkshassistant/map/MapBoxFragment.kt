@@ -85,11 +85,10 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     private fun centerIfNeed() {
-        if (gotoPos != null) {
+        if (gotoPos != null && mapView != null) {
             val curPos = mapView!!.model.mapViewPosition.center
-            mapView!!.model.mapViewPosition.moveCenterAndZoom(gotoPos!!.longitude
-                    - curPos.longitude, gotoPos!!.latitude - curPos.latitude,
-                    (19 - mapView!!.model.mapViewPosition.zoomLevel).toByte(), true)
+            mapView!!.model.mapViewPosition.moveCenter(gotoPos!!.longitude
+                    - curPos.longitude, gotoPos!!.latitude - curPos.latitude, true)
             gotoPos = null
         }
     }
@@ -124,7 +123,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                     BuildingInfoFragment.newInstance(marker.name)).commit()
         else
             Toast.makeText(activity!!.applicationContext,
-                    getString(R.string.onBuildClickedLable) + marker.name,
+                    getString(R.string.onBuildClickedLable) + ' ' + marker.name,
                     Toast.LENGTH_SHORT).show()
     }
 
