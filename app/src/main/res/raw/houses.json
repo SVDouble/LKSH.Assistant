@@ -99,6 +99,13 @@
   },
   {
     "buildingType": "HOUSE",
+    "latitude": 57.858305,
+    "longitude": 41.712389,
+    "name": "Мёд",
+    "radius": 1.5E-4
+  },
+  {
+    "buildingType": "HOUSE",
     "latitude": 57.857403,
     "longitude": 41.711691,
     "name": "Главный корпус",
