@@ -15,7 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.*
+import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.ui.fragments.BuildingInfoFragment
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.mapsforge.core.graphics.Filter
@@ -31,6 +31,18 @@ import org.mapsforge.map.rendertheme.InternalRenderTheme
 import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
+
+const val minLat = 57.855300
+const val maxLat = 57.858790
+const val minLong = 41.708843
+const val maxLong = 41.717549
+
+/* Default view position | dormitory */
+const val defaultLat = 57.85760
+const val defaultLong = 41.71000
+
+const val LAT = "LAT"
+const val LONG = "LONG"
 
 class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private val TAG = "LKSH_MAP_F"
