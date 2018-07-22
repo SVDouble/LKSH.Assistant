@@ -2,9 +2,7 @@ package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
 import android.util.Log
-import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
-import com.lksh.dev.lkshassistant.AppSettings
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TAG
 import org.json.JSONObject
@@ -18,9 +16,7 @@ class Auth private constructor() {
         fun requestLogin(ctx: Context, login: String, password: String) {
             if (!checkCredentials(login, password))
                 forwardLoginResult(LoginResult.LOGIN_FAILED)
-            val authUrl = AppSettings.baseUrl + "/user_auth/"
-            authUrl.httpPost(listOf(Pair("login", login),
-                    Pair("password", password))).responseString { request, response, result ->
+            NetworkHelper.authUser(login, password) { _, _, result ->
                 when (result) {
                     is Result.Success -> {
                         try {

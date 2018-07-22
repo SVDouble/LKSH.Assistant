@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.map
+package com.lksh.dev.lkshassistant.ui.fragments
 
 import android.content.Intent
 import android.location.Location
@@ -16,7 +16,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.houseCoordinates
-import com.lksh.dev.lkshassistant.ui.fragments.BuildingInfoFragment
+import com.lksh.dev.lkshassistant.map.*
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.mapsforge.core.graphics.Filter
 import org.mapsforge.core.model.BoundingBox
