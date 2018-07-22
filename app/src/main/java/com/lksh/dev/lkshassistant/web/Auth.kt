@@ -11,8 +11,10 @@ class Auth private constructor() {
         /* Public API */
         @JvmStatic
         fun continueIfAlreadyLoggedIn(ctx: Context) {
-            if (Prefs.getInstance(ctx).isLoggedIn)
+            if (Prefs.getInstance(ctx).isLoggedIn) {
+                Log.d(TAG, "Auth: already logged in, fast start!")
                 forwardLoginResult(LoginResult.SUCCESS)
+            }
         }
 
         @JvmStatic
@@ -24,12 +26,12 @@ class Auth private constructor() {
         }
 
         @JvmStatic
-        fun handleLoginResponse(ctx: Context, login: String, responseState: ResponseState?, token: String?) {
+        fun handleServerResponse(ctx: Context, login: String, responseState: ResponseState?, token: String?) {
             if (responseState != null)
                 forwardResponseState(responseState)
             else {
                 if (token == null)
-                    forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
+                    forwardLoginResult(LoginResult.FAIL_CRED_DO_NOT_MATCH)
                 else {
                     Prefs.getInstance(ctx).userLogin = login
                     Prefs.getInstance(ctx).userToken = token
@@ -87,7 +89,7 @@ class Auth private constructor() {
 
     enum class LoginResult {
         SUCCESS,
-        FAIL_CRED_DONT_MATCH,
+        FAIL_CRED_DO_NOT_MATCH,
         FAIL_INCORRECT_CRED
     }
 

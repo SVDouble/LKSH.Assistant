@@ -24,7 +24,7 @@ class ProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 //        val user = DBWrapper.getInstance(context!!).listUsers(Prefs.getInstance(context!!).login)[0]
-        val user = UserData(0, "", "", "", "", "", "", 0, "", "", "", "")
+        val user = UserData("", "", "", "", "", "", "", "", "")
 
         profile_name.text = "Name: ${user.name}"
         profile_surname.text = "Surname: ${user.surname}"

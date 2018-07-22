@@ -12,10 +12,10 @@ import android.view.View
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.ui.Fonts
 import com.lksh.dev.lkshassistant.ui.KeyboardVisibilityListener
-import com.lksh.dev.lkshassistant.ui.makeToast
 import com.lksh.dev.lkshassistant.ui.setKeyboardVisibilityListener
 import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.activity_start.*
+import org.jetbrains.anko.toast
 
 class LoginActivity : AppCompatActivity(),
         KeyboardVisibilityListener,
@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity(),
         login_btn.typeface = Fonts.getInstance(this).montserrat
 
         /* Request permissions */
-        Log.d(TAG, "onCreate: requesting permissions")
+        Log.d(TAG, "LoginActivity: requesting permissions")
         if (ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
@@ -71,12 +71,6 @@ class LoginActivity : AppCompatActivity(),
         Auth.continueIfAlreadyLoggedIn(this)
     }
 
-    private fun startMain() {
-        startActivity(Intent(this, MainActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
-        finish()
-    }
-
     override fun onKeyboardVisibilityChanged(keyboardVisible: Boolean) {
         if (keyboardVisible) {
             imageView.visibility = View.GONE
@@ -86,15 +80,20 @@ class LoginActivity : AppCompatActivity(),
 
     }
 
+    private fun startApp() {
+        startActivity(Intent(this, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+        finish()
+    }
+
     /* Auth */
     override fun onLoginResultFetched(loginResult: Auth.LoginResult) {
+        toast("Login result: $loginResult")
         if (loginResult == Auth.LoginResult.SUCCESS)
-            startMain()
-        else
-            makeToast(this, "Login failed: $loginResult")
+            startApp()
     }
 
     override fun onServerFault(responseState: Auth.ResponseState) {
-        makeToast(this, "Error: $responseState")
+        toast("Error: $responseState")
     }
 }
