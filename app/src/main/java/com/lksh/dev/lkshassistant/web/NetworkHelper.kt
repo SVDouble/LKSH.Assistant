@@ -7,6 +7,8 @@ import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.AppSettings
+import com.lksh.dev.lkshassistant.data.FC_CONFIG_FILENAME
+import com.lksh.dev.lkshassistant.data.Prefs
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.UnknownHostException
@@ -19,7 +21,7 @@ class NetworkHelper private constructor() {
         fun authUser(ctx: Context, login: String, password: String) {
             val authUrl = AppSettings.baseUrl + "/user_auth/"
             authUrl.httpPost(listOf(Pair("login", login), Pair("password", password)))
-                    .timeout(5000).responseString { request, response, result ->
+                    .timeout(5000).responseString { _, _, result ->
                         var token: String? = null
                         var responseState: Auth.ResponseState? = null
 
@@ -40,16 +42,25 @@ class NetworkHelper private constructor() {
                                 responseState = Auth.ResponseState.TIMEOUT_REACHED
                             }
                         }
-                        Auth.handleLoginResponse(ctx, login, responseState, token)
+                        Auth.handleServerResponse(ctx, login, responseState, token)
                     }
         }
 
+        private val serverFilePaths = mapOf(
+                FC_CONFIG_FILENAME to "",
+                "users.json" to "/get_users/"
+        )
+
         @JvmStatic
-        fun getUsers(token: String, handler: httpResponse) {
-            val authUrl = AppSettings.baseUrl + "/get_users/"
-            authUrl.httpPost(listOf(Pair("token", authUrl)))
-                    .timeout(5000).responseString { request, response, result ->
-                    }
+        fun getTextFile(ctx: Context, fileName: String): String {
+            if (!serverFilePaths.containsKey(fileName))
+                throw IllegalArgumentException("No path for requested file specified!")
+            val fileUrl = AppSettings.baseUrl + serverFilePaths[fileName]
+            val token = Prefs.getInstance(ctx).userToken
+            return fileUrl.httpPost(listOf(Pair("token", token)))
+                    .timeout(5000)
+                    .responseString()
+                    .second.responseMessage
         }
     }
 }
