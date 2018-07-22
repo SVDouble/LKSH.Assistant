@@ -24,7 +24,7 @@ class Auth private constructor() {
         }
 
         @JvmStatic
-        fun handleLoginResponse(ctx: Context, login: String, responseState: ResponseState?, token: String?) {
+        fun handleServerResponse(ctx: Context, login: String, responseState: ResponseState?, token: String?) {
             if (responseState != null)
                 forwardResponseState(responseState)
             else {

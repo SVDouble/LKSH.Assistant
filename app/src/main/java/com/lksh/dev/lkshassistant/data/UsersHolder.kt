@@ -2,6 +2,8 @@ package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
 
+const val USERS_DB_FILENAME = "users.json"
+
 data class UserData(var login: String,
                     var name: String,
                     var surname: String,
@@ -16,7 +18,8 @@ object UsersHolder {
     private lateinit var allUsers: MutableSet<UserData>
 
     fun initUsers(ctx: Context) {
-        val data = readFromFS(ctx, "users.json")
+        val data = FileController.getFile(ctx, USERS_DB_FILENAME)
+        // parse data
     }
 
     fun getUsers(): List<UserData> {
