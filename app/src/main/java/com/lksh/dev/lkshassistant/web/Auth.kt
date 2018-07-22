@@ -1,34 +1,110 @@
 package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
+import android.util.Log
+import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.data.Prefs
-import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
+import com.lksh.dev.lkshassistant.ui.activities.TAG
+import org.json.JSONException
+import org.json.JSONObject
+import java.net.UnknownHostException
 
 class Auth private constructor() {
     companion object {
+
+        /* Public API */
         @JvmStatic
-        fun login(ctx: Context, login: String = "", password: String = ""): Boolean { // true -> successful login
-            val user = DBWrapper.getInstance(ctx).listUsers("%")
-                    .filter { it.login == login && it.password == password }
+        fun continueIfAlreadyLoggedIn(ctx: Context) {
+            if (Prefs.getInstance(ctx).isLoggedIn)
+                forwardLoginResult(LoginResult.SUCCESS)
+        }
 
-            if (user.size != 1) {
-                return Prefs.getInstance(ctx).isLoggedIn
+        @JvmStatic
+        fun requestLogin(ctx: Context, login: String, password: String) {
+            if (!checkCredentials(login, password))
+                forwardLoginResult(LoginResult.FAIL_INCORRECT_CRED)
+            NetworkHelper.authUser(login, password) { _, _, result ->
+                when (result) {
+                    is Result.Success -> {
+                        try {
+                            val token = JSONObject(result.get())
+                                    .getJSONArray("result")
+                                    .getJSONObject(0)
+                                    .getString("token")
+                            Log.d("Network", token)
+                            Prefs.getInstance(ctx).userLogin = login
+                            Prefs.getInstance(ctx).userToken = token
+                            forwardLoginResult(LoginResult.SUCCESS)
+                            Prefs.getInstance(ctx).isLoggedIn = true
+
+                        } catch (e: UnknownHostException) {
+                            forwardResponseState(ResponseState.SERVER_NOT_FOUND)
+                        } catch (e: JSONException) {
+                            forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
+                        }
+                    }
+                    is Result.Failure -> {
+                        forwardResponseState(ResponseState.TIMEOUT_REACHED)
+                    }
+                }
+
             }
-
-            Prefs.getInstance(ctx).apply {
-                this.isLoggedIn = true
-                this.login = user[0].login
-            }
-
-            return true
         }
 
         @JvmStatic
         fun logout(ctx: Context) {
             Prefs.getInstance(ctx).apply {
                 isLoggedIn = false
-                login = ""
+                userToken = ""
             }
         }
+
+        @JvmStatic
+        fun registerCallback(ctx: Context, key: String) {
+            listeners[key] = (ctx as? OnAuthInteractionListener) ?: throw IllegalArgumentException("Class must implement onAuthInteractionListener")
+            Log.d(TAG, "registerCallback: registered $key")
+        }
+
+        /* Inner logic */
+        private var listeners: MutableMap<String, OnAuthInteractionListener> = mutableMapOf()
+
+        @JvmStatic
+        private fun checkCredentials(login: String, password: String): Boolean {
+            if (login == "" || password == "")
+                return false
+            if (!login.matches(Regex("([a-zA-Z0-9@*#.@]+)")))
+                return false
+            return true
+        }
+
+        @JvmStatic
+        private fun forwardLoginResult(loginResult: LoginResult) {
+            listeners.values.forEach {
+                it.onLoginResultFetched(loginResult)
+            }
+        }
+
+        @JvmStatic
+        private fun forwardResponseState(responseState: ResponseState) {
+            listeners.values.forEach {
+                it.onServerFault(responseState)
+            }
+        }
+    }
+
+    interface OnAuthInteractionListener {
+        fun onLoginResultFetched(loginResult: LoginResult)
+        fun onServerFault(responseState: ResponseState)
+    }
+
+    enum class LoginResult {
+        SUCCESS,
+        FAIL_CRED_DONT_MATCH,
+        FAIL_INCORRECT_CRED
+    }
+
+    enum class ResponseState {
+        SERVER_NOT_FOUND,
+        TIMEOUT_REACHED
     }
 }

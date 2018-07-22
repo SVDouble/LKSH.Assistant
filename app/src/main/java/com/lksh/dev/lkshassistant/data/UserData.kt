@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.data.sqlite
+package com.lksh.dev.lkshassistant.data
 
 data class UserData(var _id: Int,
                     var login: String,

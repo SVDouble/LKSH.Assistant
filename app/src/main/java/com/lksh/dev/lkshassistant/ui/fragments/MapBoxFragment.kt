@@ -1,4 +1,4 @@
-package com.lksh.dev.lkshassistant.map
+package com.lksh.dev.lkshassistant.ui.fragments
 
 import android.content.Intent
 import android.location.Location
@@ -14,10 +14,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.houseCoordinates
-import com.lksh.dev.lkshassistant.ui.fragments.BuildingInfoFragment
+import com.lksh.dev.lkshassistant.map.*
 import kotlinx.android.synthetic.main.fragment_map.*
+import org.jetbrains.anko.doAsync
+import org.json.JSONException
+import org.json.JSONObject
 import org.mapsforge.core.graphics.Filter
 import org.mapsforge.core.model.BoundingBox
 import org.mapsforge.core.model.LatLong
@@ -56,6 +62,8 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private var mapViewPos: MapViewPosition? = null
     private lateinit var mapDataStore: MapFile
     private var tileRendererLayer: TileRendererLayer? = null
+
+    private val userPosMarkers: HashMap<Int, ClickableMarker?> = hashMapOf()
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
@@ -116,7 +124,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         super.onDestroy()
     }
 
-
     override fun dispatchClickBuilding(marker: HouseInfoModel) {
         if (marker.buildingType == BuildingType.HOUSE)
             activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
@@ -150,6 +157,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         mapDataStore = MapFile(prepareMapData())
         activity!!.startService(Intent(activity, LocationTrackingService::class.java))
         startGPSTrackingThread()
+        startUsersTrackingThread()
         myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
         Log.d(TAG + "_I_ONCE", "end")
     }
@@ -180,6 +188,18 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
             }
         }
         Log.d(TAG, "GPS started")
+    }
+
+    private fun startUsersTrackingThread() {
+        doAsync {
+            Looper.prepare()
+            val TAG = "LKSH_MAP_USERS_THR"
+            while (true) {
+                showUsersPos()
+                Thread.sleep(1000 * 10)
+            }
+        }
+        Log.d(TAG, "Users tracking started")
     }
 
     private fun setHouseMarkers() {
@@ -213,6 +233,36 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         }
     }
 
+    private fun showUsersPos() {
+        "http://p2.lksh.ru:8000/get_users/"
+                .httpPost(listOf(Pair("token", Prefs.getInstance(activity!!).userToken)))
+                .responseString { request, response, result ->
+                    when (result) {
+                        is Result.Success -> {
+                            try {
+                                val users = JSONObject(result.get())
+                                        .getJSONArray("result")
+
+                                for (i in 0 until users.length()) {
+                                    val user = users.getJSONObject(i)
+
+                                    val login = user.getString("login").toInt()
+                                    val lat = user.getDouble("lat")
+                                    val long = user.getDouble("long")
+
+                                    if (lat != 0.0 && long != 0.0)
+                                        setLocation(login, LatLong(lat, long))
+                                }
+                            } catch (e: JSONException) {
+
+                            }
+                        }
+                        is Result.Failure -> {
+                        }
+                    }
+                }
+    }
+
     private fun updateMyLocation(lat: Double, long: Double) {
         myPos = LatLong(lat, long)
     }
@@ -236,6 +286,20 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         if (accuracy != 0.toFloat())
             Toast.makeText(activity!!.applicationContext, "Accuracy is $accuracy m",
                     Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setLocation(userId: Int, pos: LatLong) {
+        if (userPosMarkers[userId] != null)
+            mapView!!.layerManager.layers.remove(userPosMarkers[userId])
+        val drawable = ResourcesCompat.getDrawable(resources,
+                android.R.drawable.radiobutton_on_background,
+                null)!!
+        val marker = ClickableMarker(drawable, HouseInfoModel(pos,
+                "$userId position",
+                0.0001,
+                BuildingType.OTHER), this)
+        userPosMarkers[userId] = marker
+        mapView!!.layerManager.layers.add(marker)
     }
 
     private fun setMapPos() {

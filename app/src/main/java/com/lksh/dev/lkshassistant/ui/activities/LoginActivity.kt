@@ -1,7 +1,6 @@
 package com.lksh.dev.lkshassistant.ui.activities
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -10,46 +9,24 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
-import android.widget.Toast
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.sqlite.DBHandler
-import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
 import com.lksh.dev.lkshassistant.ui.Fonts
+import com.lksh.dev.lkshassistant.ui.KeyboardVisibilityListener
+import com.lksh.dev.lkshassistant.ui.makeToast
+import com.lksh.dev.lkshassistant.ui.setKeyboardVisibilityListener
 import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.activity_start.*
-import org.jetbrains.anko.doAsync
 
 class LoginActivity : AppCompatActivity(),
-        DBWrapper.DbInteraction,
-        KeyboardVisibilityListener {
-
-    private lateinit var db: DBHandler
-
-    private val listener: (View) -> Unit = {
-        Log.d(TAG, "loginClicked: try to login")
-
-        val login = loginField.text.toString()
-        val psw = passwordField.text.toString()
-        if (!::db.isInitialized) {
-            Log.d(TAG, "loginClicked: failed, db is not initialized")
-            Toast.makeText(this,
-                    "Please wait: db is loading",
-                    Toast.LENGTH_SHORT).show()
-        } else if (!Auth.login(applicationContext, login, psw)) {
-            Toast.makeText(this,
-                    "Wrong login or password",
-                    Toast.LENGTH_SHORT).show()
-        } else {
-            startMain()
-        }
-
-    }
+        KeyboardVisibilityListener,
+        Auth.OnAuthInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
+        /* Register login activity */
+        Auth.registerCallback(this, "LoginActivity")
 
         Log.d(TAG, "LoginActivity: launched")
         setKeyboardVisibilityListener(this, this)
@@ -81,66 +58,23 @@ class LoginActivity : AppCompatActivity(),
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.INTERNET), 0)
         }
-        login_button.setOnClickListener(listener)
-
-        /* Init DB */
-        Log.d(TAG, "onCreate: loading db")
-        doAsync {
-            DBWrapper.registerCallback(this@LoginActivity, "LoginActivity")
-            DBWrapper.initDb(applicationContext, resources)
-            db = DBWrapper.getInstance(this@LoginActivity)
-            Log.d(TAG, "Successfully loaded db: ${db.listUsers("%").size} recordings")
+        login_button.setOnClickListener {
+            val login = loginField.text.toString()
+            val psw = passwordField.text.toString()
+            Auth.requestLogin(applicationContext, login, psw)
         }
     }
 
-    override fun onDbLoaded() {
+    override fun onResume() {
+        super.onResume()
 
-        Log.d(TAG, "onDbLoaded: try automatically login")
-        if (Auth.login(applicationContext)) {
-            startMain()
-        } else {
-            Log.d(TAG, "onDbLoaded: failed, enable login fields")
-            loginField.visibility = View.VISIBLE
-            passwordField.visibility = View.VISIBLE
-            cardView.visibility = View.VISIBLE
-        }
+        Auth.continueIfAlreadyLoggedIn(this)
     }
 
     private fun startMain() {
         startActivity(Intent(this, MainActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         finish()
-    }
-
-    /* Keyboard events: open and close */
-
-    fun setKeyboardVisibilityListener(activity: Activity, keyboardVisibilityListener: KeyboardVisibilityListener) {
-        val contentView = activity.findViewById<View>(android.R.id.content)
-        var mAppHeight: Int = 0
-        var currentOrientation = -1
-        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            private var mPreviousHeight: Int = 0
-            override fun onGlobalLayout() {
-                val newHeight = contentView.height
-                if (newHeight == mPreviousHeight)
-                    return
-                mPreviousHeight = newHeight
-                if (activity.resources.configuration.orientation != currentOrientation) {
-                    currentOrientation = activity.resources.configuration.orientation
-                    mAppHeight = 0
-                }
-                if (newHeight >= mAppHeight) {
-                    mAppHeight = newHeight
-                }
-                if (newHeight != 0) {
-                    if (mAppHeight > newHeight) {
-                        keyboardVisibilityListener.onKeyboardVisibilityChanged(true)
-                    } else {
-                        keyboardVisibilityListener.onKeyboardVisibilityChanged(false)
-                    }
-                }
-            }
-        })
     }
 
     override fun onKeyboardVisibilityChanged(keyboardVisible: Boolean) {
@@ -151,8 +85,16 @@ class LoginActivity : AppCompatActivity(),
         }
 
     }
-}
 
-interface KeyboardVisibilityListener {
-    fun onKeyboardVisibilityChanged(keyboardVisible: Boolean)
+    /* Auth */
+    override fun onLoginResultFetched(loginResult: Auth.LoginResult) {
+        if (loginResult == Auth.LoginResult.SUCCESS)
+            startMain()
+        else
+            makeToast(this, "Login failed: $loginResult")
+    }
+
+    override fun onServerFault(responseState: Auth.ResponseState) {
+        makeToast(this, "Error: $responseState")
+    }
 }
