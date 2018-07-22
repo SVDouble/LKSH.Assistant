@@ -20,6 +20,7 @@ import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.map.*
+import com.lksh.dev.lkshassistant.web.NetworkHelper
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.jetbrains.anko.doAsync
 import org.json.JSONException
@@ -157,6 +158,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         mapDataStore = MapFile(prepareMapData())
         activity!!.startService(Intent(activity, LocationTrackingService::class.java))
         startGPSTrackingThread()
+        startSendLocationThread()
         startUsersTrackingThread()
         myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
         Log.d(TAG + "_I_ONCE", "end")
@@ -190,10 +192,20 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         Log.d(TAG, "GPS started")
     }
 
+    private fun startSendLocationThread() {
+        doAsync {
+            while (true) {
+                NetworkHelper.sendPosition(Prefs.getInstance(activity!!).userLogin,
+                        Prefs.getInstance(activity!!).userToken,
+                        myPos!!.latitude,
+                        myPos!!.longitude)
+                Thread.sleep(1000 * 10)
+            }
+        }
+    }
+
     private fun startUsersTrackingThread() {
         doAsync {
-            Looper.prepare()
-            val TAG = "LKSH_MAP_USERS_THR"
             while (true) {
                 showUsersPos()
                 Thread.sleep(1000 * 10)
