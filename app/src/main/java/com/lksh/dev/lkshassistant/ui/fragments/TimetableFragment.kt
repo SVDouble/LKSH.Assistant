@@ -13,6 +13,8 @@ import com.lksh.dev.lkshassistant.ui.activities.TimetableInteraction
 import com.lksh.dev.lkshassistant.ui.views.TimetableAdapter
 import com.lksh.dev.lkshassistant.ui.views.TimetableEvent
 import kotlinx.android.synthetic.main.fragment_timetable.*
+import kotlinx.android.synthetic.main.fragment_timetable.view.*
+import org.jetbrains.anko.support.v4.onRefresh
 
 class TimetableFragment : Fragment(), TimetableInteraction {
 
@@ -23,16 +25,18 @@ class TimetableFragment : Fragment(), TimetableInteraction {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timetable, container, false)
+
+        val v = inflater.inflate(R.layout.fragment_timetable, container, false)
+        v.refresher.onRefresh {
+            onTimetableUpdate()
+            v.refresher.isRefreshing = false
+        }
+        return v
     }
 
     override fun onResume() {
         super.onResume()
-        val ctx = context
-        if (ctx != null) {
-            timetable = Prefs.getInstance(ctx).timetable
-            updateRecycler()
-        }
+        onTimetableUpdate()
     }
 
     override fun onTimetableUpdate() {
