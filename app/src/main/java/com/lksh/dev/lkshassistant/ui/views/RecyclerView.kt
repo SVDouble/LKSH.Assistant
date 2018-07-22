@@ -76,7 +76,6 @@ class TimetableAdapter(private val mContext: Context, private val dataset: Array
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d(TAG, "Update recycler")
         val data = dataset[position]
         holder.time.text = data.time
         holder.itemView.backgroundColor = if (data.isCurrentEvent)

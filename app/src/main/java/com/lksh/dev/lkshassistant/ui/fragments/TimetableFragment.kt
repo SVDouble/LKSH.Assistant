@@ -28,13 +28,19 @@ class TimetableFragment : Fragment(), TimetableInteraction {
 
     override fun onResume() {
         super.onResume()
-        timetable = Prefs.getInstance(context!!).timetable
-        updateRecycler()
+        val ctx = context
+        if (ctx != null) {
+            timetable = Prefs.getInstance(ctx).timetable
+            updateRecycler()
+        }
     }
 
     override fun onTimetableUpdate() {
-        timetable = Prefs.getInstance(context!!).timetable
-        updateRecycler()
+        val ctx = context
+        if (ctx != null) {
+            timetable = Prefs.getInstance(ctx).timetable
+            updateRecycler()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
