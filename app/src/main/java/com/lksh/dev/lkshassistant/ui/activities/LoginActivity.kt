@@ -10,16 +10,24 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.UsersHolder.forceInitUsers
 import com.lksh.dev.lkshassistant.ui.Fonts
 import com.lksh.dev.lkshassistant.ui.KeyboardVisibilityListener
-import com.lksh.dev.lkshassistant.ui.makeToast
 import com.lksh.dev.lkshassistant.ui.setKeyboardVisibilityListener
 import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.activity_start.*
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 
 class LoginActivity : AppCompatActivity(),
         KeyboardVisibilityListener,
-        Auth.OnAuthInteractionListener {
+        Auth.OnAuthInteractionListener,
+        OnResourseLoad {
+
+    private var startedLoadingDependencies = false
+    private val dependencies = mutableMapOf(
+            "UsersHolder" to false
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +44,8 @@ class LoginActivity : AppCompatActivity(),
         loginField.typeface = Fonts.getInstance(this).montserrat
         passwordField.typeface = Fonts.getInstance(this).montserrat
         login_btn.typeface = Fonts.getInstance(this).montserrat
+
+        Auth.continueIfAlreadyLoggedIn(this)
 
         /* Request permissions */
         Log.d(TAG, "onCreate: requesting permissions")
@@ -65,16 +75,15 @@ class LoginActivity : AppCompatActivity(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun prepareAppResources() {
+        Log.d(TAG, "Start loading resources $!")
+        if (startedLoadingDependencies)
+            return
+        startedLoadingDependencies = true
 
-        Auth.continueIfAlreadyLoggedIn(this)
-    }
-
-    private fun startMain() {
-        startActivity(Intent(this, MainActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
-        finish()
+        Log.d(TAG, "Start loading resources!")
+        longToast("Please wait, resources loading...")
+        forceInitUsers(this)
     }
 
     override fun onKeyboardVisibilityChanged(keyboardVisible: Boolean) {
@@ -86,15 +95,32 @@ class LoginActivity : AppCompatActivity(),
 
     }
 
+    /* Dependencies */
+    override fun resolveDependencies(dependency: String) {
+        dependencies[dependency] = true
+        Log.d(TAG, "Resolve dependency '$dependency'")
+        if (dependencies.all { it.value })
+            startApp()
+    }
+
+    private fun startApp() {
+        startActivity(Intent(this, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+        finish()
+    }
+
     /* Auth */
     override fun onLoginResultFetched(loginResult: Auth.LoginResult) {
+        toast("Login result: $loginResult")
         if (loginResult == Auth.LoginResult.SUCCESS)
-            startMain()
-        else
-            makeToast(this, "Login failed: $loginResult")
+            prepareAppResources()
     }
 
     override fun onServerFault(responseState: Auth.ResponseState) {
-        makeToast(this, "Error: $responseState")
+        toast("Error: $responseState")
     }
+}
+
+interface OnResourseLoad {
+    fun resolveDependencies(dependency: String)
 }
