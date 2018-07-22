@@ -12,7 +12,7 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.sqlite.UserData
+import com.lksh.dev.lkshassistant.data.UserData
 import com.lksh.dev.lkshassistant.map.HouseInfoModel
 import com.lksh.dev.lkshassistant.ui.activities.ProfileActivity
 import com.lksh.dev.lkshassistant.ui.activities.TAG

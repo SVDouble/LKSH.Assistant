@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
+import com.lksh.dev.lkshassistant.data.UserData
 import com.lksh.dev.lkshassistant.ui.activities.MainActivity
 import com.lksh.dev.lkshassistant.ui.hideFragmentById
 import kotlinx.android.synthetic.main.fragment_building_info.*
@@ -37,9 +37,10 @@ class BuildingInfoFragment : Fragment() {
         content_focusable.setOnClickListener {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
-        val dataset = DBWrapper.getInstance(context!!)
-                .listHouse(houseId ?: "%")
-                .sortedBy { it.room.toIntOrNull() ?: 0 }
+//        val dataset = DBWrapper.getInstance(context!!)
+//                .listHouse(houseId ?: "%")
+//                .sortedBy { it.room.toIntOrNull() ?: 0 }
+        val dataset = listOf<UserData>()
         table.isStretchAllColumns = false
         table.bringToFront()
 

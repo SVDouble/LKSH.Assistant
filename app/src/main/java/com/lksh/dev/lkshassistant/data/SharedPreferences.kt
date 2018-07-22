@@ -6,29 +6,23 @@ import android.content.SharedPreferences
 /* Shared preferences */
 class Prefs private constructor(context: Context) {
     private val PREFS_FILENAME = "com.lksh.dev.lkshassistant.prefs"
-    private val BOOL_LOGIN_STATE = "login_state"
-    private val STRING_LOGIN = "login"
-    private val INT_DB_VERSION = "db_version"
-    private val STRING_TIMETABLE = "timetable"
-    //private val STRING_TIMETABLE_VERSION = "timetable_version"
-    val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
 
-    var login: String
-        get() = prefs.getString(STRING_LOGIN, "")
-        set(value) = prefs.edit().putString(STRING_LOGIN, value).apply()
+    private val BOOL_LOGIN_STATE = "bool_login_state"
+    private val STRING_TIMETABLE = "string_timetable"
+    private val STRING_USER_TOKEN = "string_user_token"
+    val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
 
     var isLoggedIn: Boolean
         get() = prefs.getBoolean(BOOL_LOGIN_STATE, false)
         set(value) = prefs.edit().putBoolean(BOOL_LOGIN_STATE, value).apply()
 
-    var dbVersion: Int
-        get() = prefs.getInt(INT_DB_VERSION, -1)
-        set(value) = prefs.edit().putInt(INT_DB_VERSION, value).apply()
+    var userToken: String
+        get() = prefs.getString(STRING_USER_TOKEN, "")
+        set(value) = prefs.edit().putString(STRING_USER_TOKEN, value).apply()
 
     var timetable: String
         get() = prefs.getString(STRING_TIMETABLE, "")
         set(value) = prefs.edit().putString(STRING_TIMETABLE, value).apply()
-
 
     companion object : SingletonHolder<Prefs, Context>(::Prefs)
 }

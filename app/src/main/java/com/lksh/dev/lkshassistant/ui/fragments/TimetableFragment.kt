@@ -56,7 +56,7 @@ class TimetableFragment : Fragment(), TimetableInteraction {
         }
     }
 
-    private fun updateRecycler() {
+    private fun updateRecycler(newText: String = "") {
         val tt = timetable.split("\n")
         val data = Array(tt.size) { i -> TimetableEvent(tt[i].substringBefore(" "), tt[i].substringAfter(" ")) }
         dataset.addAll(data.filter { !dataset.contains(it) })

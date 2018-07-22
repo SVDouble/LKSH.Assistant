@@ -11,7 +11,7 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.sqlite.DBWrapper
+import com.lksh.dev.lkshassistant.data.UserData
 import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.map.MapBoxFragment
 import com.lksh.dev.lkshassistant.ui.fragments.InfoFragment
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun searchResultsInit() {
-        val users = DBWrapper.getInstance(this).listUsers("%")
+        val users = listOf<UserData>()
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset)
             { SearchResult(SearchResult.Type.HOUSE,null, it) }

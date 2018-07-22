@@ -61,7 +61,6 @@
         android:textColorHint="@android:color/background_light"
         android:textColorLink="@android:color/background_light"
         android:textSize="16sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/passwordField"
         app:layout_constraintEnd_toStartOf="@+id/guideline_right"
         app:layout_constraintStart_toStartOf="@+id/guideline_left" />
@@ -82,7 +81,6 @@
         android:textColorHint="@android:color/background_light"
         android:textColorLink="@android:color/background_light"
         android:textSize="16sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toStartOf="@+id/guideline_right"
         app:layout_constraintStart_toStartOf="@+id/guideline_left" />
@@ -92,7 +90,6 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"
         app:cardBackgroundColor="@android:color/background_light"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp"
