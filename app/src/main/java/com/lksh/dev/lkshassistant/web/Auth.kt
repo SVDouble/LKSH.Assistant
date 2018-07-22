@@ -60,7 +60,7 @@ class Auth private constructor() {
         private fun checkCredentials(login: String, password: String): Boolean {
             if (login == "" || password == "")
                 return false
-            if (!login.matches(Regex("([a-zA-Z0-9@*#.@]+)")))
+            if (!login.matches(Regex("([a-zA-Z0-9@*#.]+)")))
                 return false
             return true
         }
