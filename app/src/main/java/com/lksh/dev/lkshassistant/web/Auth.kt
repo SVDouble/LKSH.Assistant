@@ -63,7 +63,11 @@ class Auth private constructor() {
 
         @JvmStatic
         private fun checkCredentials(login: String, password: String): Boolean {
-            return false
+            if (login == "" || password == "")
+                return false
+            if (!login.matches(Regex("([a-zA-Z0-9@*#.@]+)")))
+                return false
+            return true
         }
 
         @JvmStatic
