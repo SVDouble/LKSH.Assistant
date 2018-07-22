@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextFocusChange
 import org.jetbrains.anko.doAsync
 
-
 const val TAG = "_LKSH"
 
 class MainActivity : AppCompatActivity(),
@@ -142,7 +141,7 @@ class MainActivity : AppCompatActivity(),
         val users = listOf<UserData>()
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset)
-            { SearchResult(SearchResult.Type.HOUSE,null, it) }
+        { SearchResult(SearchResult.Type.HOUSE, null, it) }
         users.mapTo(dataset) { SearchResult(SearchResult.Type.USER, it, null) }
         searchAdapter = SearchResultAdapter(this, dataset,
                 object : SearchResultAdapter.OnHouseClickListener {
