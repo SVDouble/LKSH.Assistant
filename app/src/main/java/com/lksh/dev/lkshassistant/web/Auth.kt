@@ -11,11 +11,12 @@ import java.net.UnknownHostException
 
 class Auth private constructor() {
     companion object {
-        private var listeners: MutableMap<String, onAuthInteractionListener> = mutableMapOf()
 
+        /* Public API */
         @JvmStatic
         fun requestLogin(ctx: Context, login: String, password: String) {
-
+            if (!checkCredentials(login, password))
+                forwardLoginResult(LoginResult.LOGIN_FAILED)
             "http://assistant.p2.lksh.ru/user_auth/".httpPost(listOf(Pair("login", login),
                     Pair("password", password))).responseString { request, response, result ->
                 when (result) {
@@ -28,20 +29,14 @@ class Auth private constructor() {
                             Log.d("Network", token)
                             Prefs.getInstance(ctx).userLogin = login
                             Prefs.getInstance(ctx).userToken = token
+                            forwardLoginResult(LoginResult.LOGIN_SUCCESS)
 
-                            listeners.values.forEach {
-                                it.onLoginResultFetched(LoginResult.LOGIN_SUCCESS)
-                            }
                         } catch (e: UnknownHostException) {
-                            listeners.values.forEach {
-                                it.onServerFault(ResponseState.SERVER_NOT_FOUND)
-                            }
+                            forwardResponseState(ResponseState.SERVER_NOT_FOUND)
                         }
                     }
                     is Result.Failure -> {
-                        listeners.values.forEach {
-                            it.onServerFault(ResponseState.TIMEOUT_REACH)
-                        }
+                        forwardResponseState(ResponseState.TIMEOUT_REACHED)
                     }
                 }
 
@@ -58,17 +53,35 @@ class Auth private constructor() {
 
         @JvmStatic
         fun registerCallback(ctx: Context, key: String) {
-            listeners[key] = (ctx as? onAuthInteractionListener) ?: throw IllegalArgumentException("Class must implement onAuthInteractionListener")
+            listeners[key] = (ctx as? OnAuthInteractionListener) ?: throw IllegalArgumentException("Class must implement onAuthInteractionListener")
             Log.d(TAG, "registerCallback: registered $key")
         }
+
+        /* Inner logic */
+
+        private var listeners: MutableMap<String, OnAuthInteractionListener> = mutableMapOf()
 
         @JvmStatic
         private fun checkCredentials(login: String, password: String): Boolean {
             return false
         }
+
+        @JvmStatic
+        private fun forwardLoginResult(loginResult: LoginResult) {
+            listeners.values.forEach {
+                it.onLoginResultFetched(loginResult)
+            }
+        }
+
+        @JvmStatic
+        private fun forwardResponseState(responseState: ResponseState) {
+            listeners.values.forEach {
+                it.onServerFault(responseState)
+            }
+        }
     }
 
-    interface onAuthInteractionListener {
+    interface OnAuthInteractionListener {
         fun onLoginResultFetched(loginResult: LoginResult)
         fun onServerFault(responseState: ResponseState)
     }
@@ -80,6 +93,6 @@ class Auth private constructor() {
 
     enum class ResponseState {
         SERVER_NOT_FOUND,
-        TIMEOUT_REACH
+        TIMEOUT_REACHED
     }
 }

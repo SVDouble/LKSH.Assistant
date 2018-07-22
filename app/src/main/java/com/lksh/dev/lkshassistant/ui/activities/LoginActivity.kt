@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_start.*
 
 class LoginActivity : AppCompatActivity(),
         KeyboardVisibilityListener,
-        Auth.onAuthInteractionListener {
+        Auth.OnAuthInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
