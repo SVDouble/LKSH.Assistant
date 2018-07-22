@@ -19,6 +19,24 @@ class Auth private constructor() {
         fun requestLogin(ctx: Context, login: String, password: String) {
             if (!checkCredentials(login, password))
                 forwardLoginResult(LoginResult.FAIL_INCORRECT_CRED)
+            else
+                NetworkHelper.authUser(ctx, login, password)
+        }
+
+        @JvmStatic
+        fun handleLoginResponse(ctx: Context, login: String, responseState: ResponseState?, token: String?) {
+            if (responseState != null)
+                forwardResponseState(responseState)
+            else {
+                if (token == null)
+                    forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
+                else {
+                    Prefs.getInstance(ctx).userLogin = login
+                    Prefs.getInstance(ctx).userToken = token
+                    Prefs.getInstance(ctx).isLoggedIn = true
+                    forwardLoginResult(LoginResult.SUCCESS)
+                }
+            }
         }
 
         @JvmStatic
