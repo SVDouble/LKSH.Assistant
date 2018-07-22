@@ -21,7 +21,8 @@ class FileController private constructor() {
             doAsync {
                 fetchVersions(ctx)
                 if (localVersions != null && serverVersions != null)
-                    if ((localVersions!!.tables[fileName]?.version ?: -1) < serverVersions!!.tables[fileName]!!.version)
+                    if ((localVersions!!.tables[fileName]?.version
+                                    ?: -1) < serverVersions!!.tables[fileName]!!.version)
                         if (updateFile(ctx, fileName)) {
                             localVersions!!.tables[fileName]!!.version = serverVersions!!.tables[fileName]!!.version
                             writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions!!))
@@ -41,7 +42,7 @@ class FileController private constructor() {
         private var localVersions: VersionsInfo? = null
         private var serverVersions: VersionsInfo? = null
 
-                @JvmStatic
+        @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
             val newValue = NetworkHelper.getTextFile(ctx, fileName) ?: return false
             writeToFS(ctx, fileName, newValue)
