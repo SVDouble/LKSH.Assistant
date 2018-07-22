@@ -2,10 +2,14 @@ package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
 import android.util.Log
+import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TAG
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
+import org.json.JSONObject
+import java.net.UnknownHostException
 
 class Auth private constructor() {
     companion object {
@@ -20,6 +24,41 @@ class Auth private constructor() {
                         it.onLoginResultFetched(result)
                     }
                 }
+            }
+
+            "http://assistant.p2.lksh.ru/user_auth/".httpPost(listOf(Pair("login", login),
+                    Pair("password", password))).responseString { request, response, result ->
+                when (result) {
+                    is Result.Success -> {
+                        try {
+                            val token = JSONObject(result.get())
+                                    .getJSONArray("result")
+                                    .getJSONObject(0)
+                                    .getString("token")
+                            Log.d("Network", token)
+                            Prefs.getInstance(ctx).userLogin = login
+                            Prefs.getInstance(ctx).userToken = token
+
+                            listeners.values.forEach {
+                                it.onLoginResultFetched(LoginResult.LOGIN_SUCCESS)
+                            }
+                        } catch (e: Exception) {
+                            listeners.values.forEach {
+                                it.onLoginResultFetched(LoginResult.LOGIN_FAILED)
+                            }
+                        } catch (e: UnknownHostException) {
+                            listeners.values.forEach {
+                                it.onServerFault(RequestState.SERVER_NOT_FOUND)
+                            }
+                        }
+                    }
+                    is Result.Failure -> {
+                        listeners.values.forEach {
+                            it.onServerFault(RequestState.TIMEOUT_REACH)
+                        }
+                    }
+                }
+
             }
         }
 
@@ -45,10 +84,16 @@ class Auth private constructor() {
 
     interface onAuthInteractionListener {
         fun onLoginResultFetched(loginResult: LoginResult)
-        fun onLoginTimeout()
+        fun onServerFault(requestState: RequestState)
     }
 
     enum class LoginResult {
-        LOGIN_SUCCESS, LOGIN_FAILED
+        LOGIN_SUCCESS,
+        LOGIN_FAILED
+    }
+
+    enum class RequestState {
+        SERVER_NOT_FOUND,
+        TIMEOUT_REACH
     }
 }

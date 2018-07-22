@@ -10,6 +10,7 @@ class Prefs private constructor(context: Context) {
     private val BOOL_LOGIN_STATE = "bool_login_state"
     private val STRING_TIMETABLE = "string_timetable"
     private val STRING_USER_TOKEN = "string_user_token"
+    private val STRING_USER_LOGIN = "string_user_login"
     val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
 
     var isLoggedIn: Boolean
@@ -19,6 +20,10 @@ class Prefs private constructor(context: Context) {
     var userToken: String
         get() = prefs.getString(STRING_USER_TOKEN, "")
         set(value) = prefs.edit().putString(STRING_USER_TOKEN, value).apply()
+
+    var userLogin: String
+        get() = prefs.getString(STRING_USER_LOGIN, "")
+        set(value) = prefs.edit().putString(STRING_USER_LOGIN, value).apply()
 
     var timetable: String
         get() = prefs.getString(STRING_TIMETABLE, "")
