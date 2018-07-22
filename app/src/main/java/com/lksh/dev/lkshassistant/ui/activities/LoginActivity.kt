@@ -88,10 +88,10 @@ class LoginActivity : AppCompatActivity(),
 
     /* Auth */
     override fun onLoginResultFetched(loginResult: Auth.LoginResult) {
-        if (loginResult == Auth.LoginResult.LOGIN_SUCCESS)
+        if (loginResult == Auth.LoginResult.SUCCESS)
             startMain()
         else
-            makeToast(this, "Login failed!")
+            makeToast(this, "Login failed: $loginResult")
     }
 
     override fun onServerFault(responseState: Auth.ResponseState) {

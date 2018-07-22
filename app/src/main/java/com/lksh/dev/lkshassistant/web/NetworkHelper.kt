@@ -15,7 +15,7 @@ class NetworkHelper private constructor() {
         fun authUser(login: String, password: String, handler: httpResponse) {
             val authUrl = AppSettings.baseUrl + "/user_auth/"
             authUrl.httpPost(listOf(Pair("login", login),
-                    Pair("password", password))).responseString(Charsets.UTF_8, handler)
+                    Pair("password", password))).timeout(5000).responseString(Charsets.UTF_8, handler)
         }
     }
 }

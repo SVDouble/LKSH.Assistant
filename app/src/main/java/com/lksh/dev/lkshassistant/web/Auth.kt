@@ -16,13 +16,13 @@ class Auth private constructor() {
         @JvmStatic
         fun continueIfAlreadyLoggedIn(ctx: Context) {
             if (Prefs.getInstance(ctx).isLoggedIn)
-                forwardLoginResult(LoginResult.LOGIN_SUCCESS)
+                forwardLoginResult(LoginResult.SUCCESS)
         }
 
         @JvmStatic
         fun requestLogin(ctx: Context, login: String, password: String) {
             if (!checkCredentials(login, password))
-                forwardLoginResult(LoginResult.LOGIN_FAILED)
+                forwardLoginResult(LoginResult.FAIL_INCORRECT_CRED)
             NetworkHelper.authUser(login, password) { _, _, result ->
                 when (result) {
                     is Result.Success -> {
@@ -34,13 +34,13 @@ class Auth private constructor() {
                             Log.d("Network", token)
                             Prefs.getInstance(ctx).userLogin = login
                             Prefs.getInstance(ctx).userToken = token
-                            forwardLoginResult(LoginResult.LOGIN_SUCCESS)
+                            forwardLoginResult(LoginResult.SUCCESS)
                             Prefs.getInstance(ctx).isLoggedIn = true
 
                         } catch (e: UnknownHostException) {
                             forwardResponseState(ResponseState.SERVER_NOT_FOUND)
                         } catch (e: JSONException) {
-                            forwardLoginResult(LoginResult.LOGIN_FAILED)
+                            forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
                         }
                     }
                     is Result.Failure -> {
@@ -98,8 +98,9 @@ class Auth private constructor() {
     }
 
     enum class LoginResult {
-        LOGIN_SUCCESS,
-        LOGIN_FAILED
+        SUCCESS,
+        FAIL_CRED_DONT_MATCH,
+        FAIL_INCORRECT_CRED
     }
 
     enum class ResponseState {
