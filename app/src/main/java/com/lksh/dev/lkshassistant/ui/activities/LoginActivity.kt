@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity(),
         login_btn.typeface = Fonts.getInstance(this).montserrat
 
         /* Request permissions */
-        Log.d(TAG, "onCreate: requesting permissions")
+        Log.d(TAG, "LoginActivity: requesting permissions")
         if (ContextCompat.checkSelfPermission(this@LoginActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED

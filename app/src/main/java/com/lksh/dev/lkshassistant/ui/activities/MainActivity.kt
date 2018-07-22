@@ -161,7 +161,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun timetableLoaded() {
-        Log.d(TAG, "MAIN: timetable update")
+        Log.d(TAG, "MainActivity: timetable update")
         infoFragment.onTimetableUpdate()
     }
 }
