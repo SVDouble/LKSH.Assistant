@@ -5,6 +5,7 @@ import android.util.Log
 import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TAG
+import org.json.JSONException
 import org.json.JSONObject
 import java.net.UnknownHostException
 
@@ -12,6 +13,12 @@ class Auth private constructor() {
     companion object {
 
         /* Public API */
+        @JvmStatic
+        fun continueIfAlreadyLoggedIn(ctx: Context) {
+            if (Prefs.getInstance(ctx).isLoggedIn)
+                forwardLoginResult(LoginResult.LOGIN_SUCCESS)
+        }
+
         @JvmStatic
         fun requestLogin(ctx: Context, login: String, password: String) {
             if (!checkCredentials(login, password))
@@ -28,9 +35,12 @@ class Auth private constructor() {
                             Prefs.getInstance(ctx).userLogin = login
                             Prefs.getInstance(ctx).userToken = token
                             forwardLoginResult(LoginResult.LOGIN_SUCCESS)
+                            Prefs.getInstance(ctx).isLoggedIn = true
 
                         } catch (e: UnknownHostException) {
                             forwardResponseState(ResponseState.SERVER_NOT_FOUND)
+                        } catch (e: JSONException) {
+                            forwardLoginResult(LoginResult.LOGIN_FAILED)
                         }
                     }
                     is Result.Failure -> {

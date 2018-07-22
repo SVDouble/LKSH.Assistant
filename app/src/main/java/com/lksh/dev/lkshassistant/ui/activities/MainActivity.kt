@@ -165,10 +165,6 @@ class MainActivity : AppCompatActivity(),
         Log.d(TAG, "MAIN: timetable update")
         infoFragment.onTimetableUpdate()
     }
-
-    override fun onBackPressed() {
-        //Just do nothing, prevent closing app
-    }
 }
 
 interface TimetableInteraction {

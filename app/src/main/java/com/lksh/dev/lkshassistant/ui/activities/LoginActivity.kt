@@ -12,6 +12,7 @@ import android.view.View
 import com.lksh.dev.lkshassistant.R
 import com.lksh.dev.lkshassistant.ui.Fonts
 import com.lksh.dev.lkshassistant.ui.KeyboardVisibilityListener
+import com.lksh.dev.lkshassistant.ui.makeToast
 import com.lksh.dev.lkshassistant.ui.setKeyboardVisibilityListener
 import com.lksh.dev.lkshassistant.web.Auth
 import kotlinx.android.synthetic.main.activity_start.*
@@ -64,6 +65,12 @@ class LoginActivity : AppCompatActivity(),
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Auth.continueIfAlreadyLoggedIn(this)
+    }
+
     private fun startMain() {
         startActivity(Intent(this, MainActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
@@ -84,10 +91,10 @@ class LoginActivity : AppCompatActivity(),
         if (loginResult == Auth.LoginResult.LOGIN_SUCCESS)
             startMain()
         else
-            Log.d(TAG, "Login failed!")
+            makeToast(this, "Login failed!")
     }
 
     override fun onServerFault(responseState: Auth.ResponseState) {
-        Log.d(TAG, "Login timeout!")
+        makeToast(this, "Error: $responseState")
     }
 }

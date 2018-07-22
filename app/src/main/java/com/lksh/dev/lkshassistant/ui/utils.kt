@@ -1,9 +1,12 @@
 package com.lksh.dev.lkshassistant.ui
 
 import android.app.Activity
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewTreeObserver
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 
 fun setVisibility(element: View, isVisible: Boolean) {
     element.visibility = if (isVisible) View.VISIBLE else View.GONE
@@ -41,6 +44,10 @@ fun setKeyboardVisibilityListener(activity: Activity, keyboardVisibilityListener
             }
         }
     })
+}
+
+fun makeToast(ctx: Context, text: String) {
+    Toast.makeText(ctx, text, LENGTH_SHORT).show()
 }
 
 interface KeyboardVisibilityListener {
