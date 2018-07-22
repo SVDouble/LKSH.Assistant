@@ -19,7 +19,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         app:cardCornerRadius="10dp"
-        tools:context=".ui.fragments.BuildingInfoFragment">
+        tools:context=".ui.fragments.BuildingInfoHouseFragment">
 
         <RelativeLayout
             android:layout_width="wrap_content"

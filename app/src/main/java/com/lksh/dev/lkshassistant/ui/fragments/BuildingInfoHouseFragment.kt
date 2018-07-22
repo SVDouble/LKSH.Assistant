@@ -14,7 +14,7 @@ import com.lksh.dev.lkshassistant.ui.activities.MainActivity
 import com.lksh.dev.lkshassistant.ui.hideFragmentById
 import kotlinx.android.synthetic.main.fragment_building_info.*
 
-class BuildingInfoFragment : Fragment() {
+class BuildingInfoHouseFragment : Fragment() {
     private var houseId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +37,9 @@ class BuildingInfoFragment : Fragment() {
         content_focusable.setOnClickListener {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
-//        val dataset = DBWrapper.getInstance(context!!)
-//                .listHouse(houseId ?: "%")
-//                .sortedBy { it.room.toIntOrNull() ?: 0 }
+        //        val dataset = DBWrapper.getInstance(context!!)
+        //                .listHouse(houseId ?: "%")
+        //                .sortedBy { it.room.toIntOrNull() ?: 0 }
         val dataset = listOf<UserData>()
         table.isStretchAllColumns = false
         table.bringToFront()
@@ -58,12 +58,12 @@ class BuildingInfoFragment : Fragment() {
 
     private fun createBuildingInfoPart(number: String, name: String, parallel: String, room: String) =
             layoutInflater.inflate(R.layout.part_rv_building, table, false)
-            .apply {
-                findViewById<TextView>(R.id.number).text = number
-                findViewById<TextView>(R.id.name).text = name
-                findViewById<TextView>(R.id.parallel).text = parallel
-                findViewById<TextView>(R.id.room).text = room
-            }
+                    .apply {
+                        findViewById<TextView>(R.id.number).text = number
+                        findViewById<TextView>(R.id.name).text = name
+                        findViewById<TextView>(R.id.parallel).text = parallel
+                        findViewById<TextView>(R.id.room).text = room
+                    }
 
     override fun onStart() {
         super.onStart()
@@ -75,7 +75,7 @@ class BuildingInfoFragment : Fragment() {
         private const val ARG_HOUSE_ID = "house_id"
 
         fun newInstance(houseId: String) =
-                BuildingInfoFragment().apply {
+                BuildingInfoHouseFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_HOUSE_ID, houseId)
                     }
