@@ -1,9 +1,12 @@
+@file:Suppress("EXPERIMENTAL_FEATURE_WARNING")
+
 package com.lksh.dev.lkshassistant.ui.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +15,14 @@ import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TimetableInteraction
 import com.lksh.dev.lkshassistant.ui.views.TimetableAdapter
 import com.lksh.dev.lkshassistant.ui.views.TimetableEvent
+import com.lksh.dev.lkshassistant.web.JsoupHtml
 import kotlinx.android.synthetic.main.fragment_timetable.*
 import kotlinx.android.synthetic.main.fragment_timetable.view.*
+import kotlinx.coroutines.experimental.*
+import org.jetbrains.anko.ctx
+import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.toast
 
 class TimetableFragment : Fragment(), TimetableInteraction {
 
@@ -28,8 +36,15 @@ class TimetableFragment : Fragment(), TimetableInteraction {
 
         val v = inflater.inflate(R.layout.fragment_timetable, container, false)
         v.refresher.onRefresh {
-            onTimetableUpdate()
-            v.refresher.isRefreshing = false
+             launch{
+                context?.apply {
+                    JsoupHtml(context!!).parseHtml()
+                    context!!.runOnUiThread {
+                        v.refresher.isRefreshing = false
+                       // toast("Download").show()
+                    }
+                }
+             }
         }
         return v
     }
@@ -62,6 +77,7 @@ class TimetableFragment : Fragment(), TimetableInteraction {
 
     private fun updateRecycler() {
         val tt = timetable.split("\n")
+        dataset.clear()
         val data = Array(tt.size) { i -> TimetableEvent(tt[i].substringBefore(" "), tt[i].substringAfter(" ")) }
         dataset.addAll(data.filter { !dataset.contains(it) })
         timetableAdapter.notifyDataSetChanged()
