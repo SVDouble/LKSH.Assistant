@@ -63,7 +63,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private lateinit var mapDataStore: MapFile
     private var tileRendererLayer: TileRendererLayer? = null
 
-    private val userPosMarkers: HashMap<Int, ClickableMarker?> = hashMapOf()
+    private val userPosMarkers: HashMap<String, ClickableMarker?> = hashMapOf()
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
@@ -234,7 +234,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     private fun showUsersPos() {
-        "http://p2.lksh.ru:8000/get_users/"
+        "http://assistant.p2.lksh.ru/get_users/"
                 .httpPost(listOf(Pair("token", Prefs.getInstance(activity!!).userToken)))
                 .responseString { request, response, result ->
                     when (result) {
@@ -246,7 +246,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                                 for (i in 0 until users.length()) {
                                     val user = users.getJSONObject(i)
 
-                                    val login = user.getString("login").toInt()
+                                    val login = user.getString("login")
                                     val lat = user.getDouble("lat")
                                     val long = user.getDouble("long")
 
@@ -288,7 +288,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                     Toast.LENGTH_SHORT).show()
     }
 
-    private fun setLocation(userId: Int, pos: LatLong) {
+    private fun setLocation(userId: String, pos: LatLong) {
         if (userPosMarkers[userId] != null)
             mapView!!.layerManager.layers.remove(userPosMarkers[userId])
         val drawable = ResourcesCompat.getDrawable(resources,
