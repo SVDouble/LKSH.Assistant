@@ -54,8 +54,8 @@ class BuildingInfoWorkHouseFragment : Fragment() {
 
         table.addView(createBuildingInfoPart("№", "name", "parallel"), 0)
 
-        val authUrl = AppSettings.baseUrl + "/audience_info/kompovnik"
-        authUrl.httpPost(listOf(Pair("token", token)))
+        val infoUrl = AppSettings.baseUrl + "/audience_info/kompovnik"
+        infoUrl.httpPost(listOf(Pair("token", token)))
                 .timeout(5000).responseString { request, response, result ->
                     when (result) {
                         is Result.Success -> {
