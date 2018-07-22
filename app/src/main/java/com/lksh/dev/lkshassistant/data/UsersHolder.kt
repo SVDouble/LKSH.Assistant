@@ -18,7 +18,7 @@ object UsersHolder {
     private lateinit var allUsers: MutableSet<UserData>
 
     fun initUsers(ctx: Context) {
-        val data = FileController.getFile(ctx, USERS_DB_FILENAME)
+        //val data = FileController.requestFile(ctx, USERS_DB_FILENAME)
         // parse data
     }
 

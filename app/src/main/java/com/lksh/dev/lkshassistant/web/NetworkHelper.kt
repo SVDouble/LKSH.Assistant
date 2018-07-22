@@ -52,15 +52,16 @@ class NetworkHelper private constructor() {
         )
 
         @JvmStatic
-        fun getTextFile(ctx: Context, fileName: String): String {
+        fun getTextFile(ctx: Context, fileName: String): String? {
             if (!serverFilePaths.containsKey(fileName))
                 throw IllegalArgumentException("No path for requested file specified!")
             val fileUrl = AppSettings.baseUrl + serverFilePaths[fileName]
             val token = Prefs.getInstance(ctx).userToken
-            return fileUrl.httpPost(listOf(Pair("token", token)))
+            val response = fileUrl.httpPost(listOf(Pair("token", token)))
                     .timeout(5000)
                     .responseString()
                     .second.responseMessage
+            return if (response.isEmpty()) null else response
         }
     }
 }

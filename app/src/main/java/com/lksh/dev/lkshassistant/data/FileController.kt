@@ -3,6 +3,8 @@ package com.lksh.dev.lkshassistant.data
 import android.content.Context
 import com.beust.klaxon.Klaxon
 import com.lksh.dev.lkshassistant.web.NetworkHelper
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.runOnUiThread
 
 const val FC_CONFIG_FILENAME = "files_config.json"
 
@@ -11,11 +13,19 @@ class FileController private constructor() {
         /* Public API */
 
         @JvmStatic
-        fun getFile(ctx: Context, fileName: String): String {
-            fetchVersions(ctx)
-            if ((localVersions[fileName] ?: -1) < serverVersions[fileName]!!)
-                updateFile(ctx, fileName)
-            return readFromFS(ctx, fileName)!!
+        fun requestFile(ctx: Context, listener: GetFileListener, fileName: String) {
+            doAsync {
+                fetchVersions(ctx)
+                if ((localVersions[fileName] ?: -1) < serverVersions[fileName]!!)
+                    if (updateFile(ctx, fileName)) {
+                        localVersions[fileName] = serverVersions[fileName]!!
+                        writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions))
+                    }
+                val response = readFromFS(ctx, fileName)
+                ctx.runOnUiThread {
+                    listener.receiveFile(response)
+                }
+            }
         }
 
 
@@ -26,20 +36,29 @@ class FileController private constructor() {
         private var serverVersions: MutableMap<String, Int> = mutableMapOf()
 
         @JvmStatic
-        private fun updateFile(ctx: Context, fileName: String) {
-            val newValue = NetworkHelper.getTextFile(ctx, fileName)
+        private fun updateFile(ctx: Context, fileName: String): Boolean {
+            val newValue = NetworkHelper.getTextFile(ctx, fileName) ?: return false
             writeToFS(ctx, fileName, newValue)
+            return true
         }
 
         @JvmStatic
         private fun fetchVersions(ctx: Context) {
             /* From server */
+            serverVersions.clear()
             NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
+            /* Parse ... and add to map */
+
             /* From FS */
             localVersions.clear()
-            Klaxon().parseArray<Pair<String, Int>>(readFromFS(ctx, FC_CONFIG_FILENAME)!!)!!
-                    .map { it.first to it.second }
-                    .toMap(localVersions)
+//            Klaxon().parseArray<Pair<String, Int>>(readFromFS(ctx, FC_CONFIG_FILENAME)!!)!!
+//                    .map { it.first to it.second }
+//                    .toMap(localVersions)
+            localVersions = Klaxon().parse<MutableMap<String, Int>>(readFromFS(ctx, FC_CONFIG_FILENAME)!!)!!
         }
+    }
+
+    interface GetFileListener {
+        fun receiveFile(file: String?)
     }
 }
