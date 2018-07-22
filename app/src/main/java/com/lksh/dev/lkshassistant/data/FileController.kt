@@ -3,6 +3,8 @@ package com.lksh.dev.lkshassistant.data
 import android.content.Context
 import android.util.Log
 import com.beust.klaxon.Klaxon
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.lksh.dev.lkshassistant.ui.activities.TAG
 import com.lksh.dev.lkshassistant.web.NetworkHelper
 import org.jetbrains.anko.doAsync
@@ -74,4 +76,7 @@ class FileController private constructor() {
     interface GetFileListener {
         fun receiveFile(file: String?)
     }
+
+    private inline fun <reified T> Gson.fromJson(json: String) =
+            this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 }

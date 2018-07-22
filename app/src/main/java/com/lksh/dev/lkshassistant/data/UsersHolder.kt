@@ -2,6 +2,8 @@ package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
 import com.beust.klaxon.Klaxon
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.jetbrains.anko.doAsync
 
 const val USERS_DB_FILENAME = "users.json"
@@ -19,6 +21,20 @@ data class UserData(var login: String,
 object UsersHolder : FileController.GetFileListener {
     private var forceInitLock = false
     private var allUsers: MutableSet<UserData> = mutableSetOf()
+
+    data class UsersFromServer(
+            val error: String,
+            val result: Array<User>
+    ) {
+        data class User(
+                val name: String,
+                val login: String,
+                val parallel: String,
+                val city: String,
+                val lat: Double,
+                val long: Double
+        )
+    }
 
     fun initUsers(ctx: Context) {
         doAsync {
@@ -43,8 +59,18 @@ object UsersHolder : FileController.GetFileListener {
     }
 
     override fun receiveFile(file: String?) {
-        if (file != null)
+        if (file != null) {
+            val frServ = Gson().fromJson<UsersFromServer>(file, TypeToken.get(UsersFromServer::class.java).type)
+            allUsers = mutableSetOf()
+            frServ.result.forEach {
+                allUsers.add(UserData(login = it.login, name = it.name, parallel = it.parallel, city = it.city,
+
+                        //TODO: repair output from db this items:
+                        surname = "", room = "", grade = "", house = "", school = ""
+                        ))
+            }
             allUsers = Klaxon().parse<MutableSet<UserData>>(file)!!
+        }
         forceInitLock = false
     }
 }
