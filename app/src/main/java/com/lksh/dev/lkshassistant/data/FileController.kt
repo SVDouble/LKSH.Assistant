@@ -6,6 +6,8 @@ import com.lksh.dev.lkshassistant.web.NetworkHelper
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
 
+typealias JsonConvertType = MutableMap<String, Int>
+
 const val FC_CONFIG_FILENAME = "files_config.json"
 
 class FileController private constructor() {
@@ -32,8 +34,8 @@ class FileController private constructor() {
         /* Inner logic */
 
         /* Key: filename; Value: version */
-        private var localVersions: MutableMap<String, Int> = mutableMapOf()
-        private var serverVersions: MutableMap<String, Int> = mutableMapOf()
+        private var localVersions: JsonConvertType = mutableMapOf()
+        private var serverVersions: JsonConvertType = mutableMapOf()
 
         @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
@@ -44,16 +46,14 @@ class FileController private constructor() {
 
         @JvmStatic
         private fun fetchVersions(ctx: Context) {
-            /* From server */
-            serverVersions.clear()
-            NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
-            /* Parse ... and add to map */
+            val serverConfig = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)!!
+            val localConfig = readFromFS(ctx, FC_CONFIG_FILENAME)
 
-            /* From FS */
+            serverVersions.clear()
             localVersions.clear()
-            val localVersionsRaw = readFromFS(ctx, FC_CONFIG_FILENAME)
-            if (localVersionsRaw != null)
-                localVersions = Klaxon().parse<MutableMap<String, Int>>(localVersionsRaw)!!
+            serverVersions = Klaxon().parse<JsonConvertType>(serverConfig)!!
+            if (localConfig != null)
+                localVersions = Klaxon().parse<JsonConvertType>(localConfig)!!
         }
     }
 
