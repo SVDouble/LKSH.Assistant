@@ -19,7 +19,7 @@ class NetworkHelper private constructor() {
             authUrl.httpPost(listOf(Pair("login", login), Pair("password", password)))
                     .timeout(5000).responseString { request, response, result ->
                         var token: String? = null
-                        var responseState: Auth.ResponseState
+                        var responseState: Auth.ResponseState? = null
 
                         when (result) {
                             is Result.Success -> {
