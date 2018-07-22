@@ -51,10 +51,9 @@ class FileController private constructor() {
 
             /* From FS */
             localVersions.clear()
-//            Klaxon().parseArray<Pair<String, Int>>(readFromFS(ctx, FC_CONFIG_FILENAME)!!)!!
-//                    .map { it.first to it.second }
-//                    .toMap(localVersions)
-            localVersions = Klaxon().parse<MutableMap<String, Int>>(readFromFS(ctx, FC_CONFIG_FILENAME)!!)!!
+            val localVersionsRaw = readFromFS(ctx, FC_CONFIG_FILENAME)
+            if (localVersionsRaw != null)
+                localVersions = Klaxon().parse<MutableMap<String, Int>>(localVersionsRaw)!!
         }
     }
 

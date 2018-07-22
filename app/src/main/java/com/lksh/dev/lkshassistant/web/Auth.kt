@@ -29,7 +29,7 @@ class Auth private constructor() {
                 forwardResponseState(responseState)
             else {
                 if (token == null)
-                    forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
+                    forwardLoginResult(LoginResult.FAIL_CRED_DO_NOT_MATCH)
                 else {
                     Prefs.getInstance(ctx).userLogin = login
                     Prefs.getInstance(ctx).userToken = token
@@ -87,7 +87,7 @@ class Auth private constructor() {
 
     enum class LoginResult {
         SUCCESS,
-        FAIL_CRED_DONT_MATCH,
+        FAIL_CRED_DO_NOT_MATCH,
         FAIL_INCORRECT_CRED
     }
 
