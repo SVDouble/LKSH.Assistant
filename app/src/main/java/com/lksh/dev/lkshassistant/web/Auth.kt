@@ -11,8 +11,10 @@ class Auth private constructor() {
         /* Public API */
         @JvmStatic
         fun continueIfAlreadyLoggedIn(ctx: Context) {
-            if (Prefs.getInstance(ctx).isLoggedIn)
+            if (Prefs.getInstance(ctx).isLoggedIn) {
+                Log.d(TAG, "Auth: already logged in, fast start!")
                 forwardLoginResult(LoginResult.SUCCESS)
+            }
         }
 
         @JvmStatic
