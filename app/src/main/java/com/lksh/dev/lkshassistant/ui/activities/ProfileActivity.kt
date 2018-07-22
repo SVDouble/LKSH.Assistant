@@ -2,22 +2,21 @@ package com.lksh.dev.lkshassistant.ui.activities
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.UsersHolder.getCurrentUser
 import kotlinx.android.synthetic.main.activity_user_profile.*
 
 class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
-        Log.d(TAG, "Profile loaded")
-        val fullname = intent.getStringArrayExtra("USER")
 
-        profile_name.text = "${getString(R.string.preName)} ${fullname[1]}"
-        profile_surname.text = "${getString(R.string.preSurname)} ${fullname[2]}"
-        profile_city.text = "${getString(R.string.preCity)} ${fullname[3]}"
-        profile_parallel.text = "${getString(R.string.preParallel)} ${fullname[4]}"
-        profile_house.text = "${getString(R.string.preHouse)} ${fullname[5]}"
-        profile_room.text = "${getString(R.string.preRoom)} ${fullname[6]}"
+        val user = getCurrentUser()
+        profile_name.text = "${getString(R.string.preName)} ${user.name}"
+        profile_surname.text = "${getString(R.string.preSurname)} ${user.surname}"
+        profile_city.text = "${getString(R.string.preCity)} ${user.city}"
+        profile_parallel.text = "${getString(R.string.preParallel)} ${user.parallel}"
+        profile_house.text = "${getString(R.string.preHouse)} ${user.house}"
+        profile_room.text = "${getString(R.string.preRoom)} ${user.room}"
     }
 }

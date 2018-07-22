@@ -1,7 +1,9 @@
 package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
+import android.util.Log
 import com.beust.klaxon.Klaxon
+import com.lksh.dev.lkshassistant.ui.activities.TAG
 import com.lksh.dev.lkshassistant.web.NetworkHelper
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
@@ -51,9 +53,12 @@ class FileController private constructor() {
 
             serverVersions.clear()
             localVersions.clear()
+            Log.d(TAG, "FileController: get server versions\n$serverConfig")
             serverVersions = Klaxon().parse<JsonConvertType>(serverConfig)!!
-            if (localConfig != null)
+            if (localConfig != null) {
+                Log.d(TAG, "FileController: get local versions\n$localConfig")
                 localVersions = Klaxon().parse<JsonConvertType>(localConfig)!!
+            }
         }
     }
 

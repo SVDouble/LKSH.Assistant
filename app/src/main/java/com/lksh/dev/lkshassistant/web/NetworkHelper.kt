@@ -47,7 +47,7 @@ class NetworkHelper private constructor() {
         }
 
         private val serverFilePaths = mapOf(
-                FC_CONFIG_FILENAME to "",
+                FC_CONFIG_FILENAME to "/versions/",
                 "users.json" to "/get_users/"
         )
 
@@ -61,7 +61,8 @@ class NetworkHelper private constructor() {
                     .timeout(5000)
                     .responseString()
                     .second.responseMessage
-            return if (response.isEmpty()) null else response
+            return if (response.isEmpty()
+                    || response == "Forbidden") null else response
         }
     }
 }
