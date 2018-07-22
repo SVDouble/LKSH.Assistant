@@ -2,12 +2,8 @@ package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
 import android.util.Log
-import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TAG
-import org.json.JSONException
-import org.json.JSONObject
-import java.net.UnknownHostException
 
 class Auth private constructor() {
     companion object {
@@ -23,32 +19,6 @@ class Auth private constructor() {
         fun requestLogin(ctx: Context, login: String, password: String) {
             if (!checkCredentials(login, password))
                 forwardLoginResult(LoginResult.FAIL_INCORRECT_CRED)
-            NetworkHelper.authUser(login, password) { _, _, result ->
-                when (result) {
-                    is Result.Success -> {
-                        try {
-                            val token = JSONObject(result.get())
-                                    .getJSONArray("result")
-                                    .getJSONObject(0)
-                                    .getString("token")
-                            Log.d("Network", token)
-                            Prefs.getInstance(ctx).userLogin = login
-                            Prefs.getInstance(ctx).userToken = token
-                            forwardLoginResult(LoginResult.SUCCESS)
-                            Prefs.getInstance(ctx).isLoggedIn = true
-
-                        } catch (e: UnknownHostException) {
-                            forwardResponseState(ResponseState.SERVER_NOT_FOUND)
-                        } catch (e: JSONException) {
-                            forwardLoginResult(LoginResult.FAIL_CRED_DONT_MATCH)
-                        }
-                    }
-                    is Result.Failure -> {
-                        forwardResponseState(ResponseState.TIMEOUT_REACHED)
-                    }
-                }
-
-            }
         }
 
         @JvmStatic
