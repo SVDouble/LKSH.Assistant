@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(),
         mapBoxFragment = MapBoxFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
                 arrayOf(mapBoxFragment, infoFragment, ProfileFragment()))
+        map.offscreenPageLimit = 2
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
