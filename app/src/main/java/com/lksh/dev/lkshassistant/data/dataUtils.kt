@@ -3,7 +3,6 @@ package com.lksh.dev.lkshassistant.data
 import android.content.Context
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.InputStreamReader
 
 fun parseCsv(ctx: Context, resourceId: Int, delimiter: String = ","): List<List<String>> {
@@ -29,9 +28,11 @@ fun writeToFS(ctx: Context,
 }
 
 fun readFromFS(ctx: Context,
-               fileName: String): String {
+               fileName: String): String? {
     val file = File(ctx.filesDir, fileName)
-    if (!file.exists())
-        throw FileNotFoundException("File $fileName doesn't exist")
+    if (!file.exists()) {
+//        throw FileNotFoundException("File $fileName doesn't exist")
+        return null
+    }
     return file.readText()
 }
