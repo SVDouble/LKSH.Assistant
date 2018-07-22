@@ -11,7 +11,7 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.UsersHolder
+import com.lksh.dev.lkshassistant.data.UsersHolder.getUsers
 import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.ui.fragments.InfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.MapBoxFragment
@@ -82,7 +82,6 @@ class MainActivity : AppCompatActivity(),
         mapBoxFragment = MapBoxFragment()
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager,
                 arrayOf(mapBoxFragment, infoFragment, ProfileFragment()))
-        map.offscreenPageLimit = 2
         map.adapter = mSectionsPagerAdapter
         map.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {}
@@ -139,7 +138,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun searchResultsInit() {
-        val users = UsersHolder.getUsers().toList()
+        val users = getUsers().toList()
         val dataset = arrayListOf<SearchResult>()
         houseCoordinates.mapTo(dataset)
         { SearchResult(SearchResult.Type.HOUSE, null, it) }

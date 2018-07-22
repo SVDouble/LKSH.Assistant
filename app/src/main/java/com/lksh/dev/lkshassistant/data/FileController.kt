@@ -41,7 +41,7 @@ class FileController private constructor() {
         private var localVersions: VersionsInfo? = null
         private var serverVersions: VersionsInfo? = null
 
-                @JvmStatic
+        @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
             val newValue = NetworkHelper.getTextFile(ctx, fileName) ?: return false
             writeToFS(ctx, fileName, newValue)
