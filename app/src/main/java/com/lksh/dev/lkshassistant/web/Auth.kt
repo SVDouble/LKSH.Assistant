@@ -6,8 +6,6 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.ui.activities.TAG
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.net.UnknownHostException
 
@@ -17,14 +15,6 @@ class Auth private constructor() {
 
         @JvmStatic
         fun requestLogin(ctx: Context, login: String, password: String) {
-            doAsync {
-                val result = LoginResult.LOGIN_FAILED
-                ctx.runOnUiThread {
-                    listeners.values.forEach {
-                        it.onLoginResultFetched(result)
-                    }
-                }
-            }
 
             "http://assistant.p2.lksh.ru/user_auth/".httpPost(listOf(Pair("login", login),
                     Pair("password", password))).responseString { request, response, result ->
@@ -42,19 +32,15 @@ class Auth private constructor() {
                             listeners.values.forEach {
                                 it.onLoginResultFetched(LoginResult.LOGIN_SUCCESS)
                             }
-                        } catch (e: Exception) {
-                            listeners.values.forEach {
-                                it.onLoginResultFetched(LoginResult.LOGIN_FAILED)
-                            }
                         } catch (e: UnknownHostException) {
                             listeners.values.forEach {
-                                it.onServerFault(RequestState.SERVER_NOT_FOUND)
+                                it.onServerFault(ResponseState.SERVER_NOT_FOUND)
                             }
                         }
                     }
                     is Result.Failure -> {
                         listeners.values.forEach {
-                            it.onServerFault(RequestState.TIMEOUT_REACH)
+                            it.onServerFault(ResponseState.TIMEOUT_REACH)
                         }
                     }
                 }
@@ -84,7 +70,7 @@ class Auth private constructor() {
 
     interface onAuthInteractionListener {
         fun onLoginResultFetched(loginResult: LoginResult)
-        fun onServerFault(requestState: RequestState)
+        fun onServerFault(responseState: ResponseState)
     }
 
     enum class LoginResult {
@@ -92,7 +78,7 @@ class Auth private constructor() {
         LOGIN_FAILED
     }
 
-    enum class RequestState {
+    enum class ResponseState {
         SERVER_NOT_FOUND,
         TIMEOUT_REACH
     }

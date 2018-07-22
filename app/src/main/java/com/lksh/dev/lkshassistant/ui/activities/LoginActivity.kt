@@ -87,7 +87,7 @@ class LoginActivity : AppCompatActivity(),
             Log.d(TAG, "Login failed!")
     }
 
-    override fun onServerFault() {
+    override fun onServerFault(responseState: Auth.ResponseState) {
         Log.d(TAG, "Login timeout!")
     }
 }
