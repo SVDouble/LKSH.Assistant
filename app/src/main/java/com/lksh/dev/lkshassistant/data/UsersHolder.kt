@@ -1,6 +1,7 @@
 package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
+import android.util.Log
 import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -21,6 +22,7 @@ data class UserData(var login: String,
 object UsersHolder : FileController.GetFileListener {
     private var forceInitLock = false
     private var allUsers: MutableSet<UserData> = mutableSetOf()
+    private val TAG = "LKSH_USER_H"
 
     data class UsersFromServer(
             val error: String,
@@ -69,7 +71,7 @@ object UsersHolder : FileController.GetFileListener {
                         surname = "", room = "", grade = "", house = "", school = ""
                         ))
             }
-            allUsers = Klaxon().parse<MutableSet<UserData>>(file)!!
+            Log.d(TAG, "users loaded")
         }
         forceInitLock = false
     }
