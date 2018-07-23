@@ -63,11 +63,15 @@ class BuildingInfoWorkHouseFragment : Fragment() {
                                 val parallels = JSONObject(result.get())
                                         .getJSONArray("result")
 
+                                var counter = 0
                                 for (i in 0 until parallels.length()) {
                                     val parallel = parallels.getJSONObject(i)
 
                                     val parallelName = parallel.getString("parallel")
+                                    val placeName = parallel.getString("place_fullname")
                                     val users = parallel.getJSONArray("users")
+
+                                    table.addView(createDelimiterPart(placeName))
 
                                     for (l in 0 until users.length()) {
                                         val user = users.getJSONObject(l)
@@ -76,10 +80,12 @@ class BuildingInfoWorkHouseFragment : Fragment() {
                                                 user.getString("last_name")
 
                                         table.addView(createBuildingInfoPart(
-                                                (i + 1).toString(),
+                                                (counter + 1).toString(),
                                                 userName,
                                                 parallelName
-                                        ), i + 1)
+                                        ), counter + 1)
+
+                                        counter++
                                     }
                                 }
                             } catch (e: UnknownHostException) {
@@ -99,6 +105,12 @@ class BuildingInfoWorkHouseFragment : Fragment() {
                         findViewById<TextView>(R.id.number).text = number
                         findViewById<TextView>(R.id.name).text = name
                         findViewById<TextView>(R.id.parallel).text = parallel
+                    }
+
+    private fun createDelimiterPart(title: String): View? =
+            layoutInflater.inflate(R.layout.part_delimiter, table, false)
+                    .apply {
+                        findViewById<TextView>(R.id.title).text = title
                     }
 
     override fun onStart() {
