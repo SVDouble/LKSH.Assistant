@@ -307,7 +307,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
 
     private fun setLocation(userId: String, pos: LatLong) {
         if (userPosMarkers[userId] != null)
-            mapView!!.layerManager.layers.remove(userPosMarkers[userId])
+            mapView!!.layerManager?.layers?.remove(userPosMarkers[userId])
         val drawable = ResourcesCompat.getDrawable(resources,
                 android.R.drawable.radiobutton_on_background,
                 null)!!
@@ -316,7 +316,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                 0.0001,
                 BuildingType.OTHER), this)
         userPosMarkers[userId] = marker
-        mapView!!.layerManager.layers.add(marker)
+        mapView!!.layerManager?.layers?.add(marker)
     }
 
     private fun setMapPos() {
