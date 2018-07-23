@@ -46,14 +46,12 @@ class FileController private constructor() {
 
         @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
-            NetworkHelper.getTextFile(ctx,
-                    object : NetworkHelper.OnDispatchResponse {
-                        override fun dispatchResult(result: String?) {
-                            if (result != null)
-                                writeToFS(ctx, fileName, result)
-                        }
-                    }, fileName)
-            return true
+            val result = NetworkHelper.getTextFile(ctx, fileName)
+            if (result != null) {
+                writeToFS(ctx, fileName, result)
+                return true
+            }
+            return false
         }
 
         @JvmStatic
@@ -67,15 +65,12 @@ class FileController private constructor() {
                 localVersions = Klaxon().parse<VersionsInfo>(localConfig)
 
             /* Server config */
-            NetworkHelper.getTextFile(ctx,
-                    object : NetworkHelper.OnDispatchResponse {
-                        override fun dispatchResult(result: String?) {
-                            Log.d(TAG, "FileController: get server versions:\n$result")
-                            if (result != null)
-                                serverVersions = Klaxon().parse<VersionsInfo>(result)
-                            Log.d(TAG, serverVersions.toString())
-                        }
-                    }, FC_CONFIG_FILENAME)
+            val result = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
+            Log.d(TAG, "FileController: get server versions:\n$result")
+            if (result != null)
+                serverVersions = Klaxon().parse<VersionsInfo>(result)
+            Log.d(TAG, serverVersions.toString())
+
         }
     }
 
