@@ -24,15 +24,15 @@ class FileController private constructor() {
                 fetchVersions(ctx)
                 if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer]!!)
                     if (updateFile(ctx, fileName)) {
-                        Log.d(TAG, "Update file $fileName and its version from ${localVersions[fileName]
+                        Log.d(TAG, "RequestFile: update file $fileName and its version from ${localVersions[fileName]
                                 ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
                         localVersions[fileName] = serverVersions[fileNameOnServer]!!
                         writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions))
                     } else {
-                        Log.d(TAG, "Can't update file $fileName")
+                        Log.d(TAG, "RequestFile: can't update file $fileName")
                     }
                 else {
-                    Log.d(TAG, "File $fileName is up-to-date")
+                    Log.d(TAG, "RequestFile: file $fileName is up-to-date")
                 }
 
                 val response = readFromFS(ctx, fileName)
@@ -54,9 +54,11 @@ class FileController private constructor() {
             val fileNameOnServer = fileName.substringBefore('.')
             val result = NetworkHelper.getTextFile(ctx, fileNameOnServer)
             if (result != null) {
-                Log.d(TAG, "File $fileName new value:\n$result")
+                Log.d(TAG, "FileUpdater: file $fileName new value is:\n$result")
                 writeToFS(ctx, fileName, result)
                 return true
+            } else {
+                Log.d(TAG, "FileUpdater: can't get file $fileName")
             }
             return false
         }
@@ -67,18 +69,17 @@ class FileController private constructor() {
 
             /* Local config */
             val localConfig = readFromFS(ctx, FC_CONFIG_FILENAME)
-            Log.d(TAG, "FileController: get local versions:\n$localConfig")
             if (localConfig != null)
-                localVersions = Klaxon().parse<VersionsInfo>(localConfig)?.tables!!
-                        .map { it.key to it.value.version }.toMap().toMutableMap()
+                localVersions = Klaxon().parse<JsonConvertType>(localConfig)!!
+            Log.d(TAG, "FileController: get local versions:\n$localVersions")
 
             /* Server config */
             val result = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
-            Log.d(TAG, "FileController: get server versions:\n$result")
             if (result != null)
                 serverVersions = Klaxon().parse<VersionsInfo>(result)?.tables!!
                         .map { it.key to it.value.version }.toMap().toMutableMap()
-            Log.d(TAG, serverVersions.toString())
+            Log.d(TAG, "FileController: get server versions:\n$serverVersions")
+            Log.d(TAG, "FileController: versions successfully fetched")
         }
     }
 
