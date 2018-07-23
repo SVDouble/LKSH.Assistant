@@ -1,6 +1,7 @@
 package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import com.beust.klaxon.Klaxon
 import com.lksh.dev.lkshassistant.data.Prefs
@@ -17,17 +18,29 @@ class JsoupHtml(val ctx: Context) {
     private val URL_REQUEST = "http://assistant.p2.lksh.ru/get_timetable_events"
 
     fun parseHtml() {
-        var timetable = ""
-        Jsoup.connect(URL_REQUEST).timeout(TIMEOUT).ignoreContentType(true).get().body().run {
-            val it = Klaxon().parse<Schedule>(text())
-            for (i in it?.result ?: listOf())
-                timetable += i.time + " " + i.description + '\n'
-            ctx.runOnUiThread {
-                Prefs.getInstance(ctx).timetable = timetable
-                (ctx as JsoupInteraction).timetableLoaded()
+        if (!isOnline())
+            return
+        try {
+
+            var timetable = ""
+            Jsoup.connect(URL_REQUEST).timeout(TIMEOUT).ignoreContentType(true).get().body().run {
+                val it = Klaxon().parse<Schedule>(text())
+                for (i in it?.result ?: listOf())
+                    timetable += i.time + " " + i.description + '\n'
+                ctx.runOnUiThread {
+                    Prefs.getInstance(ctx).timetable = timetable
+                    (ctx as JsoupInteraction).timetableLoaded()
+                }
             }
-        }
+        } catch (e : Exception){}
     }
+
+    private fun isOnline(): Boolean {
+        val connMgr = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connMgr.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+
 
     interface JsoupInteraction {
         fun timetableLoaded()

@@ -35,17 +35,22 @@ class TimetableFragment : Fragment(), TimetableInteraction {
         // Inflate the layout for this fragment
 
         val v = inflater.inflate(R.layout.fragment_timetable, container, false)
-        v.refresher.onRefresh {
-             launch{
-                context?.apply {
-                    JsoupHtml(context!!).parseHtml()
+        try {
+            v.refresher.onRefresh {
+                launch {
+                    context?.apply {
+                        JsoupHtml(context!!).parseHtml()
+                        context!!.runOnUiThread {
+                            v.refresher.isRefreshing = false
+                        }
+                    }
+                    Thread.sleep(5000)
                     context!!.runOnUiThread {
                         v.refresher.isRefreshing = false
-                       // toast("Download").show()
                     }
                 }
-             }
-        }
+            }
+        } catch (e : Exception) {}
         return v
     }
 
