@@ -16,11 +16,13 @@ import kotlinx.android.synthetic.main.fragment_building_info.*
 
 class BuildingInfoFragment : Fragment() {
     private var houseId: Int? = null
+    private var houseName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             houseId = it.getInt(ARG_HOUSE_ID)
+            houseName = it.getString(ARG_HOUSE_NAME)
         }
     }
 
@@ -33,7 +35,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        header.text = houseId.toString()
+        header.text = houseName
         content_focusable.setOnClickListener {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
@@ -47,7 +49,7 @@ class BuildingInfoFragment : Fragment() {
         dataset.forEachIndexed { i, data ->
             table.addView(createBuildingInfoPart(
                     (i + 1).toString(),
-                    "${data.name} ${data.surname}",
+                    "${data.name}\n${data.surname}",
                     data.parallel,
                     data.room
             ), i + 1)
@@ -56,12 +58,12 @@ class BuildingInfoFragment : Fragment() {
 
     private fun createBuildingInfoPart(number: String, name: String, parallel: String, room: String) =
             layoutInflater.inflate(R.layout.part_rv_building, table, false)
-            .apply {
-                findViewById<TextView>(R.id.number).text = number
-                findViewById<TextView>(R.id.name).text = name
-                findViewById<TextView>(R.id.parallel).text = parallel
-                findViewById<TextView>(R.id.room).text = room
-            }
+                    .apply {
+                        findViewById<TextView>(R.id.number).text = number
+                        findViewById<TextView>(R.id.name).text = name
+                        findViewById<TextView>(R.id.parallel).text = parallel
+                        findViewById<TextView>(R.id.room).text = room
+                    }
 
     override fun onStart() {
         super.onStart()
@@ -71,11 +73,13 @@ class BuildingInfoFragment : Fragment() {
 
     companion object {
         private const val ARG_HOUSE_ID = "id"
+        private const val ARG_HOUSE_NAME = "name"
 
-        fun newInstance(houseId: Int) =
+        fun newInstance(houseId: Int, houseName: String) =
                 BuildingInfoFragment().apply {
                     arguments = Bundle().apply {
                         putInt(ARG_HOUSE_ID, houseId)
+                        putString(ARG_HOUSE_NAME, houseName)
                     }
                 }
     }

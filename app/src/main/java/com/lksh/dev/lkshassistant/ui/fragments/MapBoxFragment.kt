@@ -128,11 +128,11 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         when (marker.buildingType) {
             BuildingType.HOUSE -> {
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        BuildingInfoFragment.newInstance(marker.id)).commit()
+                        BuildingInfoFragment.newInstance(marker.id, marker.name)).commit()
             }
             BuildingType.OTHER -> {
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        BuildingInfoFragment.newInstance(marker.id)).commit()
+                        BuildingInfoFragment.newInstance(marker.id, marker.name)).commit()
             }
             BuildingType.USER, BuildingType.NONE -> {
 
