@@ -43,7 +43,7 @@ class UserCardAdapter(private val mContext: Context,
         holder.number.text = position.toString()
         holder.name.text = data.name
         holder.parallel.text = data.parallel
-        holder.home.text = data.house
+        holder.home.text = data.house.toString()
     }
 
     override fun getItemCount() = dataset.size

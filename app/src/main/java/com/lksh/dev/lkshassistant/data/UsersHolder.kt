@@ -17,7 +17,7 @@ data class UserData(
         @Json(name = "room")
         var room: String,
         @Json(name = "houseId")
-        var house: String,
+        var house: Int,
         @Json(name = "parallel")
         var parallel: String,
         @Json(ignored = true)
@@ -55,7 +55,7 @@ object UsersHolder : FileController.GetFileListener {
         return allUsers.find { it.login == Prefs.getInstance(this).userLogin }!!
     }
 
-    fun Context.getUsersByHouse(house: String): List<UserData> {
+    fun Context.getUsersByHouse(house: Int): List<UserData> {
         return allUsers.filter { it.house == house }
     }
 

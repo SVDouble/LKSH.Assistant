@@ -127,11 +127,11 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         when (marker.buildingType) {
             BuildingType.HOUSE -> {
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        BuildingInfoFragment.newInstance(marker.name)).commit()
+                        BuildingInfoFragment.newInstance(marker.id)).commit()
             }
             BuildingType.OTHER -> {
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        CustomBuildingInfoFragment.newInstance(marker.name)).commit()
+                        BuildingInfoFragment.newInstance(marker.id)).commit()
             }
             BuildingType.USER, BuildingType.NONE -> {
 
@@ -288,7 +288,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         val drawable = ResourcesCompat.getDrawable(resources,
                 android.R.drawable.radiobutton_on_background,
                 null)!!
-        val marker = ClickableMarker(drawable, HouseInfoModel(pos,
+        val marker = ClickableMarker(drawable, HouseInfoModel(-1, pos,
                 "Your position",
                 0.0001,
                 BuildingType.NONE), this)
@@ -309,7 +309,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         val drawable = ResourcesCompat.getDrawable(resources,
                 android.R.drawable.radiobutton_on_background,
                 null)!!
-        val marker = ClickableMarker(drawable, HouseInfoModel(pos,
+        val marker = ClickableMarker(drawable, HouseInfoModel(-1, pos,
                 "$userId position",
                 0.0001,
                 BuildingType.OTHER), this)

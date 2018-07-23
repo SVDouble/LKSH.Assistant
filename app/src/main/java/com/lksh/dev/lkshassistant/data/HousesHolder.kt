@@ -37,10 +37,10 @@ object HousesHolder : FileController.GetFileListener {
         if (file != null) {
             val frServ = Gson().fromJson<HousesHolder.HousesFromServer>(file, TypeToken.get(HousesHolder.HousesFromServer::class.java).type)
 //            allHouses = Klaxon().parse<HousesFromServer>(file)!!.result
-//                    .map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
-            allHouses = frServ.result.map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
+//                    .map { HouseInfoModel(LatLong(it.lat, it.long), it.name, it.radius, it.buildingType) }
+            allHouses = frServ.result.map { HouseInfoModel(it.id, LatLong(it.lat, it.long), it.name, it.radius, it.buildingType) }
             MapBoxFragment.onUpdateHouses()
-            Log.d(TAG, "Update houses ${allHouses.size}!")
+            Log.d(TAG, "Update houses ${allHouses.size}!\n$allHouses")
         }
         forceInitLock = false
     }

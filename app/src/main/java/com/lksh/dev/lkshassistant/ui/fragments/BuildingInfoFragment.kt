@@ -15,12 +15,12 @@ import com.lksh.dev.lkshassistant.ui.hideFragmentById
 import kotlinx.android.synthetic.main.fragment_building_info.*
 
 class BuildingInfoFragment : Fragment() {
-    private var houseId: String? = null
+    private var houseId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            houseId = it.getString(ARG_HOUSE_ID)
+            houseId = it.getInt(ARG_HOUSE_ID)
         }
     }
 
@@ -33,7 +33,7 @@ class BuildingInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        header.text = houseId
+        header.text = houseId.toString()
         content_focusable.setOnClickListener {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
@@ -72,10 +72,10 @@ class BuildingInfoFragment : Fragment() {
     companion object {
         private const val ARG_HOUSE_ID = "house_id"
 
-        fun newInstance(houseId: String) =
+        fun newInstance(houseId: Int) =
                 BuildingInfoFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_HOUSE_ID, houseId)
+                        putInt(ARG_HOUSE_ID, houseId)
                     }
                 }
     }

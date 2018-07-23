@@ -12,6 +12,6 @@ class App : Application() {
 //        /* Load house coordinates from json */
 //        val data = resources.openRawResource(R.raw.houses)
 //        houseCoordinates = Klaxon().parseArray<JsonHouseInfoModel>(data)!!
-//                .map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
+//                .map { HouseInfoModel(LatLong(it.lat, it.long), it.name, it.radius, it.buildingType) }
     }
 }
