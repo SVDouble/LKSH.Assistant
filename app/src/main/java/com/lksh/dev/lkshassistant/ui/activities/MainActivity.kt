@@ -11,8 +11,8 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.HousesHolder
 import com.lksh.dev.lkshassistant.data.UsersHolder.getUsers
-import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.ui.fragments.InfoFragment
 import com.lksh.dev.lkshassistant.ui.fragments.MapBoxFragment
 import com.lksh.dev.lkshassistant.ui.fragments.ProfileFragment
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(),
     private fun searchResultsInit() {
         val users = getUsers().toList()
         val dataset = arrayListOf<SearchResult>()
-        houseCoordinates.mapTo(dataset)
+        HousesHolder.getHouses().mapTo(dataset)
         { SearchResult(SearchResult.Type.HOUSE, null, it) }
         users.mapTo(dataset) { SearchResult(SearchResult.Type.USER, it, null) }
         searchAdapter = SearchResultAdapter(this, dataset,

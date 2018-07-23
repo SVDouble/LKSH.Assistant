@@ -17,8 +17,8 @@ import android.widget.Toast
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.HousesHolder
 import com.lksh.dev.lkshassistant.data.Prefs
-import com.lksh.dev.lkshassistant.houseCoordinates
 import com.lksh.dev.lkshassistant.map.*
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.jetbrains.anko.doAsync
@@ -208,7 +208,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     private fun setHouseMarkers() {
-        for (house in houseCoordinates) {
+        for (house in HousesHolder.getHouses()) {
             val marker = ClickableMarker(ResourcesCompat.getDrawable(resources,
                     R.drawable.invisible, null)!!,
                     house, this)
@@ -390,7 +390,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         private fun findHouseLatLong(name: String): LatLong? {
             if (name.length == 3 && name.startsWith("ГК"))
                 return findHouseLatLong("ГК")
-            for (house in houseCoordinates)
+            for (house in HousesHolder.getHouses())
                 if (house.name == name)
                     return house.latLong
             return null

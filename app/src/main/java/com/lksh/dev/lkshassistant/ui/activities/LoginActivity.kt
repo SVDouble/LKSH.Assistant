@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.lksh.dev.lkshassistant.R
+import com.lksh.dev.lkshassistant.data.HousesHolder
 import com.lksh.dev.lkshassistant.data.UsersHolder
 import com.lksh.dev.lkshassistant.ui.Fonts
 import com.lksh.dev.lkshassistant.ui.KeyboardVisibilityListener
@@ -83,6 +84,7 @@ class LoginActivity : AppCompatActivity(),
 
     private fun startApp() {
         UsersHolder.initUsers(this)
+        HousesHolder.initHouses(this)
         startActivity(Intent(this, MainActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         finish()
