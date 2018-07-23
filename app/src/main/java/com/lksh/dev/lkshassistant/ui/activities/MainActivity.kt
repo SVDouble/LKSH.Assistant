@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity(),
                         search.clearFocus()
                         mapBoxFragment.setPosByHouseName(houseId)
 //                        supportFragmentManager.beginTransaction().add(R.id.activity_main,
-//                                BuildingInfoFragment.newInstance(houseId)).commit()
+//                                BuildingInfoHouseFragment.newInstance(houseId)).commit()
                     }
                 })
         searchAdapter.notifyDataSetChanged()

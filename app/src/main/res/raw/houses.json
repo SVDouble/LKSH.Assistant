@@ -112,56 +112,56 @@
     "radius": 2.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.858095,
     "longitude": 41.711262,
     "name": "Клуб",
     "radius": 2.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.857525,
     "longitude": 41.712398,
     "name": "Комповник",
     "radius": 2.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.856865,
     "longitude": 41.712037,
     "name": "Романтик",
     "radius": 1.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.857136,
     "longitude": 41.711321,
     "name": "Гараж",
     "radius": 1.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.857064,
     "longitude": 41.711265,
     "name": "Гнездо",
     "radius": 5.0E-5
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.857413,
     "longitude": 41.710131,
     "name": "Столовая",
     "radius": 5.0E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.856306,
     "longitude": 41.712751,
     "name": "Корабль",
     "radius": 2.5E-4
   },
   {
-    "buildingType": "OTHER",
+    "buildingType": "WORK_HOUSE",
     "latitude": 57.85674,
     "longitude": 41.717549,
     "name": "Хорошо",
