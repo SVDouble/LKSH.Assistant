@@ -22,6 +22,7 @@ import com.lksh.dev.lkshassistant.data.Prefs
 import com.lksh.dev.lkshassistant.map.*
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.support.v4.toast
 import org.json.JSONException
 import org.json.JSONObject
 import org.mapsforge.core.graphics.Filter
@@ -215,6 +216,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                 mapView!!.layerManager.layers.remove(it)
         }
         setHouseMarkers()
+        toast("Houses loaded!")
     }
 
     private fun setHouseMarkers() {

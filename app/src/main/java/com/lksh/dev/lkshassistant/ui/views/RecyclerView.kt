@@ -48,7 +48,7 @@ class UserCardAdapter(private val mContext: Context,
 
     override fun getItemCount() = dataset.size
 }
-
+/* */
 
 /* Timetable */
 data class TimetableEvent(

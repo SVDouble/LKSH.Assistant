@@ -16,7 +16,7 @@ data class UserData(
         var surname: String,
         @Json(name = "room")
         var room: String,
-        @Json(name = "houseId")
+        @Json(name = "house_id")
         var house: Int,
         @Json(name = "parallel")
         var parallel: String,

@@ -47,7 +47,7 @@ class CustomBuildingInfoFragment : Fragment() {
     }
 
     companion object {
-        private const val ARG_HOUSE_ID = "house_id"
+        private const val ARG_HOUSE_ID = "id"
 
         fun newInstance(houseId: String) =
                 BuildingInfoFragment().apply {
