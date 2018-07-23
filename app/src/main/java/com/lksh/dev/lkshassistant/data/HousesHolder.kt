@@ -20,12 +20,16 @@ object HousesHolder : FileController.GetFileListener {
             val result: Array<JsonHouseInfoModel>
     )
 
-    fun initHouses(ctx: Context) {
+    fun initHouses(ctx: Context, useLocalVersion: Boolean = true) {
         doAsync {
-            while (allHouses.isEmpty()) {
-                if (!forceInitLock)
-                    FileController.requestFile(ctx, this@HousesHolder, HOUSES_DB_FILENAME)
-                forceInitLock = true
+            if (!useLocalVersion) {
+                do {
+                    if (!forceInitLock)
+                        FileController.requestFile(ctx, this@HousesHolder, HOUSES_DB_FILENAME)
+                    forceInitLock = true
+                } while (allHouses.isEmpty())
+            } else {
+                FileController.requestFile(ctx, this@HousesHolder, HOUSES_DB_FILENAME, true)
             }
         }
     }
@@ -33,14 +37,14 @@ object HousesHolder : FileController.GetFileListener {
     fun getHouses(): List<HouseInfoModel> =
             allHouses
 
-    override fun receiveFile(file: String?) {
+    override fun receiveFile(ctx: Context, file: String?) {
         if (file != null) {
             val frServ = Gson().fromJson<HousesHolder.HousesFromServer>(file, TypeToken.get(HousesHolder.HousesFromServer::class.java).type)
-//            allHouses = Klaxon().parse<HousesFromServer>(file)!!.result
-//                    .map { HouseInfoModel(LatLong(it.lat, it.long), it.name, it.radius, it.buildingType) }
             allHouses = frServ.result.map { HouseInfoModel(it.id, LatLong(it.lat, it.long), it.name, it.radius, it.buildingType) }
             MapBoxFragment.onUpdateHouses()
             Log.d(TAG, "Update houses ${allHouses.size}!\n$allHouses")
+        } else {
+            initHouses(ctx, false)
         }
         forceInitLock = false
     }

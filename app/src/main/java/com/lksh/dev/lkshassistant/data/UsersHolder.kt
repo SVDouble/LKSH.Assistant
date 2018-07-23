@@ -37,12 +37,16 @@ object UsersHolder : FileController.GetFileListener {
             val result: Array<UserData>
     )
 
-    fun initUsers(ctx: Context) {
+    fun initUsers(ctx: Context, useLocalVersion: Boolean = true) {
         doAsync {
-            while (allUsers.isEmpty()) {
-                if (!forceInitLock)
-                    FileController.requestFile(ctx, this@UsersHolder, USERS_DB_FILENAME)
-                forceInitLock = true
+            if (!useLocalVersion) {
+                while (allUsers.isEmpty()) {
+                    if (!forceInitLock)
+                        FileController.requestFile(ctx, this@UsersHolder, USERS_DB_FILENAME)
+                    forceInitLock = true
+                }
+            } else {
+                FileController.requestFile(ctx, this@UsersHolder, USERS_DB_FILENAME, true)
             }
         }
     }
@@ -63,12 +67,14 @@ object UsersHolder : FileController.GetFileListener {
         return allUsers.find { it.login == login }
     }
 
-    override fun receiveFile(file: String?) {
+    override fun receiveFile(ctx: Context, file: String?) {
         if (file != null) {
             val frServ = Gson().fromJson<UsersFromServer>(file, TypeToken.get(UsersFromServer::class.java).type)
             allUsers = mutableSetOf()
             allUsers.addAll(frServ.result)
             Log.d(TAG, "users loaded")
+        } else {
+            initUsers(ctx, false)
         }
         forceInitLock = false
     }

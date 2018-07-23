@@ -23,26 +23,28 @@ class FileController private constructor() {
         /* Public API */
 
         @JvmStatic
-        fun requestFile(ctx: Context, listener: GetFileListener, fileName: String) {
+        fun requestFile(ctx: Context, listener: GetFileListener, fileName: String, useLocalVersion: Boolean = false) {
             doAsync {
-                val fileNameOnServer = fileName.substringBefore('.')
-                fetchVersions(ctx)
-                if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer] ?: -2)
-                    if (updateFile(ctx, fileName)) {
-                        Log.d(TAG, "RequestFile: update file $fileName and its version from ${localVersions[fileName]
-                                ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
-                        localVersions[fileName] = serverVersions[fileNameOnServer]!!
-                        saveLocalConfig(ctx)
-                    } else {
-                        Log.d(TAG, "RequestFile: can't update file $fileName")
+                if (!useLocalVersion) {
+                    val fileNameOnServer = fileName.substringBefore('.')
+                    fetchVersions(ctx)
+                    if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer] ?: -2)
+                        if (updateFile(ctx, fileName)) {
+                            Log.d(TAG, "RequestFile: update file $fileName and its version from ${localVersions[fileName]
+                                    ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
+                            localVersions[fileName] = serverVersions[fileNameOnServer]!!
+                            saveLocalConfig(ctx)
+                        } else {
+                            Log.d(TAG, "RequestFile: can't update file $fileName")
+                        }
+                    else {
+                        Log.d(TAG, "RequestFile: file $fileName is up-to-date")
                     }
-                else {
-                    Log.d(TAG, "RequestFile: file $fileName is up-to-date")
                 }
 
                 val response = readFromFS(ctx, fileName)
                 ctx.runOnUiThread {
-                    listener.receiveFile(response)
+                    listener.receiveFile(ctx, response)
                 }
             }
         }
@@ -114,6 +116,6 @@ class FileController private constructor() {
     }
 
     interface GetFileListener {
-        fun receiveFile(file: String?)
+        fun receiveFile(ctx: Context, file: String?)
     }
 }

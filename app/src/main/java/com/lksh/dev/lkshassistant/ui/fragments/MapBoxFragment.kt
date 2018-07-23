@@ -211,12 +211,15 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     fun updateHouseMarkers() {
-        mapView!!.layerManager.layers.forEach {
-            if (it is ClickableMarker)
-                mapView!!.layerManager.layers.remove(it)
+        if (mapView != null) {
+            mapView!!.layerManager.layers.forEach {
+                if (it is ClickableMarker)
+                    mapView!!.layerManager.layers.remove(it)
+            }
+            setHouseMarkers()
+            toast("Houses loaded!")
+            needUpdateMarkers = false
         }
-        setHouseMarkers()
-        toast("Houses loaded!")
     }
 
     private fun setHouseMarkers() {
