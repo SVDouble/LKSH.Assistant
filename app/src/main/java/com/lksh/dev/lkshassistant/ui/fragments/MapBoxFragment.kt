@@ -109,8 +109,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         super.onResume()
         working = true
         centerIfNeed()
-        if (needUpdateMarkers)
-            updateHouseMarkers()
     }
 
     override fun onDestroyView() {
@@ -187,6 +185,8 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                                     "I can't get location providers. Do you turn on GPS?",
                                     Toast.LENGTH_SHORT).show()
                         centerIfNeed()
+                        if (needUpdateMarkers)
+                            updateHouseMarkers()
                     } catch (e: SecurityException) {
                         Log.d(TAG, e.message, e)
                     }
