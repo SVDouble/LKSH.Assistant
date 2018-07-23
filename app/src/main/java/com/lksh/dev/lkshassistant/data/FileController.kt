@@ -27,7 +27,7 @@ class FileController private constructor() {
                         Log.d(TAG, "RequestFile: update file $fileName and its version from ${localVersions[fileName]
                                 ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
                         localVersions[fileName] = serverVersions[fileNameOnServer]!!
-                        writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions))
+                        saveLocalConfig(ctx)
                     } else {
                         Log.d(TAG, "RequestFile: can't update file $fileName")
                     }
@@ -65,23 +65,34 @@ class FileController private constructor() {
 
         @JvmStatic
         private fun fetchVersions(ctx: Context) {
-            Log.d(TAG, "FileController: fetch versions from server")
+            Log.d(TAG, "FileController: fetch versions")
 
-            /* Local config */
+            /*Local config */
             val localConfig = readFromFS(ctx, FC_CONFIG_FILENAME)
+            localVersions.clear()
             if (localConfig != null)
-                localVersions = Klaxon().parse<JsonConvertType>(localConfig)!!
-            Log.d(TAG, "FileController: get local versions:\n$localVersions")
+                Klaxon().parseArray<MapParser>(localConfig)!!.map { it.key to it.value }.toMap(localVersions)
+            Log.d(TAG, "FileController: local versions:\n$localVersions")
 
             /* Server config */
             val result = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
             if (result != null)
                 serverVersions = Klaxon().parse<VersionsInfo>(result)?.tables!!
                         .map { it.key to it.value.version }.toMap().toMutableMap()
-            Log.d(TAG, "FileController: get server versions:\n$serverVersions")
+            Log.d(TAG, "FileController: server versions:\n$serverVersions")
             Log.d(TAG, "FileController: versions successfully fetched")
         }
+
+        @JvmStatic
+        private fun saveLocalConfig(ctx: Context) {
+            writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions.toList().map { MapParser(it.first, it.second) }))
+        }
     }
+
+    data class MapParser(
+            val key: String,
+            val value: Int
+    )
 
     data class VersionsInfo(
             @Json(name = "tables")
