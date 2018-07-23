@@ -165,8 +165,8 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         mapDataStore = MapFile(prepareMapData())
         activity!!.startService(Intent(activity, LocationTrackingService::class.java))
         startGPSTrackingThread()
-        startSendLocationThread()
-        startUsersTrackingThread()
+        //startSendLocationThread()
+        //startUsersTrackingThread()
         myPos = LatLong(Bundle().getDouble(LAT, defaultLat), Bundle().getDouble(LONG, defaultLong))
         Log.d(TAG + "_I_ONCE", "end")
     }
@@ -189,6 +189,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                                     "I can't get location providers. Do you turn on GPS?",
                                     Toast.LENGTH_SHORT).show()
                         centerIfNeed()
+                        showMyPos(center = false)
                     } catch (e: SecurityException) {
                         Log.d(TAG, e.message, e)
                     }
@@ -202,11 +203,15 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     private fun startSendLocationThread() {
         doAsync {
             while (true) {
-                NetworkHelper.sendPosition(Prefs.getInstance(activity!!).userLogin,
-                        Prefs.getInstance(activity!!).userToken,
-                        myPos!!.latitude,
-                        myPos!!.longitude)
-                Thread.sleep(1000 * 10)
+                try {
+                    NetworkHelper.sendPosition(Prefs.getInstance(activity!!).userLogin,
+                            Prefs.getInstance(activity!!).userToken,
+                            myPos!!.latitude,
+                            myPos!!.longitude)
+                    Thread.sleep(1000 * 10)
+                } catch (e: Exception) {
+                    Log.e("SendLocation", e.message)
+                }
             }
         }
     }
@@ -218,7 +223,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                 Thread.sleep(1000 * 10)
             }
         }
-        Log.d(TAG, "Users tracking started")
     }
 
     private fun setHouseMarkers() {
