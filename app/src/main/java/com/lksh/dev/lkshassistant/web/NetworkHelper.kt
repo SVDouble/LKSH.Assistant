@@ -56,13 +56,14 @@ class NetworkHelper private constructor() {
 
         private val serverFilePaths = mapOf(
                 FC_CONFIG_FILENAME to "/versions/",
+                "houses" to "/get_houses/",
                 "users" to "/get_users/"
         )
 
         @JvmStatic
         fun getTextFile(ctx: Context, fileName: String): String? {
             if (!serverFilePaths.containsKey(fileName))
-                throw IllegalArgumentException("No path for requested file specified!")
+                throw IllegalArgumentException("No path for file $fileName specified!")
             val fileUrl = AppSettings.baseUrl + serverFilePaths[fileName]
             val token = Prefs.getInstance(ctx).userToken
             Log.d(TAG, "Get '$fileName' from server")

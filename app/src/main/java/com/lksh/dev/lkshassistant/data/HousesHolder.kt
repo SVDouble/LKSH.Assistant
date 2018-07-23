@@ -1,9 +1,13 @@
 package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
-import com.beust.klaxon.Klaxon
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.lksh.dev.lkshassistant.map.HouseInfoModel
 import com.lksh.dev.lkshassistant.map.JsonHouseInfoModel
+import com.lksh.dev.lkshassistant.ui.activities.TAG
+import com.lksh.dev.lkshassistant.ui.fragments.MapBoxFragment
 import org.jetbrains.anko.doAsync
 import org.mapsforge.core.model.LatLong
 
@@ -31,9 +35,12 @@ object HousesHolder : FileController.GetFileListener {
 
     override fun receiveFile(file: String?) {
         if (file != null) {
-            allHouses = Klaxon().parse<HousesFromServer>(file)!!.result
-                    .map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
-            // allHouses = ...
+            val frServ = Gson().fromJson<HousesHolder.HousesFromServer>(file, TypeToken.get(HousesHolder.HousesFromServer::class.java).type)
+//            allHouses = Klaxon().parse<HousesFromServer>(file)!!.result
+//                    .map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
+            allHouses = frServ.result.map { HouseInfoModel(LatLong(it.latitude, it.longitude), it.name, it.radius, it.buildingType) }
+            MapBoxFragment.onUpdateHouses()
+            Log.d(TAG, "Update houses ${allHouses.size}!")
         }
         forceInitLock = false
     }

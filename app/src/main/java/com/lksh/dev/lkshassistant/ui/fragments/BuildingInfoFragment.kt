@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.lksh.dev.lkshassistant.R
-import com.lksh.dev.lkshassistant.data.UsersHolder.getUsers
+import com.lksh.dev.lkshassistant.data.UsersHolder.getUsersByHouse
 import com.lksh.dev.lkshassistant.ui.activities.MainActivity
 import com.lksh.dev.lkshassistant.ui.hideFragmentById
 import kotlinx.android.synthetic.main.fragment_building_info.*
@@ -38,7 +38,7 @@ class BuildingInfoFragment : Fragment() {
             hideFragmentById(activity as MainActivity, R.id.activity_main)
         }
 
-        val dataset = context!!.getUsers().sortedBy { it.room.toIntOrNull() ?: 0 }
+        val dataset = context!!.getUsersByHouse(houseId!!).sortedBy { it.room.toIntOrNull() ?: 0 }
         table.isStretchAllColumns = false
         table.bringToFront()
 
