@@ -43,7 +43,7 @@ class UserCardAdapter(private val mContext: Context,
         holder.number.text = position.toString()
         holder.name.text = data.name
         holder.parallel.text = data.parallel
-        holder.home.text = data.house.toString()
+        holder.home.text = data.house_id.toString()
     }
 
     override fun getItemCount() = dataset.size
@@ -130,14 +130,14 @@ class SearchResultAdapter(private val mContext: Context,
                 holder.itemView.setOnClickListener {
                     Log.d(TAG, "Open user profile")
                     mContext.startActivity(Intent(mContext, ProfileActivity::class.java).putExtra("USER", arrayOf(data.user.login,
-                            data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house, data.user.room)))
+                            data.user.name, data.user.surname, data.user.city, data.user.parallel, data.user.house_id, data.user.room)))
                 }
             }
             SearchResult.Type.HOUSE -> {
                 title = data.house!!.name
                 icon = android.R.drawable.ic_media_ff
                 holder.itemView.setOnClickListener {
-                    Log.d(TAG, "Open house page")
+                    Log.d(TAG, "Open house_id page")
                     mHouseListener.onSearchResultClick(title)
                 }
             }

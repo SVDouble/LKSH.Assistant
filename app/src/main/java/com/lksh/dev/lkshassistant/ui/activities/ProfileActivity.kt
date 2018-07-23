@@ -16,7 +16,7 @@ class ProfileActivity : AppCompatActivity() {
         profile_surname.text = "${getString(R.string.preSurname)} ${user.surname}"
         profile_city.text = "${getString(R.string.preCity)} ${user.city}"
         profile_parallel.text = "${getString(R.string.preParallel)} ${user.parallel}"
-        profile_house.text = "${getString(R.string.preHouse)} ${user.house}"
+        profile_house.text = "${getString(R.string.preHouse)} ${user.house_id}"
         profile_room.text = "${getString(R.string.preRoom)} ${user.room}"
     }
 }

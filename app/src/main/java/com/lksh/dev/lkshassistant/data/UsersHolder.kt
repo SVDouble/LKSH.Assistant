@@ -8,29 +8,38 @@ import com.google.gson.reflect.TypeToken
 import org.jetbrains.anko.doAsync
 
 data class UserData(
-        @Json(name = "login")
-        var login: String,
         @Json(name = "name")
-        var name: String,
+        var name: String = "name",
+
         @Json(name = "surname")
-        var surname: String,
-        @Json(name = "room")
-        var room: String,
-        @Json(name = "house_id")
-        var house: Int,
+        var surname: String = "surname",
+
+        @Json(name = "login")
+        var login: String = "login",
+
         @Json(name = "parallel")
-        var parallel: String,
-        @Json(ignored = true)
-        var grade: String = "",
-        @Json(ignored = true)
-        var school: String = "",
+        var parallel: String = "parallel",
+
         @Json(name = "city")
-        var city: String)
+        var city: String = "city",
+
+        @Json(name = "room")
+        var room: String = "room",
+
+        @Json(name = "house_id")
+        var house_id: Int = -1,
+
+        @Json(ignored = true)
+        var grade: String = "grade",
+
+        @Json(ignored = true)
+        var school: String = "school"
+)
 
 object UsersHolder : FileController.GetFileListener {
     private var forceInitLock = false
     private var allUsers: MutableSet<UserData> = mutableSetOf()
-    private val TAG = "LKSH_USER_H"
+    private val TAG = "_LKSH"
 
     data class UsersFromServer(
             val error: String,
@@ -40,11 +49,11 @@ object UsersHolder : FileController.GetFileListener {
     fun initUsers(ctx: Context, useLocalVersion: Boolean = true) {
         doAsync {
             if (!useLocalVersion) {
-                while (allUsers.isEmpty()) {
+                do {
                     if (!forceInitLock)
                         FileController.requestFile(ctx, this@UsersHolder, USERS_DB_FILENAME)
                     forceInitLock = true
-                }
+                } while (allUsers.isEmpty())
             } else {
                 FileController.requestFile(ctx, this@UsersHolder, USERS_DB_FILENAME, true)
             }
@@ -60,7 +69,7 @@ object UsersHolder : FileController.GetFileListener {
     }
 
     fun Context.getUsersByHouse(house: Int): List<UserData> {
-        return allUsers.filter { it.house == house }
+        return allUsers.filter { it.house_id == house }
     }
 
     fun Context.getUserByLogin(login: String): UserData? {
@@ -74,6 +83,7 @@ object UsersHolder : FileController.GetFileListener {
             allUsers.addAll(frServ.result)
             Log.d(TAG, "users loaded")
         } else {
+            Log.d(TAG, "Users aren't cached, try to download json from server...")
             initUsers(ctx, false)
         }
         forceInitLock = false

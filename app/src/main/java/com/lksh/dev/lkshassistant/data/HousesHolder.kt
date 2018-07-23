@@ -44,6 +44,7 @@ object HousesHolder : FileController.GetFileListener {
             MapBoxFragment.onUpdateHouses()
             Log.d(TAG, "Update houses ${allHouses.size}!\n$allHouses")
         } else {
+            Log.d(TAG, "Houses aren't cached, try to download json from server...")
             initHouses(ctx, false)
         }
         forceInitLock = false
