@@ -35,6 +35,6 @@ class InfoFragment : Fragment(), TimetableInteraction {
     }
 
     override fun onTimetableUpdate() {
-        timetableFragment.onTimetableUpdate()
+        //timetableFragment.onTimetableUpdate()
     }
 }
