@@ -105,15 +105,6 @@ class NetworkHelper private constructor() {
                 return null
             }
         }
-        }
-
-        fun sendPosition(id: String, token: String, lat: Double, long: Double) {
-            val authUrl = AppSettings.baseUrl + "/get_users/$id/set/"
-            authUrl.httpPost(listOf(Pair("token", token), Pair("lat", lat),
-                    Pair("long", long)))
-                    .timeout(5000).responseString { request, response, result -> }
-        }
-    }
 
         private fun getPostDataString(params: HashMap<String, String>): String {
             val res = StringBuilder()
@@ -123,4 +114,12 @@ class NetworkHelper private constructor() {
             return res.dropLast(1).toString()
         }
     }
+
+    private fun sendPosition(id: String, token: String, lat: Double, long: Double) {
+        val authUrl = AppSettings.baseUrl + "/get_users/$id/set/"
+        authUrl.httpPost(listOf(Pair("token", token), Pair("lat", lat),
+                Pair("long", long)))
+                .timeout(5000)
+    }
+
 }
