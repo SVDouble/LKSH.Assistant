@@ -13,6 +13,7 @@ data class JsonHouseInfoModel(
         var latitude: Double,
         var longitude: Double,
         var name: String,
+        var id: Int,
         var radius: Double,
         var buildingType: BuildingType
 )
