@@ -54,7 +54,8 @@ class BuildingInfoWorkHouseFragment : Fragment() {
 
         table.addView(createBuildingInfoPart("№", "name", "parallel"), 0)
 
-        val infoUrl = AppSettings.baseUrl + "/audience_info/kompovnik"
+        var prevPlaceName = ""
+        val infoUrl = AppSettings.baseUrl + "/audience_info/${houseId!!.toLowerCase()}"
         infoUrl.httpPost(listOf(Pair("token", token)))
                 .timeout(5000).responseString { request, response, result ->
                     when (result) {
@@ -62,6 +63,8 @@ class BuildingInfoWorkHouseFragment : Fragment() {
                             try {
                                 val parallels = JSONObject(result.get())
                                         .getJSONArray("result")
+                                        .getJSONObject(0)
+                                        .getJSONArray("parallels")
 
                                 var counter = 0
                                 for (i in 0 until parallels.length()) {
@@ -69,9 +72,12 @@ class BuildingInfoWorkHouseFragment : Fragment() {
 
                                     val parallelName = parallel.getString("parallel")
                                     val placeName = parallel.getString("place_fullname")
-                                    val users = parallel.getJSONArray("users")
+                                    val users = parallel.getJSONArray("students")
 
-                                    table.addView(createDelimiterPart(placeName))
+                                    if (placeName != prevPlaceName) {
+                                        table.addView(createDelimiterPart(placeName))
+                                        prevPlaceName = placeName
+                                    }
 
                                     for (l in 0 until users.length()) {
                                         val user = users.getJSONObject(l)
@@ -83,7 +89,7 @@ class BuildingInfoWorkHouseFragment : Fragment() {
                                                 (counter + 1).toString(),
                                                 userName,
                                                 parallelName
-                                        ), counter + 1)
+                                        ))
 
                                         counter++
                                     }
