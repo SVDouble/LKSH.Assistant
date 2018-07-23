@@ -28,7 +28,12 @@ class FileController private constructor() {
                                 ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
                         localVersions[fileName] = serverVersions[fileNameOnServer]!!
                         writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions))
+                    } else {
+                        Log.d(TAG, "Can't update file $fileName")
                     }
+                else {
+                    Log.d(TAG, "File $fileName is up-to-date")
+                }
 
                 val response = readFromFS(ctx, fileName)
                 ctx.runOnUiThread {
@@ -49,6 +54,7 @@ class FileController private constructor() {
             val fileNameOnServer = fileName.substringBefore('.')
             val result = NetworkHelper.getTextFile(ctx, fileNameOnServer)
             if (result != null) {
+                Log.d(TAG, "File $fileName new value:\n$result")
                 writeToFS(ctx, fileName, result)
                 return true
             }
