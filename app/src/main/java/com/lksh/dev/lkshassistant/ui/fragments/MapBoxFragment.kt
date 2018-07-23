@@ -84,7 +84,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "view created")
         if (isFirstStart)
             initOnce()
         mapView = view.findViewById(R.id.mapViewFr)

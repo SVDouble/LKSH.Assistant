@@ -1,6 +1,7 @@
 package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
+import android.util.Log
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
@@ -9,6 +10,7 @@ import com.github.kittinunf.result.Result
 import com.lksh.dev.lkshassistant.AppSettings
 import com.lksh.dev.lkshassistant.data.FC_CONFIG_FILENAME
 import com.lksh.dev.lkshassistant.data.Prefs
+import com.lksh.dev.lkshassistant.ui.activities.TAG
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.UnknownHostException
@@ -52,17 +54,19 @@ class NetworkHelper private constructor() {
         )
 
         @JvmStatic
-        fun getTextFile(ctx: Context, fileName: String): String? {
+        fun getTextFile(ctx: Context, listener: OnDispatchResponse, fileName: String) {
             if (!serverFilePaths.containsKey(fileName))
                 throw IllegalArgumentException("No path for requested file specified!")
             val fileUrl = AppSettings.baseUrl + serverFilePaths[fileName]
             val token = Prefs.getInstance(ctx).userToken
-            val response = fileUrl.httpPost(listOf(Pair("token", token)))
-                    .timeout(5000)
-                    .responseString()
-                    .second.responseMessage
-            return if (response.isEmpty()
-                    || response == "Forbidden") null else response
+            Log.d(TAG, "Get file $fileName from server")
+            fileUrl.httpPost(listOf(Pair("token", token)))
+                    .timeout(5000).responseString { _, _, result ->
+                        var response: String? = null
+                        if (result is Result.Success)
+                            response = result.value
+                        listener.dispatchResult(response)
+                    }
         }
 
         fun sendPosition(id: String, token: String, lat: Double, long: Double) {
@@ -71,5 +75,9 @@ class NetworkHelper private constructor() {
                     Pair("long", long)))
                     .timeout(5000).responseString { request, response, result -> }
         }
+    }
+
+    interface OnDispatchResponse {
+        fun dispatchResult(result: String?)
     }
 }
