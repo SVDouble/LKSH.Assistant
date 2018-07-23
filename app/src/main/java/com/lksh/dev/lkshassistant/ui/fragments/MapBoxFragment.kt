@@ -83,7 +83,6 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "view created")
         if (isFirstStart)
             initOnce()
         mapView = view.findViewById(R.id.mapViewFr)
@@ -125,13 +124,19 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     override fun dispatchClickBuilding(marker: HouseInfoModel) {
-        if (marker.buildingType == BuildingType.HOUSE)
-            activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                    BuildingInfoFragment.newInstance(marker.name)).commit()
-        else
-            Toast.makeText(activity!!.applicationContext,
-                    getString(R.string.onBuildClickedLable) + ' ' + marker.name,
-                    Toast.LENGTH_SHORT).show()
+        when (marker.buildingType) {
+            BuildingType.HOUSE -> {
+                activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                        BuildingInfoFragment.newInstance(marker.name)).commit()
+            }
+            BuildingType.OTHER -> {
+                activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
+                        CustomBuildingInfoFragment.newInstance(marker.name)).commit()
+            }
+            BuildingType.USER, BuildingType.NONE -> {
+
+            }
+        }
     }
 
     fun setNightTheme() {

@@ -2,6 +2,7 @@ package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
 import android.util.Log
+import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -45,30 +46,49 @@ class FileController private constructor() {
 
         @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
-            val newValue = NetworkHelper.getTextFile(ctx, fileName) ?: return false
-            writeToFS(ctx, fileName, newValue)
+            NetworkHelper.getTextFile(ctx,
+                    object : NetworkHelper.OnDispatchResponse {
+                        override fun dispatchResult(result: String?) {
+                            if (result != null)
+                                writeToFS(ctx, fileName, result)
+                        }
+                    }, fileName)
             return true
         }
 
         @JvmStatic
         private fun fetchVersions(ctx: Context) {
-            val serverConfig = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)!!
+            Log.d(TAG, "FileController: fetch versions from server")
+
+            /* Local config */
             val localConfig = readFromFS(ctx, FC_CONFIG_FILENAME)
-            Log.d(TAG, "FileController: get server versions\n$serverConfig")
-            serverVersions = Klaxon().parse<VersionsInfo>(serverConfig)
-            if (localConfig != null) {
-                Log.d(TAG, "FileController: get local versions\n$localConfig")
+            Log.d(TAG, "FileController: get local versions:\n$localConfig")
+            if (localConfig != null)
                 localVersions = Klaxon().parse<VersionsInfo>(localConfig)
-            }
+
+            /* Server config */
+            NetworkHelper.getTextFile(ctx,
+                    object : NetworkHelper.OnDispatchResponse {
+                        override fun dispatchResult(result: String?) {
+                            Log.d(TAG, "FileController: get server versions:\n$result")
+                            if (result != null)
+                                serverVersions = Klaxon().parse<VersionsInfo>(result)
+                            Log.d(TAG, serverVersions.toString())
+                        }
+                    }, FC_CONFIG_FILENAME)
         }
     }
 
     data class VersionsInfo(
+            @Json(name = "tables")
             val tables: MutableMap<String, TableInfo>,
+            @Json(name = "houses")
             val houses: Map<String, Int>
     ) {
         data class TableInfo(
+                @Json(name = "url")
                 val url: String,
+                @Json(name = "version")
                 var version: Int
         )
     }
