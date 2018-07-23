@@ -109,6 +109,8 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         super.onResume()
         working = true
         centerIfNeed()
+        if (needUpdateMarkers)
+            updateHouseMarkers()
     }
 
     override fun onDestroyView() {
@@ -205,6 +207,14 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
             }
         }
         Log.d(TAG, "Users tracking started")
+    }
+
+    fun updateHouseMarkers() {
+        mapView!!.layerManager.layers.forEach {
+            if (it is ClickableMarker)
+                mapView!!.layerManager.layers.remove(it)
+        }
+        setHouseMarkers()
     }
 
     private fun setHouseMarkers() {
@@ -378,6 +388,7 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
         private const val ARG_LONG = "long"
 
         private var gotoPos: LatLong? = null
+        private var needUpdateMarkers = true
 
         fun newInstance(param1: String, param2: String) =
                 MapBoxFragment().apply {
@@ -394,6 +405,10 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
                 if (house.name == name)
                     return house.latLong
             return null
+        }
+
+        fun onUpdateHouses() {
+            needUpdateMarkers = true
         }
     }
 }
