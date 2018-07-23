@@ -2,22 +2,32 @@ package com.lksh.dev.lkshassistant.data
 
 import android.content.Context
 import android.util.Log
-import com.beust.klaxon.Klaxon
+import com.beust.klaxon.Json
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.jetbrains.anko.doAsync
 
 const val USERS_DB_FILENAME = "users.json"
 
-data class UserData(var login: String,
-                    var name: String,
-                    var surname: String,
-                    var room: String,
-                    var house: String,
-                    var parallel: String,
-                    var grade: String,
-                    var school: String,
-                    var city: String)
+data class UserData(
+        @Json(name = "login")
+        var login: String,
+        @Json(name = "name")
+        var name: String,
+        @Json(name = "surname")
+        var surname: String,
+        @Json(name = "room")
+        var room: String,
+        @Json(name = "houseId")
+        var house: String,
+        @Json(name = "parallel")
+        var parallel: String,
+        @Json(ignored = true)
+        var grade: String = "",
+        @Json(ignored = true)
+        var school: String = "",
+        @Json(name = "city")
+        var city: String)
 
 object UsersHolder : FileController.GetFileListener {
     private var forceInitLock = false
@@ -26,17 +36,8 @@ object UsersHolder : FileController.GetFileListener {
 
     data class UsersFromServer(
             val error: String,
-            val result: Array<User>
-    ) {
-        data class User(
-                val name: String,
-                val login: String,
-                val parallel: String,
-                val city: String,
-                val lat: Double,
-                val long: Double
-        )
-    }
+            val result: Array<UserData>
+    )
 
     fun initUsers(ctx: Context) {
         doAsync {
@@ -64,13 +65,7 @@ object UsersHolder : FileController.GetFileListener {
         if (file != null) {
             val frServ = Gson().fromJson<UsersFromServer>(file, TypeToken.get(UsersFromServer::class.java).type)
             allUsers = mutableSetOf()
-            frServ.result.forEach {
-                allUsers.add(UserData(login = it.login, name = it.name, parallel = it.parallel, city = it.city,
-
-                        //TODO: repair output from db this items:
-                        surname = "", room = "", grade = "", house = "", school = ""
-                        ))
-            }
+            allUsers.addAll(frServ.result)
             Log.d(TAG, "users loaded")
         }
         forceInitLock = false

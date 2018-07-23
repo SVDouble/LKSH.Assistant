@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.beust.klaxon.Json
 import com.beust.klaxon.Klaxon
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.lksh.dev.lkshassistant.ui.activities.TAG
 import com.lksh.dev.lkshassistant.web.NetworkHelper
 import org.jetbrains.anko.doAsync
@@ -22,14 +20,16 @@ class FileController private constructor() {
         @JvmStatic
         fun requestFile(ctx: Context, listener: GetFileListener, fileName: String) {
             doAsync {
+                val fileNameOnServer = fileName.substringBefore('.')
                 fetchVersions(ctx)
-                if (localVersions != null && serverVersions != null)
-                    if ((localVersions!!.tables[fileName]?.version ?: -1) < serverVersions!!.tables[fileName]!!.version)
-                        if (updateFile(ctx, fileName)) {
-                            localVersions!!.tables[fileName]!!.version = serverVersions!!.tables[fileName]!!.version
-                            writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions!!))
-                            //TODO: not so many times override file
-                        }
+                if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer]!!)
+                    if (updateFile(ctx, fileName)) {
+                        Log.d(TAG, "Update file $fileName and its version from ${localVersions[fileName]
+                                ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
+                        localVersions[fileName] = serverVersions[fileNameOnServer]!!
+                        writeToFS(ctx, FC_CONFIG_FILENAME, Klaxon().toJsonString(localVersions))
+                    }
+
                 val response = readFromFS(ctx, fileName)
                 ctx.runOnUiThread {
                     listener.receiveFile(response)
@@ -41,12 +41,13 @@ class FileController private constructor() {
         /* Inner logic */
 
         /* Key: filename; Value: version */
-        private var localVersions: VersionsInfo? = null
-        private var serverVersions: VersionsInfo? = null
+        private var localVersions: JsonConvertType = mutableMapOf()
+        private var serverVersions: JsonConvertType = mutableMapOf()
 
         @JvmStatic
         private fun updateFile(ctx: Context, fileName: String): Boolean {
-            val result = NetworkHelper.getTextFile(ctx, fileName)
+            val fileNameOnServer = fileName.substringBefore('.')
+            val result = NetworkHelper.getTextFile(ctx, fileNameOnServer)
             if (result != null) {
                 writeToFS(ctx, fileName, result)
                 return true
@@ -62,15 +63,16 @@ class FileController private constructor() {
             val localConfig = readFromFS(ctx, FC_CONFIG_FILENAME)
             Log.d(TAG, "FileController: get local versions:\n$localConfig")
             if (localConfig != null)
-                localVersions = Klaxon().parse<VersionsInfo>(localConfig)
+                localVersions = Klaxon().parse<VersionsInfo>(localConfig)?.tables!!
+                        .map { it.key to it.value.version }.toMap().toMutableMap()
 
             /* Server config */
             val result = NetworkHelper.getTextFile(ctx, FC_CONFIG_FILENAME)
             Log.d(TAG, "FileController: get server versions:\n$result")
             if (result != null)
-                serverVersions = Klaxon().parse<VersionsInfo>(result)
+                serverVersions = Klaxon().parse<VersionsInfo>(result)?.tables!!
+                        .map { it.key to it.value.version }.toMap().toMutableMap()
             Log.d(TAG, serverVersions.toString())
-
         }
     }
 
@@ -91,7 +93,4 @@ class FileController private constructor() {
     interface GetFileListener {
         fun receiveFile(file: String?)
     }
-
-    private inline fun <reified T> Gson.fromJson(json: String) =
-            this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 }

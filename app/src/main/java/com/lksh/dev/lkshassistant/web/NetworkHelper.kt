@@ -1,7 +1,6 @@
 package com.lksh.dev.lkshassistant.web
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.Request
@@ -15,12 +14,12 @@ import com.lksh.dev.lkshassistant.ui.activities.TAG
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.UnknownHostException
-import java.io.BufferedWriter
-import java.io.OutputStreamWriter
 
 typealias httpResponse = (Request, Response, Result<String, FuelError>) -> Unit
 
@@ -57,7 +56,7 @@ class NetworkHelper private constructor() {
 
         private val serverFilePaths = mapOf(
                 FC_CONFIG_FILENAME to "/versions/",
-                "users.json" to "/get_users/"
+                "users" to "/get_users/"
         )
 
         @JvmStatic
@@ -66,7 +65,7 @@ class NetworkHelper private constructor() {
                 throw IllegalArgumentException("No path for requested file specified!")
             val fileUrl = AppSettings.baseUrl + serverFilePaths[fileName]
             val token = Prefs.getInstance(ctx).userToken
-            Log.d(TAG, "Get file $fileName from server")
+            Log.d(TAG, "Get '$fileName' from server")
             val url = URL(fileUrl)
             with(url.openConnection() as HttpURLConnection) {
                 //request
@@ -82,7 +81,6 @@ class NetworkHelper private constructor() {
                 writer.flush()
                 writer.close()
                 os.close()
-
 
                 //response
                 Log.d(TAG, "response code at $url is $responseCode")
