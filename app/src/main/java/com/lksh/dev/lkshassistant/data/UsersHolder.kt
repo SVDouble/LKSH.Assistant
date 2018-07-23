@@ -7,8 +7,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.jetbrains.anko.doAsync
 
-const val USERS_DB_FILENAME = "users.json"
-
 data class UserData(
         @Json(name = "login")
         var login: String,
@@ -55,6 +53,10 @@ object UsersHolder : FileController.GetFileListener {
 
     fun Context.getCurrentUser(): UserData {
         return allUsers.find { it.login == Prefs.getInstance(this).userLogin }!!
+    }
+
+    fun Context.getUsersByHouse(house: String): List<UserData> {
+        return allUsers.filter { it.house == house }
     }
 
     fun Context.getUserByLogin(login: String): UserData? {

@@ -67,36 +67,41 @@ class NetworkHelper private constructor() {
             val token = Prefs.getInstance(ctx).userToken
             Log.d(TAG, "Get '$fileName' from server")
             val url = URL(fileUrl)
-            with(url.openConnection() as HttpURLConnection) {
-                //request
-                requestMethod = "POST"
-                connectTimeout = 50000
-                readTimeout = 50000
-                doOutput = true
-                doInput = true
-                val os = outputStream
-                val writer = BufferedWriter(
-                        OutputStreamWriter(os, "UTF-8"))
-                writer.write(getPostDataString(hashMapOf("token" to token)))
-                writer.flush()
-                writer.close()
-                os.close()
+            try {
+                with(url.openConnection() as HttpURLConnection) {
+                    //request
+                    requestMethod = "POST"
+                    connectTimeout = 50000
+                    readTimeout = 50000
+                    doOutput = true
+                    doInput = true
+                    val os = outputStream
+                    val writer = BufferedWriter(
+                            OutputStreamWriter(os, "UTF-8"))
+                    writer.write(getPostDataString(hashMapOf("token" to token)))
+                    writer.flush()
+                    writer.close()
+                    os.close()
 
-                //response
-                Log.d(TAG, "response code at $url is $responseCode")
-                if (responseCode != 200)
-                    return null
+                    //response
+                    Log.d(TAG, "response code at $url is $responseCode")
+                    if (responseCode != 200)
+                        return null
 
-                BufferedReader(InputStreamReader(inputStream)).use {
-                    val response = StringBuffer()
+                    BufferedReader(InputStreamReader(inputStream)).use {
+                        val response = StringBuffer()
 
-                    var inputLine = it.readLine()
-                    while (inputLine != null) {
-                        response.append(inputLine)
-                        inputLine = it.readLine()
+                        var inputLine = it.readLine()
+                        while (inputLine != null) {
+                            response.append(inputLine)
+                            inputLine = it.readLine()
+                        }
+                        return response.toString()
                     }
-                    return response.toString()
                 }
+            } catch (e: UnknownHostException) {
+                Log.d(TAG, "Host not found: ", e)
+                return null
             }
         }
 

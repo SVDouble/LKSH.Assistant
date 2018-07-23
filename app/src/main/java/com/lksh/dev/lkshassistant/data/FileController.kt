@@ -13,6 +13,11 @@ typealias JsonConvertType = MutableMap<String, Int>
 
 const val FC_CONFIG_FILENAME = "files_config.json"
 
+/* Custom files */
+const val USERS_DB_FILENAME = "users.json"
+const val HOUSES_DB_FILENAME = "houses.json"
+
+
 class FileController private constructor() {
     companion object {
         /* Public API */
@@ -22,7 +27,7 @@ class FileController private constructor() {
             doAsync {
                 val fileNameOnServer = fileName.substringBefore('.')
                 fetchVersions(ctx)
-                if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer]!!)
+                if ((localVersions[fileName] ?: -1) < serverVersions[fileNameOnServer] ?: -2)
                     if (updateFile(ctx, fileName)) {
                         Log.d(TAG, "RequestFile: update file $fileName and its version from ${localVersions[fileName]
                                 ?: "no_version_detected"} to ${serverVersions[fileNameOnServer]!!}")
