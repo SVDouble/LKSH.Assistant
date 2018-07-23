@@ -126,14 +126,15 @@ class MapBoxFragment : Fragment(), OnMapInteractionListener {
     }
 
     override fun dispatchClickBuilding(marker: HouseInfoModel) {
+        val token = Prefs.getInstance(activity!!).userToken
         when (marker.buildingType) {
             BuildingType.HOUSE ->
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        BuildingInfoHouseFragment.newInstance(marker.name))
+                        BuildingInfoHouseFragment.newInstance(marker.name, token))
                         .commit()
             BuildingType.WORK_HOUSE ->
                 activity!!.supportFragmentManager.beginTransaction().add(R.id.activity_main,
-                        BuildingInfoWorkHouseFragment.newInstance(marker.name, Prefs.getInstance(activity!!).userToken))
+                        BuildingInfoWorkHouseFragment.newInstance(marker.name, token))
                         .commit()
             else ->
                 Toast.makeText(activity!!.applicationContext,

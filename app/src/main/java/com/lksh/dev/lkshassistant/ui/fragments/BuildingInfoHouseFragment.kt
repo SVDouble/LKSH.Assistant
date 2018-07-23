@@ -53,8 +53,10 @@ class BuildingInfoHouseFragment : Fragment() {
         table.addView(createBuildingInfoPart("№", "name", "parallel", "room"), 0)
 
         val authUrl = AppSettings.baseUrl + "/get_houses/${houseId!!
-                .replace("Домик ", "")}"
-        authUrl.httpPost(listOf(Pair("token", "123")))
+                .replace("Домик ", "")
+                .replace("Главный корпус", "гк")
+        }"
+        authUrl.httpPost(listOf(Pair("token", token)))
                 .timeout(5000).responseString { request, response, result ->
                     when (result) {
                         is Result.Success -> {
@@ -69,7 +71,7 @@ class BuildingInfoHouseFragment : Fragment() {
                                     val name = "${user.getString("name")} " +
                                             user.getString("last_name")
                                     val parallelName = user.getString("parallel")
-                                            .replace("Преподаватель", "П.")
+                                            .replace("Преподаватель ", "П.")
                                     val room = user.getString("room")
 
                                     table.addView(createBuildingInfoPart(
@@ -118,7 +120,7 @@ class BuildingInfoHouseFragment : Fragment() {
         private const val ARG_HOUSE_ID = "house_id"
         private const val ARG_TOKEN = "token"
 
-        fun newInstance(houseId: String) =
+        fun newInstance(houseId: String, token: String) =
                 BuildingInfoHouseFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_HOUSE_ID, houseId)
